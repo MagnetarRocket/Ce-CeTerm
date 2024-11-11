@@ -1,0 +1,75 @@
+#!/bin/sh
+###############################################################################
+#  
+#  Copyright 1988 - 2002 Enabling Technologies Group
+#  Copyright 2003   Robert Styma Consulting
+#  
+###############################################################################
+# SCCS info %Z% %M% %I% - %G% %U%
+#
+#   Script syntax:  ce_deinstall
+#   Purpose:        This script de-installs the 'ce' software.  It first
+#                   removes the links from the documentation directories, and
+#                   it deletes the entire ce directory.
+#
+#   Change history:
+#       1992.09.30 longot          Created.
+#       1995.12.15 Robert Styma	Added code for ce_merge and ce_update
+#       1996.05.08 Robert Styma	Added code for CEAPPDIR
+#       1997.10.27 Robert Styma	Updates for release 2.5
+#
+###############################################################################
+
+
+#------------------------------------------------------------------------------
+# go after the command links
+#
+    dir=$CEBINDIR
+    /bin/echo "[Removing commands from $CEBINDIR...]"
+    for n in ce cv ce_init ceterm xdmc ce_update ce_merge ce_isceterm
+    do
+		if /bin/ls -al $dir/$n 2>&1 | grep "^l" > /dev/null
+        then
+            /bin/echo "[   $dir/$n]"
+            /bin/chmod 777 $dir/$n
+            /bin/rm  $dir/$n
+        fi
+    done
+
+
+#------------------------------------------------------------------------------
+# go after the documentation links
+#
+
+    /bin/echo "[Removing man pages ...]"
+	for n in ce.1 cv.1 ceterm.1 xdmc.1
+	do
+    	if test -f $n ; then
+        	/bin/echo "[   $n]"
+           /bin/chmod 777 $CEMANDIR/$n
+			/bin/rm $CEMANDIR/$n
+		fi
+	done
+
+
+#------------------------------------------------------------------------------
+# go after the X application defaults file
+#
+
+    adf="$CEAPPDIR/Ce"
+    if test -f $adf
+    then
+        /bin/echo "[   $adf]"
+        /bin/chmod 777 $adf
+        rm $adf
+    fi
+
+
+#------------------------------------------------------------------------------
+# Tell them where the other files are ...
+#
+    /bin/echo ""
+    /bin/echo "    " Please complete the de-installation by manually deleting"
+    /bin/echo "    " the following ce directories:"
+	/bin/echo "$CEHELPDIR" 
+	/bin/echo "$CEMAINDIR"

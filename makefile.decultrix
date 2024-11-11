@@ -1,0 +1,104 @@
+
+CC          = 	cc
+
+#  C_OPTS can be set from the shell environment to turn on -g
+#  set C_OPTS='-g'; export C_OPTS
+
+DFLAGS      = \
+ -DDebuG\
+ -DPAD\
+ -DCE_LITTLE_ENDIAN\
+ -DUSE_BSD_SIGNALS\
+ -DARPUS_CE\
+ -DNO_LICENSE
+CFLAGS      = $(C_OPTS) -g $(DFLAGS)
+LIBS        = /usr/lib/libX11.a
+
+
+#CFLAGS      = -A cpu,3000 -g -DDebuG -W0,-info,4
+
+
+# The following include sets variable CRPAD_OBS
+include makefile.objs
+
+EXTRA_OBJS    =  usleep.o
+
+SRCMODS  = $(CRPAD_OBS:.o=.c) delcc.c xdmc.c ceapi.c
+
+default :  ce xdmc ce_isceterm
+
+
+# The following include sets variable HFILES and sets up the .h file dependencies
+include makefile.depends
+
+
+# rule puts cflags at the end so we cans what is being compiled
+.c.o:
+	$(CC) -c $< $(CFLAGS)
+
+expidate.o: expidate.h expidate.c expistamp
+	$(CC) -c expidate.c $(CFLAGS)
+	expistamp -n 130.131 1001 expidate.o
+#	expistamp expidate.o 1993/12/31 1001
+
+expi expistamp: expistamp.o
+	$(CC) $(CFLAGS) -o expistamp expistamp.o
+
+md: memdata_test.o memdata.o debug.o undo.o search.o re.o
+	$(CC) $(CFLAGS) -o md memdata_test.o memdata.o debug.o undo.o search.o re.o
+
+keytest: keytest.o keysym.o
+	$(CC) $(CFLAGS) -o keytest keytest.o keysym.o $(LIBS)
+
+delcc: delcc.o
+	$(CC) $(CFLAGS) -o delcc delcc.o $(LIBS)
+
+ccdump: ccdump.c debug.o cc.c hexdump.o
+	$(CC) $(CFLAGS) -o ccdump ccdump.c  debug.o hexdump.o $(LIBS)
+
+xdmccc.o : cc.o  xdmccc.c
+	$(CC) $(CFLAGS) -DPGM_XDMC -c xdmccc.c
+
+xdmccc.c : 
+	ln -s cc.c xdmccc.c
+
+xdmc: xdmc.c getxopts.o debug.o xdmccc.o netlist.o hexdump.o link_date.o usleep.o
+	$(CC) $(CFLAGS) -o xdmc xdmc.c xdmccc.o getxopts.o debug.o netlist.o hexdump.o link_date.o usleep.o $(LIBS)
+
+ce: $(HFILES) $(CRPAD_OBS) link_date.o expistamp
+	$(CC) $(CFLAGS) -o ce $(CRPAD_OBS) link_date.o $(LIBS)
+	chown root ce
+	chmod 4755 ce
+
+apipastebuf.o : pastebuf.o  apipastebuf.c
+	$(CC) $(CFLAGS) -DPGM_CEAPI -c apipastebuf.c
+
+apipastebuf.c : 
+	ln -s pastebuf.c apipastebuf.c
+
+apinormalize.o : normalize.o  apinormalize.c
+	$(CC) $(CFLAGS) -DPGM_CEAPI -UARPUS_CE -UPAD -c apinormalize.c
+
+apinormalize.c : 
+	ln -s normalize.c apinormalize.c
+
+libceapi.a: ceapi.o debug.o xdmccc.o apipastebuf.o apinormalize.o hexdump.o
+	rm -f libceapi.a
+	ar r libceapi.a `lorder ceapi.o debug.o xdmccc.o apipastebuf.o apinormalize.o hexdump.o | tsort 2> /dev/null`
+
+getxopts: getxopts.c  debug.o
+	$(CC) $(CFLAGS) -DGETXOPTS_STAND_ALONE -o getxopts getxopts.c debug.o $(LIBS)
+
+propnames: propnames.c
+	$(CC) $(CFLAGS) -o propnames propnames.c $(LIBS)
+
+link_date.o: $(CRPAD_OBS)
+	rm -f link_date.c
+	date '+char   *compile_date = "%h %d 19%y";' > link_date.c
+	date '+char   *compile_time = "%T";' >> link_date.c
+	$(CC) $(CFLAGS) -c link_date.c
+
+$(SRCMODS) $(HFILES) expistamp.c expilist.c:
+	ln -s Xlib/$@ $@
+
+

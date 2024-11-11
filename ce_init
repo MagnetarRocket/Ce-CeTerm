@@ -1,0 +1,1110 @@
+#!/bin/sh 
+###############################################################################
+#  
+#  ARPUS/Ce text editor and terminal emulator modeled after the
+#  Apollo(r) Domain systems.
+#  Copyright 1988 - 2002 Enabling Technologies Group
+#  Copyright 2003 - 2005 Robert Styma Consulting
+#  
+#  This program is free software; you can redistribute it and/or
+#  modify it under the terms of the GNU General Public License
+#  as published by the Free Software Foundation; either version 2
+#  of the License, or (at your option) any later version.
+#  
+#  This program is distributed in the hope that it will be useful,
+#  but WITHOUT ANY WARRANTY; without even the implied warranty of
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#  GNU General Public License for more details.
+#  
+#  You should have received a copy of the GNU General Public License
+#  along with this program; if not, write to the Free Software
+#  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+#  
+#  Original Authors:  Robert Styma and Kevin Plyler
+#  Email:  styma@swlink.net
+#  
+###############################################################################
+#
+#   Script syntax:  ce_init [-c cekeys_file_path] [-s system] [-u] [-x xdefaults_file ]
+#
+#                   -c   -  path to the .Cekeys file to create.  Defaults to $HOME/.Cekeys
+#                           If you use another file, you will need to use environment
+#                           variable CEKEYS=/the/path/to/your/cekeys
+#                   -s  -   System to use.  One of KNOWN_SYSTEMS
+#                           Default is to figure it out.
+#                   -u  -   Update mode, skips asking .Xdefaults questions.
+#                   -x  -   Path to .Xdefaults file to examine and modify
+#
+#   Purpose:        Initialize a user's environment by creating a .Cekeys file
+#                   and a practice file in his or her home directory.  Also
+#                   show the user any information about anomalous behavior with
+#                   respect the designated workstation type that may differ
+#                   from the standard behavior described in the User Guide and
+#                   the on-line documentation.
+#
+#   Change history:
+#       1993.09.22 longot   Changed so that instead of creating or modifying
+#                           the user's .Xdefaults file, it simply informs the
+#                           user of the existence of the app-defaults/Ce file.
+#       1992.09.30 longot   Created.
+#	     1995.04.18 mikeh    Changed "/bin/grep" to "grep" to cater to linux.
+#	     1997.08.04 stymar	 Added prompts to tailor install/init
+#	     2005.03.06 stymar   Updated m3 code for UNIX to work with bash
+#	     2005.07.06 stymar   Updated default keydefs for ^x, ^c, ^v
+#
+###############################################################################
+
+#Testing stuff
+#set -xv
+#exec 2>/tmp/zl1
+#CEBINDIR=/home/stymar/bin
+
+
+#  Initializations
+new_xdefaults=""
+KNOWN_SYSTEMS="aix domainos hp-ux sunos ultrix linux sgi"
+
+
+usage="usage:ce_init [-c<cekeys_file>] [-s<system_type>] [-u] [-x<xdefaults_file>]
+              -s <system_type>    -  One of the known system names: $KNOWN_SYSTEMS
+              -u                  -  Update mode, skips asking .Xdefaults questions
+              -c <cekeys_file>    -  Name of the file to save key definitions in, default: $HOME/.Cekeys
+              -x <xdefaults_file> - Name of the .Xdefaults file to examine and possibly update"
+
+UPDATE_MODE=n
+ 
+while getopts c:s:ux: c
+do
+   case $c in
+   c)       CEKEYS_FILE=$OPTARG;;
+   s)       SYSNAME=$OPTARG;;
+   u)       UPDATE_MODE=y;;
+   x)       XDEFAULTS_FILE=$OPTARG;;
+   \?)      echo $USAGE
+            exit 1;;
+   esac
+done
+shift `expr $OPTIND - 1`
+
+# Note, $# does not include $0 as it does in C
+if [ $# != 0 ]
+then
+   echo "ce_init takes no positional arguments"
+   echo $usage
+   exit 1
+fi
+
+MYHOME="$HOME"
+if [ "$MYHOME" = "/" ]
+then
+   MYHOME=""
+fi
+
+if [ "x$CEKEYS_FILE" = "x" ]
+then
+   CEKEYS_FILE=$MYHOME/.Cekeys
+fi
+
+if [ "x$XDEFAULTS_FILE" = "x" ]
+then
+  XDEFAULTS_FILE=$MYHOME/.Xdefaults
+fi
+
+
+#------------------------------------------------------------------------------
+# Set up some useful constants
+#
+if [ -x /bin/tr ]
+then
+   TRPATH="/bin/tr"
+else
+   TRPATH="/usr/bin/tr"
+fi
+
+if [ -x /bin/awk ]
+then
+   AWKPATH="/bin/awk"
+else
+   AWKPATH="/usr/bin/awk"
+fi
+
+#------------------------------------------------------------------------------
+# if no command argument, we derive the system name ourselves
+#
+if [ "x$SYSNAME" != "x" ]
+then
+   SYSNAME=`/bin/echo $SYSNAME | $TRPATH '[A-Z]' '[a-z]'`
+elif [ ! -x /bin/uname ]
+then
+   SYSNAME=":"
+else
+   SYSNAME=`/bin/uname -s | $TRPATH '[A-Z]' '[a-z]'`
+fi
+
+#------------------------------------------------------------------------------
+# If we can't find the system name, we ask the user to rerun and to
+# include a name that is one of our 'known_uname_systems'.
+#
+KNOWN=`echo $KNOWN_SYSTEMS | grep -i $SYSNAME`
+if [ "x$KNOWN" = "x" ]
+then
+   echo "System type $SYSNAME unknown.  Please run ce_init -s<system_type>,"
+   echo "where <type> is one of the following: $KNOWN_SYSTEMS "
+   exit 1
+fi
+
+#------------------------------------------------------------------------------
+# Use ce -oplist to get information about how the defaults are setup
+#
+DEFAULT_OPS=`ce -oplist`
+expr_set=0
+dpb_set=0
+mouse_set=0
+
+#------------------------------------------------------------------------------
+#  If this is not a -u (update run) ask the user about some how they want
+#  Their Xdefaults set up.  Update mode is used by ce update just to
+#  generate a list of the new cekeys.  We assume .expr is set up the way
+#  the user likes it.
+#
+   echo " 
+      ce_init will now ask a few questions to determine how you 
+      want ARPUS/Ce set up. Then, with your permission, it
+      will make updates to your .Xdefaults file and create your
+      $CEKEYS_FILE file.  ce_init will not make any changes
+      until the final confirmation, you can attention out of this
+      tool with no impact to existing .Cekeys or .Xdefaults data."
+
+   if [ -r $XDEFAULTS_FILE ]
+   then
+      have_xdefaults=1
+   else
+      have_xdefaults=0
+   fi
+
+   # Try to get the expr line from the .Xdefaults file
+   if [ $have_xdefaults = 1 ]
+   then
+      a=`sed '/^!/d' $XDEFAULTS_FILE | grep '^ *[Cc][ev]\.expr'`
+   else
+      a=""
+   fi
+   #  Get the U or A from Ce.expr : Unix
+   expr_type=`expr "$a" : '.*: *\(.\)'`
+
+   if [ "x$expr_type" = "x" ]
+   then
+      default_expr=1
+      a=`echo "$DEFAULT_OPS" | grep '^ *[Cc][ev]\.expr`
+      expr_type=`expr "$a" : '.*: *\(.\)'`
+   else
+      default_expr=0
+   fi
+
+   if [ "$default_expr" = "1" ]
+   then
+      echo "
+      Ce supports two modes of regular expressions, AEGIS and UNIX.
+      AEGIS regular expressions are the form used on the Apollo Domain
+      systems and characterized by the '@' character being the escape
+      character.  UNIX regular expressions are the form used by
+      grep(1), sed(1), ed(1), and other standard UNIX tools.
+
+      The default expression mode at this is site is: $expr_type
+      What type of regular expressions do you wish to use?"
+
+      invalid_expr=true
+      while $invalid_expr ; do
+         echo "enter A or U [default is $expr_type] \c"
+         read new_expr
+
+         if [ x$new_expr = x ]
+         then
+            invalid_expr=false
+         else
+            new_expr=`echo "$new_expr" | tr '[a-z]' '[A-Z]'`
+            if [ $new_expr = A -o  $new_expr = U ]
+            then
+               invalid_expr=false
+               expr_type=$new_expr
+               expr_set=1
+               new_xdefaults="$new_xdefaults
+!!  ARPUS/Ce expression mode
+!!  DESCRIPTION:  Instructs ce to use either AEGIS regular expression syntax
+!!    or Unix regular expression syntax for search and replace operations.
+Ce.expr:$new_expr "
+            else
+               echo "Invalid response, $new_expr"
+            fi
+         fi
+
+      done
+  
+   fi
+
+   # Try to get the dfltPasteBuf line from the .Xdefaults file
+   if [ $have_xdefaults = 1 ]
+   then
+      a=`sed '/^!/d' $XDEFAULTS_FILE | grep '^ *[Cc][ev]\.dfltPasteBuf'`
+   else
+      a=""
+   fi
+   #  Get the name from Ce.dfltPasteBuf : PRIMARY
+   dpb=`expr "$a" : '.*: *\(.*\)'`
+
+   if [ "x$dpb" = "x" ]
+   then
+      default_pb=1
+      a=`echo "$DEFAULT_OPS" | grep '^ *[Cc][ev]\.dfltPasteBuf`
+      dpb=`expr "$a" : '.*: *\(.*\)'`
+   else
+      default_pb=0
+   fi
+
+   if [ "$default_pb" = "1" ]
+   then
+      echo "
+      Ce supports as many paste buffers as you can make up names for.
+      The two main ones used by X based applications are
+      PRIMARY and CLIPBOARD.  For the default (unnamed) paste buffer
+      it is good to choose a name which interacts with other X
+      based programs which do not allow you to pick the paste buffer
+      names.  With the exception of SunOS 4.1.*, PRIMARY is the
+      optimal choice for the default.  Earlier versions of Ce
+      used CLIPBOARD at the default.  You can change this default
+      by editing your .Xdefaults file and changing the value for
+      
+
+      The default at your site is $dpb
+      What name do you choose for as your default."
+
+      invalid_expr=true
+      while $invalid_expr ; do
+         echo "enter PRIMARY or CLIPBOARD [default is $dpb] \c"
+         read new_dpb
+
+         if [ x$new_dpb = x ]
+         then
+            invalid_expr=false
+         else
+            new_dpb=`echo $new_dpb | tr '[a-z]' '[A-Z]'`
+            if [ $new_dpb = PRIMARY -o  $new_dpb = CLIPBOARD ]
+            then
+               invalid_expr=false
+               dpb=$new_dpb
+               dpb_set=1
+               new_xdefaults="$new_xdefaults
+!!  ARPUS/Ce Default paste buffer
+!!  DESCRIPTION:  The X selection name ce will use for copy, cut, and 
+!!    paste operations when no paste buffer name is specified.
+Ce.dfltPasteBuf:$new_dpb "
+            else
+               echo "Invalid response, $new_dpb"
+            fi
+         fi
+
+      done
+  
+   fi
+
+   if [ $dpb = PRIMARY ]
+   then
+      other_pb=CLIPBOARD
+   else
+      other_pb=PRIMARY
+   fi
+
+   #
+   #  Find out if the mouse is on or off.
+   #
+   # Try to get the mouse line from the .Xdefaults file
+   if [ $have_xdefaults = 1 ]
+   then
+      a=`sed '/^!/d' $XDEFAULTS_FILE | grep '^ *[Cc][ev]\.mouse'`
+   else
+      a=""
+   fi
+   #  Get the on or off from Ce.mouse : on
+   mouse=`expr "$a" : '.*: *\(.*\)'`
+
+   if [ "x$mouse" = "x" ]
+   then
+      default_expr=1
+      a=`echo "$DEFAULT_OPS" | grep '^ *[Cc][ev]\.mouse'`
+      mouse=`expr "$a" : '.*: *\(.*\)'`
+      if [ "x$mouse" = "x" ]
+      then
+         mouse=on
+      else
+         # Convert to lower case
+         mouse=`echo "$mouse" | tr '[A-Z]' '[a-z]'`
+      fi
+   else
+      default_expr=0
+   fi
+
+   if [ "$default_expr" = "1" ]
+   then
+      echo "
+      Ce's normal mode of operation connects the mouse and text cursors.
+      It is possible to run Ce with the mouse and text cursors 
+      disconnected.  This is usually desirable in cases where X traffic
+      is being displayed back across a slow serial line (modem).
+
+      The default mode at this is site is: $mouse
+      Do you want the mouse cursor to text cursor connection on or off?"
+
+      invalid_expr=true
+      while $invalid_expr ; do
+         echo "enter on or off [default is $mouse] \c"
+         read new_mouse
+
+         if [ x$new_mouse = x ]
+         then
+            invalid_expr=false
+         else
+            new_mouse=`echo "$new_mouse" | tr '[A-Z]' '[a-z]'`
+            if [ $new_mouse = on -o  $new_mouse = off ]
+            then
+               invalid_expr=false
+               mouse=$new_mouse
+               mouse_set=1
+               new_xdefaults="$new_xdefaults
+!!  ARPUS/Ce CONNECT MOUSE AND TEXT CURSORS
+!!    This resource tells ce how to coordinate the text cursor with
+!!    the mouse cursor. The default behavior (Ce.mouse: on) is for
+!!    the cursor to follow each other: when the text cursor moves,
+!!    the mouse cursor follows it, and vice versa. If the mouse
+!!    cursor is moved and text is entered, the text appears at the
+!!    mouse cursor's current position. When Ce.mouse is set to 'no',
+!!    the cursors move independently. If the mouse cursor is moved,
+!!    the text insertion position does not change. This behavior
+!!    works in concert with the 'sic' command, which tells ce to move
+!!    the text cursor to the mouse cursor's current position.
+Ce.mouse:$new_mouse "
+            else
+               echo "Invalid response, $new_mouse"
+            fi
+         fi
+
+      done
+  
+   fi
+
+
+#------------------------------------------------------------------------------
+# set up the file names we will be using
+
+KEYSBAK="$CEKEYS_FILE.saved_by_ce_init.$$"
+PRACDEST="$MYHOME/ce_practice"
+
+echo "***************************************************************************"
+echo "***************************************************************************"
+echo "***************************************************************************"
+
+if [ $UPDATE_MODE = n ]
+then
+   if [ "x$new_xdefaults" != "x" ]
+   then
+      echo "
+      ce_init wishes to append the following to your .Xdefaults file $XDEFAULTS_FILE:
+      $new_xdefaults"
+   fi
+   if [ -r $CEKEYS_FILE ]
+   then
+      echo "
+      ce_init wishes to rename $CEKEYS_FILE to $KEYSBAK
+      and create a new $CEKEYS_FILE"
+   else
+      echo "
+      ce_init wishes to create a new $CEKEYS_FILE"
+   fi
+   
+   echo "
+      ce_init wishes to generate file $PRACDEST"
+   
+   invalid_r=true
+   while $invalid_r ; do
+      echo "Do you approve these updates? [ Y or N ] \c"
+      read r
+   
+      if [ x$r != x ]
+      then
+         if [ "$r" = "Y" -o "$r" = "y" ]
+         then
+            invalid_r=false
+         elif [ "$r" = "N" -o "$r" = "n" ]
+         then
+            invalid_r=false
+            exit 4
+         else
+            echo "Invalid response, $r"
+         fi
+      fi
+   done
+
+   echo "$new_xdefaults" >> $XDEFAULTS_FILE
+   xrdb -merge $MYHOME/.Xdefaults
+
+
+
+   #------------------------------------------------------------------------------
+   # Create a new key def file for the caller, unless one exists already.
+   #
+   if [ -r $CEKEYS_FILE ]
+   then
+      /bin/mv $CEKEYS_FILE $KEYSBAK
+   fi
+   if [ -r $CEKEYS_FILE ]
+   then
+      echo "Cannot rename $CEKEYS_FILE to $KEYSBAK,  Do this manually and rerun ce_init"
+      exit 3
+   fi
+fi
+
+#------------------------------------------------------------------------------
+# First create the keydef header
+#
+echo "
+###############################################################################
+#
+# ARPUS/ce key definitions using only common keys.
+#
+###############################################################################
+#
+# The illustration below shows a key layout that very likely approximates the
+# layout of common keys (F1-F8, Numeric Keypad, Escape, Backspace, Tab, Delete,
+# Control, Shift, and Return) as arranged on your keyboard.  This illustration
+# is provided to help you see more clearly how those keys are used based on
+# their default definitions;  the Backspace, Tab, Delete, Control, Shift, and
+# Return keys have standard meanings.
+#
+# Each function key and numeric keypad key has up to three definitions
+# associated with it, corresponding to an unmodified key press (the top
+# definition), a shifted key press (the middle definition), and a controlled
+# key press (the bottom definition).
+#
+###############################################################################
+# EASY TIPS FOR REMEMBERING THESE DEFINITIONS -- NOTE HOW THE KEYS ARE GROUPED:
+#------------------------------------------------------------------------------
+#   F1-F4       Mark Copy Cut Paste     'Mark' is first;  copy/cut/paste are
+#                                       in alphabetical order;  shifted F1-F4
+#                                       are exactly the same, except that they
+#                                       do rectangular operations
+#------------------------------------------------------------------------------
+#   F5          Cut                     F5 = cut line
+#                                       Shift/F5 = cut to end of line
+#                                       Ctrl/F5 = cut word
+#
+#   F6          Paste                   F6 = paste text of last F5
+#                                       Shift/F6 = paste text of last Shift/F5
+#                                       Ctrl/F6 = paste text of last Crtl/F5
+#------------------------------------------------------------------------------
+#   F7          Undo
+#   Shift/F7    Redo
+#------------------------------------------------------------------------------
+#   F8              Write file to disk and close session
+#   Shift/F8        Write file to disk, put session into read-only
+#   Ctrl/F8         Abort edit session
+#   Alt/F8          Help On:    (use diamond key on the Sun)
+#------------------------------------------------------------------------------
+#   Numeric Keypad 2, 4, 6, 8           Move cursor: 2=down 4=left 6=right 8=up
+#   Same keys SHIFTED                   Scrolling a single line or column
+#   Same keys CONTROLLED                Scrolling multiple lines or columns
+###############################################################################
+#
+#         F1               F2               F3               F4
+# +----------------+----------------+----------------+----------------+
+# |  Mark/ Hlight  |      Copy      |       Cut      |      Paste     |
+# |Mark/ Rec Hlight|    Rec Copy    |     Rec Cut    |    Rec Paste   | Shift
+# | ReMark/Hlight  |                |                |                | Control
+# +----------------+----------------+----------------+----------------+
+#
+#         F5               F6               F7               F8
+# +----------------+----------------+----------------+----------------+
+# |    Cut Line    |   Paste Line   |      Undo      | Close session  |
+# |   Cut to EOL   | Paste EOL Text |      Redo      | Write to disk  | Shift
+# |    Cut Word    |   Paste Word   |                | Abort session  | Control
+# +----------------+----------------+----------------+----------------+
+#
+#       Escape
+# +----------------+
+# | To "Command: " |
+# |                |
+# | To menu bar    | Control
+# +----------------+
+#
+#
+#                       NumPad 7         NumPad 8         NumPad 9
+#                  +----------------+----------------+----------------+
+#                  |                |   Cursor up    |                |
+#                  |                | Scroll up line |                | Shift
+#                  |                | Scroll up page |                | Control
+#                  +----------------+----------------+----------------+
+#
+#                       NumPad 4         NumPad 5         NumPad 6
+#                  +----------------+----------------+----------------+
+#                  |  Cursor left   | To beg of line |  Cursor right  |
+#                  | Scroll lft col | To end of line | Scroll rgt col | Shift
+#                  |  "" mult cols  |                |  "" mult cols  | Control
+#                  +----------------+----------------+----------------+
+#
+#                       NumPad 1         NumPad 2         NumPad 3
+#                  +----------------+----------------+----------------+
+#                  | To beg of line |  Cursor down   | To end of line |
+#                  |                | Scroll dn line |                | Shift
+#                  |                | Scroll dn page |                | Control
+#                  +----------------+----------------+----------------+
+#
+###############################################################################
+#
+#                       Mouse 1          Mouse 2         Mouse 3
+#                  +----------------+----------------+----------------+
+#                  |  Mark/Hlight   |     Paste      |"click" cv file |
+#                  |     Copy       |                |                |        Up
+#                  |                |                |                |
+#                  |Mark/ Rec Hlight|   Rec Paste    |"click" ce file | Shift
+#                  |    Rec Copy    |                |                | Shift  Up
+#                  |                |                |                |
+#                  |      *         |       **       |     ***        | Control
+#                  |                |                |                |
+#                  +----------------+----------------+----------------+
+#
+#
+#     *      CTRL Mouse 1 : Take the contents of the current paste buffer and do a find on this name.
+#                           Also save the find command in a separate paste buffer.
+#     **     CTRL Mouse 2 : Re-execute the find command saved in by CTRL Mouse 1
+#     ***    CTRL Mouse 3 : Grab a "word" and delete it.  Paste in the contents of the current paste buffer.
+#
+###############################################################################
+" >> $CEKEYS_FILE
+
+#------------------------------------------------------------------------------
+# Next comes the mouse key definitions.  These are dependent upon expr mode.
+#
+echo "
+#
+#
+# MOUSE
+#
+# The following set of definitions define mouse activity as follows:
+#
+# Mouse 1 : Starts text highlighing on the downstroke.  The upstroke copies the data to the default paste buffer.  Like an xterm.
+# Mouse 2 : Paste
+# Mouse 3 : Does a cv of a file just like the default (click on a file)
+#
+# Mouse 1 : Starts rectangular text highlighing on the downstroke.  The upstroke copies the data to the default paste buffer.  Like an xterm.
+# Mouse 2 : Rectangular Paste
+# Mouse 3 Shifted : Same as regular Mouse 1 except goes into edit instead of browse
+# 
+# CTRL Mouse 1 : Take the contents of the current paste buffer and do a find on this name.
+#                Also save the find command in a separate paste buffer.
+# CTRL Mouse 2 : Re-execute the find command saved in by CTRL Mouse 1
+# CTRL Mouse 3 : Grab a "word" and delete it.  Paste in the contents of the current paste buffer.
+#
+# Diamond  Mouse 2 : Grabs a "word" and puts it in the default paste buffer
+# Diamond  Mouse 3 : Help
+#
+# These keys are useful as follows:
+# Use ALT-M2 or M1 to grab some text.
+# Move the mouse toward the top of the screen and press ^m1 to find it and save the find.
+# Use ALT-M2 or M1 to grab some new text.
+# Use ^M2 to find the next occurance of the original string.
+# Use ^M3 to replace the word at that location with the contents of the paste buffer.
+#
+# Note these key definitions are coded using Aegis regular expression mode.
+#
+# The sic commands in the m2, m3, m1s, and m3s commands allow the buttons to work in mouse off mode.
+#
+# Ce.expr dependent key definition follows:
+
+" >> $CEKEYS_FILE
+
+if [ $mouse = on ]
+then
+echo "
+kd m1   dr;echo ke
+kd m1s  sic;dr;echo -r ke
+
+kd m1u  sic;xc  ke;  
+kd m1us sic;xc -r ke;  
+" >> $CEKEYS_FILE
+else
+echo "
+kd m1   sic;dr;echo;mouse -on ke
+kd m1s  sic;dr;echo -r;mouse -on ke
+
+kd m1u  sic;xc ;mouse -off ke;  
+kd m1us  sic;xc -r ;mouse -off ke;  
+" >> $CEKEYS_FILE
+fi
+
+
+if [ $expr_type = U ]
+then
+echo "
+#
+# Unix regular expression mode Mouse keys
+#
+kd m2   xp X  ke
+kd m3   sic;/[^-a-zA-Z._@\$0-9||/|||~]/dr;  ?[^-a-zA-Z._@\$0-9||/|||~]?;/./xc -l cv_file; ti;tl;xd junk;es 'cv ||'';xp cv_file;tr;es '||'';en ke
+
+kd m2s  xp -r X ke
+kd m3s  sic;/[^-a-zA-Z._@\$0-9||/|||~]/dr;  ?[^-a-zA-Z._@\$0-9||/|||~]?;/./xc -l cv_file; ti;tl;xd junk;es 'ce ||'';xp cv_file;tr;es '||'';en ke
+
+kd ^m1  tdm;tl;xd -l junk;es '/';xp X;tr;es '/';dr;tl;xc save_find;tr;en ke
+kd ^m2  tdm;tl;xd -l junk;xp save_find;tr;en ke
+kd ^m3  /[^-a-zA-Z._@\$0-9||/|||~]/dr; ?[^-a-zA-Z._@\$0-9||/|||~]?;/./;xd -l junk;xp X ke
+
+kd m2u   ke
+kd m3u   ke
+
+kd *m2  sic;/[^-a-zA-Z._@\$0-9||/||~]/dr;?[^-a-zA-Z._@\$0-9||/||~]?;/./xc X ke 
+
+kd ^F5              dr;/[^a-z0-9\$_]/;xd -l word_del ke      # cut word
+
+
+
+" | sed -e 's!|!\\!g' >> $CEKEYS_FILE
+else
+echo "
+#
+# Aegis regular expression mode Mouse keys
+#
+kd m1   sic;dr;echo ke
+kd m2   xp X ke
+kd m3   sic;/[~a-zA-Z._@@-\$0-9@@/@@\~]/dr; \[~a-zA-Z._@@-\$0-9@@/@@\~]\;/?/xc cv_file; ti;tl;xd -l junk;es 'cv @@'';xp cv_file;tr;es '@@'';en ke
+
+kd m1s  sic;dr;echo -r ke
+kd m2s  xp -r X ke
+kd m3s  sic;/[~a-zA-Z._@@-\$0-9@@/@@\~]/dr; \[~a-zA-Z._@@-\$0-9@@/@@\~]\;/?/xc cv_file; ti;tl;xd -l junk;es 'ce @@'';xp cv_file;tr;es '@@'';en ke
+
+kd ^m1  tdm;tl;xd -l junk;es '/';xp X;tr;es '/';dr;tl;xc save_find;tr;en ke
+kd ^m2  tdm;tl;xd -l junk;xp save_find;tr;en ke
+kd ^m3  /[~a-zA-Z._@@-\$0-9@@/@@\~]/dr; \[~a-zA-Z._@@-\$0-9@@/@@\~]\;/?/xd -l junk;xp  X ke
+
+kd m1u   xc X ke;  
+kd m1us  sic;xc -r X ke;  
+kd m2u   ke
+kd m3u   ke
+
+kd *m2  sic;/[~a-zA-Z._@@-\$0-9@@/@@\~]/dr;\[~a-zA-Z._@@-\$0-9@@/@@\~]\/?/xc X ke 
+
+kd ^F5              dr;/[~a-z0-9\$_]/;xd -l word_del ke      # cut word
+
+" >> $CEKEYS_FILE
+fi
+
+
+#------------------------------------------------------------------------------
+# The real common keys, F1 - 8 and the <ctrl>-alpha keys
+#
+echo "
+#
+#
+# TEXT MANIPULATION
+    kd F1               dr;echo ke                              # mark and enable highlight
+    kd F1S              dr;echo -r ke                           # mark and enable rectangular highlight
+    kd ^F1              rm;echo  ke                             # restore mark and enable highlight
+    kd ^F1S             rm;echo -r ke                           # restore mark and enable rectangular highlight
+    kd F2               xc ke                                   # copy text region
+    kd F2S              xc -r ke                                # copy rectangular text region
+    kd ^F2              xc $other_pb ke                         # copy text region to alt paste buffer
+    kd ^F2S             xc -r $other_pb ke                      # copy rectangular text region to alt paste buffer
+    kd F3               xd ke                                   # delete text region
+    kd F3S              xd -r ke                                # delete rectangular text region
+    kd ^F3              xd $other_pb ke                         # delete text region to alt paste buffer
+    kd ^F3S             xd -r $other_pb ke                      # delete rectangular text region to alt paste buffer
+    kd F4               xp ke                                   # paste text
+    kd F4S              xp -r ke                                # paste text rectangularly
+    kd ^F4              xp $other_pb ke                         # paste text from alt paste buffer
+    kd ^F4S             xp -r $other_pb ke                      # paste text rectangularly from alt paste buffer
+
+    kd F5               cms;tl;xd -l line_del ke                # cut line
+    kd F5S              es ' ';ee;dr;tr;xd -l eol_del;tl;tr ke  # cut to end-of-line
+    kd F6               xp -l line_del ke                       # paste text from last line cut
+    kd F6S              xp -l eol_del ke                        # paste text from last to-end-of-line cut
+    kd ^F6              xp -l word_del ke                       # paste text from last word cut
+    kd F7               undo ke                                 # undo
+    kd F7S              redo ke                                 # redo
+    kd F8               pw;wc -q ke                             # close the file and window
+    kd F8S              pw;ro ke                                # close the file and put window in read-only mode
+    kd ^F8              wc -q ke                                # close the file and window, ignoring changes
+    kd F9               cv \$CEHELPDIR/&'Help on: '.hlp ke       # Get help on a subject which is prompted for (commands is the index)
+    kd Delete           ed ke                                   # delete the character under the cursor
+    kd ^Delete          cms;tl;xd  line_de ke                   # delete the whole line under the cursor
+    kd BackSpace        ee ke                                   # delete the character preceding the cursor
+    kd Return           tr;en ke                                # enter a newline
+    kd ReturnS          en ke                                   # insert a newline following the current line
+    kd ^Tab             er 09 ke                                # insert a tab character (hex 09)
+    kd *c               xc ke                                   # copy text region
+    kd *e               xd ke                                   # delete text region
+    kd *p               xp ke                                   # paste text
+    kd *t               tf -l 1 -r 72 -b -p ke                  # Text flow, 1-72 right and left justify, or rectangular region
+
+    kd Insert           ei ke                                   # Toggle insert/overstrike mode
+    kd Home             tl ke	                                 # Go to beginning of line
+    kd End              tr ke                                   # Go to end of line
+
+#
+#
+# CURSOR CONTROL
+    kd ^t               pt;tt;tl ke                             # to top of file
+    kd ^b               pb;tb;tr ke                             # to bottom of file
+    kd ^k               ad;tl ke                                # start of next line
+    #  Deal with caps lock on
+    kd ^T               pt;tt;tl ke                             # to top of file
+    kd ^B               pb;tb;tr ke                             # to bottom of file
+    kd ^K               ad;tl ke                                # start of next line
+    kd TabS             thl ke                                  # left to tab stop
+    kd Tab              th ke                                   # right to tab stop
+    kd Escape           tdm;ph -1000;tb;tr ke                   # to Command:  window
+    kd ^Escape          tmb ke                                  # to menu bar
+    kd Down             ad ke                                   # cursor down 1 line
+    kd Left             al ke                                   # cursor left 1 column
+    kd Right            ar ke                                   # cursor right 1 column
+    kd Up               au ke                                   # cursor up 1 line
+
+
+
+#
+#
+# WINDOW SCROLLING
+    kd ^Up              pp -0.5 ke                              # scroll up half page
+    kd ^Down            pp 0.5 ke                               # scroll down half page
+    kd ^Left            ph -10 ke                               # scroll left 10 columns
+    kd ^Right           ph 10 ke                                # scroll right 10 columns
+    kd Prior            pp -0.5 ke                              # scroll up half page
+    kd Next             pp 0.5 ke                               # scroll down half page
+    kd UpS              pv -1 ke                                # scroll up 1 line
+    kd DownS            pv 1 ke                                 # scroll down 1 line
+    kd LeftS            ph -1 ke                                # scroll left 1 column
+    kd RightS           ph 1 ke                                 # scroll right 1 column
+
+
+
+
+#
+#
+# EDIT MODE AND MANIPULATION
+    kd ^m               ro ke                                   # put the window into/out of read-only mode
+    kd ^w               pw ke                                   # update the file to disk
+    kd ^i               ei ke                                   # put the window into/out of insert/overstrike mode
+    kd ^y               wc ke                                   # save the file and close the window
+    kd ^n               wc -q ke                                # close the file and window, ignoring changes
+    kd ^l               lineno ke                               # Toggle line numbers on and off
+    kd ^p               ! -c -m lp ke                           # Send marked range of text to lp (printer)
+    #  Deal with caps lock on
+    kd ^M               ro ke                                   # put the window into/out of read-only mode
+    kd ^W               pw ke                                   # update the file to disk
+    kd ^I               ei ke                                   # put the window into/out of insert/overstrike mode
+    kd ^Y               pw;wc -q ke                             # close the file and window
+    kd ^N               wc -q ke                                # close the file and window, ignoring changes
+    kd ^L               lineno ke                               # Toggle line numbers on and off
+    kd ^P               ! -c -m lp ke                           # Send marked range of text to lp (printer)
+
+
+#
+#
+# SEARCH
+    kd ^r               // ke                                   # search forward for the most recently used pattern
+    kd ^u               ?? ke                                 # search backward for the most recently used pattern
+    kd ^e               so ke                                   # Repeat substitution once using search/replace from previous substitute
+    kd *r               nc ke                                   # search forward to the next colored area
+    kd *u               pc ke                                   # search backward to the next colored area
+    kd *b               bl -d ke                                # Find balancing parens, brackets, braces, etc.
+    #  Deal with caps lock on
+    kd ^R               // ke                                   # search forward for the most recently used pattern
+    kd ^U               ?? ke                                 # search backward for the most recently used pattern
+    kd ^E               so ke                                   # Repeat substitution once using search/replace from previous substitute
+    kd *R               nc ke                                   # search forward to the next colored area
+    kd *U               pc ke                                   # search backward to the next colored area
+    kd *B               bl -d ke                                # Find balancing parens, brackets, braces, etc.
+
+#
+#
+# CETERM
+
+    kd ^x               xd PRIMARY ke                           # CUT to primary paste buffer
+    kd ^c               cntlc -h 03  PRIMARY  ke                # interupt process in ceterm or do a copy to PRIMAY
+    kd ^v               xp PRIMARY ke                           # Paste from primary paste buffer
+    kd ^q               dq -a ^c  ke                            # interupt process in ceterm
+    kd ^d               dq -a ^d  ke                            # end of file in ceterm
+    kd ^s               ws ke                                   # toggle window scroll
+    kd ^h               wh ke                                   # toggle window hold
+    #  Deal with caps lock on
+    kd ^C               dq -a ^c  ke                            # interupt process in ceterm
+    kd ^Q               dq -a ^c  ke                            # interupt process in ceterm
+    kd ^D               dq -a ^d  ke                            # end of file in ceterm
+    kd ^S               ws ke                                   # toggle window scroll
+    kd ^H               wh ke                                   # toggle window hold
+
+#
+#
+# ALIASES TO CREATE MNEMONIC COMMANDS
+
+alias  help       cv \$CEHELPDIR/\$1.hlp ke                       # get help
+alias  quit       wc -q ke                                      # exit without saving
+alias  exit       wc -q ke                                      # exit without saving
+alias  end        wc    ke                                      # exit with save
+alias  save       pw    ke                                      # save file
+alias  top        pt;tt;tl ke                                   # go to top of file
+alias  bottom     pb;tb;tr ke                                   # go to top of file
+alias  print      1,$! -c -m lp   ke                            # print file (system dependent)
+
+
+" >> $CEKEYS_FILE
+        
+if [ $mouse = on ]
+then
+echo "
+
+    kd ^space           cms;abrt ke                             # abort the current search or highlight operation
+" >> $CEKEYS_FILE
+else
+echo "
+
+    kd ^space           cms;abrt;mouse -off ke                      # abort the current search or highlight operation
+
+" >> $CEKEYS_FILE
+fi
+
+
+if [ $SYSNAME = sunos ]
+then
+echo "
+#
+#
+# SunOS specific key definitions
+#
+#
+# CURSOR CONTROL
+    kd F34              ad ke                                   # cursor down 1 line
+    kd F30              al ke                                   # cursor left 1 column
+    kd F32              ar ke                                   # cursor right 1 column
+    kd F28              au ke                                   # cursor up 1 line
+    kd F31              tl ke                                   # to start of current line
+    kd F31S             tr ke                                   # to end of current line
+#
+#
+# WINDOW SCROLLING using th keypad
+    kd F30S             ph -1 ke                                # scroll left 1 column
+    kd ^F30             ph -10 ke                               # scroll left 10 columns
+    kd F32S             ph 1 ke                                 # scroll right 1 column
+    kd ^F32             ph 10 ke                                # scroll right 10 columns
+    kd F28S             pv -1 ke                                # scroll up 1 line
+    kd ^F28             pp -0.5 ke                              # scroll up half page
+    kd F34S             pv 1 ke                                 # scroll down 1 line
+    kd ^F34             pp 0.5 ke                               # scroll down half page
+
+#
+#
+# EXTENDED HELP KEY
+   kd Help  cv \$CEHELPDIR/&'Help on: '.hlp ke                   # Help key, may be overridden by olwm
+
+#
+#
+# PAD SCROLLING
+    kd F29              pp -0.5 ke                              # scroll up half page
+    kd F35              pp 0.5 ke                               # scroll down half page
+
+#
+#
+# TEXT MANIPULATION USING LEFT SIDE KEYS (Copy, Paste, etc.)
+    kd F14              undo ke                                 # undo
+    kd F14S             redo ke                                 # redo
+    kd F16              xc ke                                   # copy text region
+    kd F16S             xc -r ke                                # copy rectangular text region
+    kd ^F16             xc $other_pb ke                         # copy text region to alt paste buffer
+    kd ^F16S            xc -r $other_pb ke                      # copy rectangular text region to alt paste buffer
+    kd F18              xp ke                                   # paste text
+    kd F18S             xp -r ke                                # paste text rectangularly
+    kd ^F18             xp $other_pb ke                         # paste text from alt paste buffer
+    kd ^F18S            xp $other_pb -r ke                      # paste text rectangularly from alt paste buffer
+    kd F20              xd ke                                   # delete text region
+    kd F20S             xd -r ke                                # delete rectangular text region
+    kd ^F20             xd $other_pb ke                         # delete text region to alt paste buffer
+    kd ^F20S            xd -r $other_pb ke                      # delete rectangular text region to alt paste buffer
+
+#
+#
+# SEARCH
+    kd F19              // ke                                   # search forward for most recently used pattern
+    kd F19S             \\\\ ke                                 # search backward for most recently used pattern
+
+
+" >> $CEKEYS_FILE
+fi
+
+if [ $SYSNAME = hp-ux ]
+then
+echo "
+#
+#
+# CURSOR CONTROL  - HP/UX SPECIFIC
+    kd KP_2             ad ke                                   # cursor down 1 line
+    kd KP_4             al ke                                   # cursor left 1 column
+    kd KP_6             ar ke                                   # cursor right 1 column
+    kd KP_8             au ke                                   # cursor up 1 line
+    kd KP_5             tl ke                                   # to start of current line
+    kd KP_5S            tr ke                                   # to end of current line
+
+# WINDOW SCROLLING  - HP/UX SPECIFIC
+    kd KP_4S            ph -1 ke                                # scroll left 1 column
+    kd ^KP_4            ph -10 ke                               # scroll left 10 columns
+    kd KP_6S            ph 1 ke                                 # scroll right 1 column
+    kd ^KP_6            ph 10 ke                                # scroll right 10 columns
+    kd KP_8S            pv -1 ke                                # scroll up 1 line
+    kd ^KP_8            pp -0.5 ke                              # scroll up half page
+    kd KP_2S            pv 1 ke                                 # scroll down 1 line
+    kd ^KP_2            pp 0.5 ke                               # scroll down half page
+
+#
+# TEXT MANIPULATION  - HP/UX SPECIFIC
+# Note: Alt of alpha keys on an HP are not what they seem.  Execute kk;kk and then press Alt-<some_alpha_key>
+    kd DeleteChar       ed ke                                   # delete the character under the cursor
+    kd *ccedilla        xc ke                                   # Alt-c copy text region
+    kd *ae              xd ke                                   # Alt-e delete text region
+    kd *thorn           xp ke                                   # Alt-p paste text
+    kd *usldead_grave   tf -l 1 -r 72 -b -p ke                  # (alt t) Text flow, 1-72 right and left justify, or rectangular region
+#
+#
+# SEARCH
+    kd *hpblock         bl -d ke                                # (alt b) Find balancing parens, brackets, braces, etc.
+
+#
+#
+# TEXT MANIPULATION - HP/UX SPECIFIC - SOME OF THESE ARE ON THE WORKSTATION KEYBOARD ONLY
+    kd Select           dr;echo ke                      # mark start of text region and enable highlighting
+    kd SelectS          dr;echo -r ke                   # mark start of text region and enable rectangular highlighting
+    kd ^Prior           undo ke                         # undo
+    kd ^Next            redo ke                         # redo
+    kd DeleteLine       cms;tl;xd line_del ke           # delete current line
+    kd DeleteLineS      xp line_del ke                  # paste most recently deleted line
+
+#
+#
+# EDIT PAD MODE AND MANIPULATION - HP/UX SPECIFIC
+    kd Cancel           wc -q ke                        # close file and window, ignoring changes
+    kd Break            pw;ro ke                        # close file and put window into read-only mode
+
+
+" >> $CEKEYS_FILE
+fi
+
+
+#------------------------------------------------------------------------------
+# create the practice file
+#                        
+if [ $UPDATE_MODE = n ]
+then
+   rm -f $PRACDEST
+   echo "
+#                                  ARPUS/ce, Practice file)  (%G%)    (SCCS %I%)
+*******************************************************************************
+
+    Welcome to ce!
+
+    This is the only time that 'ce' will automatically create an edit window
+    for you.  Hopefully the information in this introductory file will assist
+    you in getting up to speed very quickly.
+
+    To close this window and other ce windows, press the F8 function key.  But
+    please do not do so yet!  The information below tells you about
+
+        -   using ce's on-line help mechanisms, and
+        -   finding out exactly how your keyboard keys are defined so that you
+            will remember them EASILY.
+
+    **************************************************
+    * USE THE "F9" MOUSE BUTTON TO ASK FOR HELP.     *
+    **************************************************
+
+        When you press it, ce will give a \"Help on :\" prompt in the command
+        window.  Type in the name of a command or topic and press <RETURN>.
+        If you enter a valid command or topic, ce will create a read-only
+        window onto the help file for that command or topic.
+
+        *
+        *
+        * TRY THIS:  Press the F9 key and type the word \"keyboard\" at the prompt.
+        *
+        *
+
+        As you can see in the \"keyboard\" help file, the keys have been defined
+        so that you can easily memorize their functions.
+
+    ******************************************************************
+    * USE THE M3 (Right) MOUSE BUTTON TO LOOK AT RELATED HELP FILES. *
+    ******************************************************************
+
+        Every ce help file has a section called \"RELATED HELP FILES\".  If you
+        position the cursor directly on the name of a related help file and
+        press M3, ce will create a read-only window onto that related help
+        file.
+
+        *
+        *
+        * TRY THIS:  Put the cursor on the pathname below and press M3:
+        *            $CEHELPDIR/intro.hlp
+        *
+        *
+
+        The \"intro\" help file contains other basic information about using Ce.
+
+    ********************************************************************************
+    * USE THE M1 (Left) MOUSE BUTTON TO COPY DATA TO THE DEFAULT PASTE BUFFER      *
+    * USE THE M2 (Center) MOUSE BUTTON TO PASTE DATA FROM THE DEFAULT PASTE BUFFER *
+    ********************************************************************************
+
+        Position the cursor directly over the beginning of an area of text
+        and press and hold M1.  Drag the mouse over a range of text and 
+        release M1.  Press M2 to paste.
+
+        *
+        *
+        * TRY THIS:  Put the cursor on the first word the on this line, press
+        *            M1, drag the mouse to the end of this sentence, and
+        *            release M1.  Move the mouse to the \"Y\" below and press
+        *            M2 to paste.
+        *            Now undo the change with the undo key (F7) and repeat the
+        *            exercise with the SHIFT key held down.  This will to a
+        *            rectangular copy and paste.
+        *          
+        *            Y
+        *
+        *
+
+    Now is a good time to make some decisions about how you want ce, cv, and
+    ceterm to appear.  For example, some people want line numbers to be on
+    when editing, but off in the ceterm terminal emulator window.  The same
+    may be true of pulldowns and scroll bars.  How the window is positioned
+    after a sucessful find operation is also tailorable.  Do you want the
+    line found to be the top line in the window, or would you like one or more
+    lines between it and the top?   To explore these options, use mouse 3
+    to click on the file name $CEAPPDIR/Ce and then move the new window out of the
+    way.  Then use mouse 3 with the <SHIFT> key held down to click on the file
+    name ~/.Xdefaults to create an edit window on your .Xdefaults file.  Look
+    over the descriptions of options in the $CEAPPDIR/Ce window and copy those
+    that you wish to change to your .Xdefaults file.  You can use F2 to copy
+    the line in one window and F4 to paste in the target window.  Note that
+    in X resource files '!' is the comment character.  The comment extends
+    from the ! to the end of the line.  After editing the .Xdefaults file, use
+    F8 to close the window and save the file.  Then from a UNIX window run
+    \"xrdb -merge ~/.Xdefaults\".  This will load the new key definitions.  You can
+    also just wait till you log out and log back in.
+
+*******************************************************************************
+" >> $PRACDEST
+
+
+   #------------------------------------------------------------------------------
+   #------------------------------------------------------------------------------
+   # finally, a word or five about finding help
+   #
+
+    CEKEYS=$CEKEYS_FILE ce -reload
+    ce -geo c100x45+200+25 $PRACDEST
+
+fi
+

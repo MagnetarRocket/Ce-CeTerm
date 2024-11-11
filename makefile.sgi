@@ -1,0 +1,98 @@
+SCCSID      = "%Z% %M% %I% - %G% %U% AG CS Phoenix"
+#  makefile for SGI irix version 5.2
+
+CC          =  cc	
+
+DFLAGS      =\
+ -Dsolaris\
+ -DPAD\
+ -DDebuG\
+ -DNeedFunctionPrototypes\
+ -DARPUS_CE\
+ -DNO_LICENSE
+
+CFLAGS      =  -O -Olimit 1800 $(DFLAGS)
+
+#GFLAGS     = 
+GFLAGS     = 
+LIBS        = /usr/lib/libX11.so 
+
+
+# The following include sets variable CRPAD_OBS
+include makefile.objs
+
+EXTRA_OBJS    =  usleep.o
+
+
+
+SRCMODS  = $(CRPAD_OBS:.o=.c)  xdmc.c ceapi.c
+
+default: ce xdmc libceapi.a
+
+
+# The following include sets variable HFILES and sets up the .h file dependencies
+include makefile.depends
+
+# rule puts cflags at the end so we can see what is being compiled
+.c.o:
+	$(CC) -c $< $(CFLAGS)
+
+expidate.o: expidate.h expidate.c expistamp
+	$(CC) $(CFLAGS) -c expidate.c
+	expistamp -n130.131 1001 expidate.o
+
+md: memdata_test.o memdata.o debug.o undo.o search.o re.o
+	$(CC) $(CFLAGS) -o md memdata_test.o memdata.o debug.o undo.o search.o re.o
+
+ccdump: ccdump.o
+	$(CC) $(CFLAGS) -o ccdump ccdump.o $(LIBS)
+
+wdfdump: wdfdump.o
+	$(CC) $(CFLAGS) -o wdfdump wdfdump.o $(LIBS)
+
+xdmccc.o : cc.o  xdmccc.c
+	$(CC) $(CFLAGS) -DPGM_XDMC -c xdmccc.c
+
+xdmccc.c : 
+	ln -s cc.c xdmccc.c
+
+xdmc: xdmc.c getxopts.o debug.o xdmccc.o netlist.o hexdump.o link_date.o
+	$(CC) $(CFLAGS) -o xdmc xdmc.c xdmccc.o getxopts.o debug.o netlist.o hexdump.o link_date.o $(LIBS)
+
+ce: $(HFILES) $(CRPAD_OBS) link_date.o
+	$(CC) -o ce $(CFLAGS) $(CRPAD_OBS) link_date.o $(LIBS)
+
+apipastebuf.o : pastebuf.o  apipastebuf.c
+	$(CC) $(CFLAGS) -DPGM_CEAPI -c apipastebuf.c
+	-chown root ce
+	-chmod 4755 ce
+
+apipastebuf.c : 
+	ln -s pastebuf.c apipastebuf.c
+
+apinormalize.o : normalize.o  apinormalize.c
+	$(CC) $(CFLAGS) -DPGM_CEAPI -UARPUS_CE -UPAD -c apinormalize.c
+
+apinormalize.c : 
+	ln -s normalize.c apinormalize.c
+
+libceapi.a: ceapi.o debug.o xdmccc.o apipastebuf.o apinormalize.o hexdump.o
+	rm -f libceapi.a
+	ar r libceapi.a `lorder ceapi.o debug.o xdmccc.o apipastebuf.o apinormalize.o hexdump.o | tsort 2> /dev/null`
+
+getxopts: getxopts.c  debug.o
+	$(CC) $(CFLAGS) -DGETXOPTS_STAND_ALONE -o getxopts getxopts.c debug.o $(LIBS)
+
+propnames: propnames.c
+	$(CC) $(CFLAGS) -o propnames propnames.c $(LIBS)
+
+
+link_date.o: $(CRPAD_OBS)
+
+$(SRCMODS) $(HFILES) expistamp.c expilist.c link_date.c:
+	ln -s Xlib/$@ $@
+
+tar:
+	tar cf - $(SRCMODS) $(HFILES) expistamp.c expilist.c xdmc.c > ce.tar
+
+

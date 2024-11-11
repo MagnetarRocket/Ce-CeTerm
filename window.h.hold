@@ -1,0 +1,93 @@
+#ifndef _WINDOW_H_INCLUDED
+#define _WINDOW_H_INCLUDED
+
+/* "%Z% %M% %I% - %G% %U% AG CS Phoenix" */
+
+/***************************************************************
+*  
+*  Copyright 1988 - 2002 Enabling Technologies Group
+*  Copyright 2003   Robert Styma Consulting
+*  
+***************************************************************/
+
+/**************************************************************
+*
+*  Routines in window.c
+*     dm_wg                   - Resize a window
+*     dm_wm                   - move a window
+*     dm_icon                 - iconify the window
+*     dm_geo                  - Resize and move a window, new command
+*     dm_wp                   - window pop
+*     dm_rs                   - refresh screen
+*     process_geometry        - Process a geometry string, set window values.
+*     window_is_obscured      - Return flag showing if the window is at least partially obscured.
+*     raised_window           - Sets flag to show window is raised
+*     obscured_window         - Sets flag to show window is at least partially obscured.
+*     main_subarea            - Calculates size of text region of the main window
+*     window_crossing         - Mark the passage of the cursor into and out of the window structure
+*     focus_change            - Mark the gaining and losing the input focus.
+*     in_window               - Show which window the mouse cursor is in.
+*     force_in_window         - Force the in window flag to true.
+*     force_out_window        - Force the in window flag to False
+*     get_root_location       - Get the root x and y coordinates for a window
+*     reconfigure             - Generate a configurenotify
+*
+***************************************************************/
+
+#include "buffer.h"
+#include "dmc.h"
+
+
+/***************************************************************
+*  
+*  Prototypes for Routines
+*  
+***************************************************************/
+
+int   dm_geo(DMC             *dmc,
+             DISPLAY_DESCR   *dspl_descr);
+
+void  dm_wp(DMC              *dmc,
+            PAD_DESCR        *main_window_cur_descr);
+
+void  dm_icon(DMC              *dmc,
+              Display          *display,
+              Window            main_x_window);
+
+void  dm_rs(Display          *display);
+
+
+int  process_geometry(DISPLAY_DESCR    *dspl_descr,       /* input / output */
+                      char             *geometry_string,  /* input */
+                      int               default_size);    /* input */
+
+int window_is_obscured(DISPLAY_DESCR       *dspl_descr);  /* returns True or False */
+
+void raised_window(DISPLAY_DESCR       *dspl_descr);  /* sets flag */
+
+void obscured_window(DISPLAY_DESCR       *dspl_descr); /* sets flag */
+
+int  main_subarea(DISPLAY_DESCR    *dspl_descr);
+
+void window_crossing(XEvent              *event,
+                     DISPLAY_DESCR       *dspl_descr);
+
+void focus_change(XEvent              *event,
+                  DISPLAY_DESCR       *dspl_descr);
+
+int in_window(DISPLAY_DESCR       *dspl_descr);
+
+void force_in_window(DISPLAY_DESCR       *dspl_descr);
+
+void force_out_window(DISPLAY_DESCR       *dspl_descr);
+
+void  get_root_location(Display      *display,
+                        Window        window,
+                        int          *root_x,
+                        int          *root_y);
+
+void reconfigure(PAD_DESCR        *main_pad,
+                 Display          *display);
+
+#endif
+

@@ -1,0 +1,186 @@
+#define  TEXT_ATOM_NAME       "TEXT"
+#define  TARGETS_ATOM_NAME    "TARGETS"
+#define  TIMESTAMP_ATOM_NAME  "TIMESTAMP"
+#define  INCR_ATOM_NAME    "INCR"
+#define  LENGTH_ATOM_NAME    "LENGTH"
+
+
+
+Request INCR paste data to window 0xB2, property =  361 (_NET_CLIENT_LIST), state = NewValue
+Not a request for more pastebuf data
+-------find_valid_event:  Returning True for event type PropertyNotify (28), mask 0x00639F7D, display 0x973CC50
+event  PropertyNotify
+     window = 0xB2, atom = 362, state = PropertyNewValue, time = -1099600125
+     display = 0x973CC50, send_event = False, serial = 2017
+
+Request INCR paste data to window 0xB2, property =  362 (_NET_CLIENT_LIST_STACKING), state = NewValue
+Not a request for more pastebuf data
+-------find_valid_event:  Returning True for event type PropertyNotify (28), mask 0x00639F7D, display 0x973CC50
+event  PropertyNotify
+     window = 0xB2, atom = 287, state = PropertyNewValue, time = -1099600123
+     display = 0x973CC50, send_event = False, serial = 2017
+
+Request INCR paste data to window 0xB2, property =  287 (_NET_ACTIVE_WINDOW), state = NewValue
+Not a request for more pastebuf data
+-------find_valid_event:  Returning True for event type PropertyNotify (28), mask 0x00639F7D, display 0x973CC50
+event  PropertyNotify
+     window = 0xB2, atom = 323, state = PropertyNewValue, time = -1099600120
+     display = 0x973CC50, send_event = False, serial = 2017
+
+Request INCR paste data to window 0xB2, property =  323 (XKLAVIER_ALLOW_SECONDARY), state = NewValue
+Not a request for more pastebuf data
+-------find_valid_event:  Returning True for event type PropertyNotify (28), mask 0x00639F7D, display 0x973CC50
+event  PropertyNotify
+     window = 0xB2, atom = 287, state = PropertyNewValue, time = -1099600116
+     display = 0x973CC50, send_event = False, serial = 2017
+
+Request INCR paste data to window 0xB2, property =  287 (_NET_ACTIVE_WINDOW), state = NewValue
+Not a request for more pastebuf data
+-------find_valid_event:  Returning True for event type PropertyNotify (28), mask 0x00639F7D, display 0x973CC50
+event  PropertyNotify
+     window = 0xB2, atom = 361, state = PropertyNewValue, time = -1099600114
+     display = 0x973CC50, send_event = False, serial = 2017
+
+Request INCR paste data to window 0xB2, property =  361 (_NET_CLIENT_LIST), state = NewValue
+Not a request for more pastebuf data
+-------find_valid_event:  Returning True for event type PropertyNotify (28), mask 0x00639F7D, display 0x973CC50
+event  PropertyNotify
+     window = 0xB2, atom = 362, state = PropertyNewValue, time = -1099600112
+     display = 0x973CC50, send_event = False, serial = 2017
+
+Request INCR paste data to window 0xB2, property =  362 (_NET_CLIENT_LIST_STACKING), state = NewValue
+Not a request for more pastebuf data
+-------find_valid_event:  Returning True for event type PropertyNotify (28), mask 0x00639F7D, display 0x973CC50
+event  PropertyNotify
+     window = 0xB2, atom = 287, state = PropertyNewValue, time = -1099600109
+     display = 0x973CC50, send_event = False, serial = 2017
+
+Request INCR paste data to window 0xB2, property =  287 (_NET_ACTIVE_WINDOW), state = NewValue
+Not a request for more pastebuf data
+-------find_valid_event:  Returning True for event type PropertyNotify (28), mask 0x00639F7D, display 0x973CC50
+event  PropertyNotify
+     window = 0xB2, atom = 287, state = PropertyNewValue, time = -1099600108
+     display = 0x973CC50, send_event = False, serial = 2017
+
+Request INCR paste data to window 0xB2, property =  287 (_NET_ACTIVE_WINDOW), state = NewValue
+Not a request for more pastebuf data
+-------find_valid_event:  Returning True for event type PropertyNotify (28), mask 0x00639F7D, display 0x973CC50
+event  PropertyNotify
+     window = 0xB2, atom = 361, state = PropertyNewValue, time = -1099600089
+     display = 0x973CC50, send_event = False, serial = 2017
+
+Request INCR paste data to window 0xB2, property =  361 (_NET_CLIENT_LIST), state = NewValue
+Not a request for more pastebuf data
+-------find_valid_event:  Returning True for event type PropertyNotify (28), mask 0x00639F7D, display 0x973CC50
+event  PropertyNotify
+     window = 0xB2, atom = 362, state = PropertyNewValue, time = -1099600087
+     display = 0x973CC50, send_event = False, serial = 2017
+
+Request INCR paste data to window 0xB2, property =  362 (_NET_CLIENT_LIST_STACKING), state = NewValue
+Not a request for more pastebuf data
+-------find_valid_event:  Returning True for event type PropertyNotify (28), mask 0x00639F7D, display 0x973CC50
+event  PropertyNotify
+     window = 0xB2, atom = 287, state = PropertyNewValue, time = -1099600085
+     display = 0x973CC50, send_event = False, serial = 2017
+
+Request INCR paste data to window 0xB2, property =  287 (_NET_ACTIVE_WINDOW), state = NewValue
+Not a request for more pastebuf data
+-------find_valid_event:  Returning True for event type PropertyNotify (28), mask 0x00639F7D, display 0x973CC50
+event  PropertyNotify
+     window = 0xB2, atom = 323, state = PropertyNewValue, time = -1099600081
+     display = 0x973CC50, send_event = False, serial = 2017
+
+Request INCR paste data to window 0xB2, property =  323 (XKLAVIER_ALLOW_SECONDARY), state = NewValue
+Not a request for more pastebuf data
+-------find_valid_event:  Returning True for event type PropertyNotify (28), mask 0x00639F7D, display 0x973CC50
+event  PropertyNotify
+     window = 0xB2, atom = 287, state = PropertyNewValue, time = -1099600079
+     display = 0x973CC50, send_event = False, serial = 2017
+
+Request INCR paste data to window 0xB2, property =  287 (_NET_ACTIVE_WINDOW), state = NewValue
+Not a request for more pastebuf data
+-------find_valid_event:  Returning True for event type PropertyNotify (28), mask 0x00639F7D, display 0x973CC50
+event  PropertyNotify
+     window = 0xB2, atom = 361, state = PropertyNewValue, time = -1099600075
+     display = 0x973CC50, send_event = False, serial = 2017
+
+Request INCR paste data to window 0xB2, property =  361 (_NET_CLIENT_LIST), state = NewValue
+Not a request for more pastebuf data
+-------find_valid_event:  Returning True for event type PropertyNotify (28), mask 0x00639F7D, display 0x973CC50
+event  PropertyNotify
+     window = 0xB2, atom = 362, state = PropertyNewValue, time = -1099600072
+     display = 0x973CC50, send_event = False, serial = 2017
+
+Request INCR paste data to window 0xB2, property =  362 (_NET_CLIENT_LIST_STACKING), state = NewValue
+Not a request for more pastebuf data
+-------find_valid_event:  Returning True for event type PropertyNotify (28), mask 0x00639F7D, display 0x973CC50
+event  PropertyNotify
+     window = 0xB2, atom = 287, state = PropertyNewValue, time = -1099600071
+     display = 0x973CC50, send_event = False, serial = 2017
+
+Request INCR paste data to window 0xB2, property =  287 (_NET_ACTIVE_WINDOW), state = NewValue
+Not a request for more pastebuf data
+-------find_valid_event:  Returning True for event type PropertyNotify (28), mask 0x00639F7D, display 0x973CC50
+event  PropertyNotify
+     window = 0xB2, atom = 287, state = PropertyNewValue, time = -1099600069
+     display = 0x973CC50, send_event = False, serial = 2017
+
+Request INCR paste data to window 0xB2, property =  287 (_NET_ACTIVE_WINDOW), state = NewValue
+Not a request for more pastebuf data
+-------find_valid_event:  Returning True for event type PropertyNotify (28), mask 0x00639F7D, display 0x973CC50
+event  PropertyNotify
+     window = 0xB2, atom = 361, state = PropertyNewValue, time = -1099494922
+     display = 0x973CC50, send_event = False, serial = 2017
+
+Request INCR paste data to window 0xB2, property =  361 (_NET_CLIENT_LIST), state = NewValue
+Not a request for more pastebuf data
+-------find_valid_event:  Returning True for event type PropertyNotify (28), mask 0x00639F7D, display 0x973CC50
+event  PropertyNotify
+     window = 0xB2, atom = 362, state = PropertyNewValue, time = -1099494920
+     display = 0x973CC50, send_event = False, serial = 2017
+
+Request INCR paste data to window
+
+
+
+
+
+           deb
+
+
+ qqqqq
+
+ Request INCR paste data to window 0xB2, property =  287 (_NET_ACTIVE_WINDOW), state = NewValue
+
+Request INCR paste data to window 0xB2, property =  287 (_NET_ACTIVE_WINDOW), state = NewValue
+
+Request INCR paste data to window 0xB2, property =  287 (_NET_ACTIVE_WINDOW), state = NewValue
+
+-------find_valid_event:  Returning True for event type PropertyNotify (28), mask 0x00639F7D, display 0x973CC50
+-------find_valid_event:  Returning True for event type PropertyNotify (28), mask 0x00639F7D, display 0x973CC50
+
+The quick brown fox jumps over the lazy dog
+The quick brown fox jumps over the lazy dog
+
+Sending 44 bytes of string data
+more_pastebuf_data
+
+
+selection_atom
+makefile.unixware
+
+ls -lt *.[ch]
+
+
+DEBUG2(fprintf(stderr, "Request INCR paste data to window 0x%X, property =  %d (%s), state = %s\n",
+               event->xproperty.window,
+               event->xproperty.atom, (p = XGetAtomName(event->xproperty.display, event->xproperty.atom)),
+               ((event->xproperty.state == PropertyDelete) ? "Deleted" : "NewValue"));
+
+-rwxr-xr-x 1 stymar styma   3283 Jul  5  2005 apistats.h
+-rwxr-xr-x 1 stymar styma   2616 Jul  5  2005 alias.h
+-rwxr-xr-x 1 stymar styma  23490 Jul  5  2005 alias.c
+-rw-r--r-- 1 stymar styma   3715 Jun  7  2005 strl.c
+-rw-r--r-- 1 stymar styma   1616 Jun  7  2005 strl.h
+-rwxr-xr-x 1 stymar styma  36924 May 31  2005 getxopts.c
+-rw-r--r-- 1 stymar styma   7391 May 31  2005 dumptermios.c

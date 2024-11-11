@@ -1,0 +1,601 @@
+/*static char *sccsid = "%Z% %M% %I% - %G% %U% ";*/
+
+/***************************************************************
+*  
+*  ARPUS/Ce text editor and terminal emulator modeled after the
+*  Apollo(r) Domain systems.
+*  Copyright 1988 - 2002 Enabling Technologies Group
+*  Copyright 2003 - 2005 Robert Styma Consulting
+*  
+*  This program is free software; you can redistribute it and/or
+*  modify it under the terms of the GNU General Public License
+*  as published by the Free Software Foundation; either version 2
+*  of the License, or (at your option) any later version.
+*  
+*  This program is distributed in the hope that it will be useful,
+*  but WITHOUT ANY WARRANTY; without even the implied warranty of
+*  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+*  GNU General Public License for more details.
+*  
+*  You should have received a copy of the GNU General Public License
+*  along with this program; if not, write to the Free Software
+*  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+*  
+*  Original Authors:  Robert Styma and Kevin Plyler
+*  Email:  styma@swlink.net
+*  
+***************************************************************/
+
+/***************************************************************
+*
+*  module keypress.c
+*
+*  Routine:
+*     keypress    - Process KeyPress, KeyRelease, ButtonPress, ButtonRelease
+*
+***************************************************************/
+
+
+#include <stdio.h>          /* /usr/include/stdio.h      */
+#include <errno.h>          /* /usr/include/errno.h      */
+#include <string.h>         /* /usr/include/string.h   */
+#include <limits.h>         /* /usr/include/limits.h   */
+#include <stdlib.h>         /* /usr/include/stdlib.h     */
+#include <sys/types.h>      /* "/usr/include/sys/types.h"     */
+#ifdef WIN32
+#include <malloc.h>   /* just for free */
+#endif
+
+#include "cc.h"
+#include "cswitch.h"
+#include "debug.h"
+#include "dmc.h"
+#include "dmwin.h"
+#include "getevent.h"
+#include "kd.h"
+#include "keypress.h"
+#include "mark.h"
+#ifdef WIN32
+#include "pad.h"
+#endif
+#include "parms.h"
+#include "parsedm.h"
+#include "pd.h"
+#include "prompt.h"
+#include "pw.h"
+#include "record.h"
+#include "redraw.h"
+#include "tab.h"
+#include "typing.h"
+#include "undo.h"
+#include "winsetup.h"
+#include "xerror.h"
+#include "xerrorpos.h"
+
+
+/************************************************************************
+
+NAME:      keypress  -  Process KeyPress, KeyRelease, ButtonPress, ButtonRelease
+
+
+
+PURPOSE:    This routine does the Ce processing for key and mouse
+            button events.
+
+PARAMETERS:
+
+   1.  dspl_descr      - pointer to DISPLAY_DESCR  (INPUT/OUTPUT)
+                         This is the current display description.
+                            
+   2.  event_union     - pointer to XEvent (INPUT)
+                         This is the event which caused the DM commands to get
+                         executed.  It the event structure for a:
+                         KeyPress, KeyRelease, ButtonPress, ButtonRelease
+
+   3.  read_locked     - int  (INPUT)
+                         Read locked flag.  Prevents "ro" commands if True.
+                            
+   4.  edit_file       - pointer to char (OUTPUT)
+                         This is the current file being edited.
+                         For ceterm, it is the SHELL name with pid.
+
+   5.  arg0            - pointer to char (INPUT)
+                         The command name, passed to lower level routines.
+
+FUNCTIONS :
+
+   1.   Make sure all the keydefs are loaded.
+
+   2.   If we are in kk mode, display the kk information and return.
+
+   3.   If there are commands waiting to process, parse them.  Otherwise
+        get the command associated with this keypress.
+
+   4.   Do the command list prescanning (see embedded comments)
+
+   5.   Process each command with cswitch.
+
+*************************************************************************/
+
+void keypress(DISPLAY_DESCR  *dspl_descr,  /* in/out */
+              XEvent         *event_union, /* input  KeyPress, KeyRelease, ButtonPress, ButtonRelease */
+              int             read_locked, /* input  */
+              char           *edit_file,   /* input  */
+              char           *arg0)        /* input  */
+{
+int                   redraw_needed = 0;    /* bitmask flag to tell when window redraw is needed and also what kind  */                
+int                   warp_needed = False;  /* Flag to show the cursor needs to be warped */
+DMC                  *dm_list;          /* List of DM commands generated from keyboard events            */
+DMC                  *hold_dmc;         /* work variable in walking the dm_list                          */
+DMC                  *temp_dmc;         /*           "       "                                           */
+DMC                  *new_dmc = NULL;   /* list of DM command generated by routines, attached to dm_list */
+DMC                   autocut_dmc;      /* used to implement autocut, spliced on from of dm_list         */
+int                   undo_cmd_group;
+int                   need_flush;
+int                   modifies_main_pad; /* Flag used with autosave  */
+char                  msg[MAX_LINE];
+DISPLAY_DESCR        *wc_display_deleted;
+int                   stop_dm_list;
+
+
+/***************************************************************
+*  Variables saved between keystrokes
+***************************************************************/
+static int            grouped_undo = 0;  /* DM command type used to separate "undo" grouping of es and ee commands  */
+static int            key_count = 0;    /* count of keystrokes used in autosave feature              */
+static int            keydefs_finished = False;   /* flag to show we are done reading the key definitions */
+
+/********************************************************
+*  Make sure all the keydefs have been read in.  This
+*  routine is (must) always be called once.  keydefs_finished
+*  is a local flag.
+*********************************************************/
+if (!keydefs_finished)
+   {
+      finish_keydefs();
+      keydefs_finished = True;
+      set_event_masks(dspl_descr, False);
+   }
+
+/***************************************************************
+*  Handle the key events dealt with by the kk command.
+*  The kk command increments dm_kk_flag.  The commands execution
+*  is delayed until another keypress occurs.
+***************************************************************/
+
+if (dspl_descr->dm_kk_flag > 0)
+   {
+      if ((event_union->type == KeyPress) || (event_union->type == ButtonPress))
+         {
+            dm_kk(event_union);
+            (dspl_descr->dm_kk_flag)--;
+         }
+      return; /* out of loop reading key strokes */
+   }
+
+/********************************************************
+*  RES 3/30/95 for Odd X server on Boeing X terminals:
+*  Save the beginning X, Y, and window so we can see if the
+*  cursor really moved.
+*********************************************************/
+dspl_descr->cursor_buff->start_x = dspl_descr->cursor_buff->x;
+dspl_descr->cursor_buff->start_y = dspl_descr->cursor_buff->y;
+dspl_descr->cursor_buff->start_which_window = dspl_descr->cursor_buff->which_window;
+
+/********************************************************
+*  Get the list of DM commands for this key.
+*  If commands were passed in via the argv, execute them
+*  and erase the record of them.
+*********************************************************/
+if (CMDS_FROM_ARG)
+   {
+      DEBUG4(fprintf(stderr, "Stored cmds from arg: \"%s\"\n", CMDS_FROM_ARG);)
+      dm_list = parse_dm_line(CMDS_FROM_ARG, True, 0, dspl_descr->escape_char, dspl_descr->hsearch_data);
+      free(CMDS_FROM_ARG);
+      CMDS_FROM_ARG = NULL;
+   }
+else
+   if (dspl_descr->pd_data->pulldown_active || (event_union->xmotion.window == dspl_descr->pd_data->menubar_x_window))
+      if (((event_union->type == ButtonPress) || (event_union->type == ButtonRelease)))
+         dm_list =  pd_button(event_union, dspl_descr);
+      else
+         dm_list = NULL; /* ignore keypresses when a pulldown is active */
+   else
+      dm_list = key_to_dm(event_union,
+                          (dspl_descr->vt100_mode && (dspl_descr->cursor_buff->which_window == MAIN_PAD)),
+                          ISOLATIN,
+                          dspl_descr->caps_mode,
+                          dspl_descr->hsearch_data);
+
+if ((dm_list == NULL) || (dm_list == DMC_COMMENT))
+   return;
+
+if ((event_union->type == KeyPress) || (event_union->type == ButtonPress))
+   dm_clean(((dspl_descr->cursor_buff->which_window == MAIN_PAD) || (dspl_descr->cursor_buff->which_window == DMINPUT_WINDOW)) && (dm_list != NULL));
+
+/***************************************************************
+*  Prescan the list.
+*  If we have a modifying type call, generate a key event.  
+*  If we have a undo or redo do not generate a key event.  
+*  If we have pending enter source (es) commands in the buffer and
+*  this is not another one, flush the buffer back to the memdata structure.
+***************************************************************/
+if (!dspl_descr->cursor_buff->up_to_snuff)
+   bring_up_to_snuff(dspl_descr);
+
+if (WRITABLE(dspl_descr->cursor_buff->current_win_buff->token))
+   for (temp_dmc = dm_list; temp_dmc != NULL; temp_dmc = temp_dmc->next)
+      if (dmsyms[temp_dmc->any.cmd].modifies_buff)
+         {
+            /* undo_cmd_group is local to this loop */
+            undo_cmd_group = ((temp_dmc->any.cmd == DM_er) ? DM_es : temp_dmc->any.cmd);
+            /* RES 2/17/94  add DM_ee to special list, User reported discrepency */
+            /*if ((temp_dmc->any.cmd != DM_es && temp_dmc->any.cmd != DM_er && temp_dmc->any.cmd != DM_ee) && dspl_descr->cursor_buff->current_win_buff->buff_modified)*/
+
+            /* RES 5/2/94   Separate DM_ee and DM_es commands into separate groupings */
+            need_flush  = (temp_dmc->any.cmd != DM_es && temp_dmc->any.cmd != DM_er && temp_dmc->any.cmd != DM_ee);
+            if (!(dspl_descr->cursor_buff->current_win_buff->buff_modified))
+               need_flush = False;
+            else
+               if (!need_flush && (undo_cmd_group != grouped_undo))
+                  need_flush = True;
+
+            if (need_flush)
+               {
+                  flush(dspl_descr->cursor_buff->current_win_buff);
+                  if (dspl_descr->cursor_buff->which_window != MAIN_PAD)
+                     flush(dspl_descr->main_pad);
+               }
+            /* grouped_undo is saved between keystrokes */
+            grouped_undo = ((temp_dmc->any.cmd == DM_er) ? DM_es : temp_dmc->any.cmd);
+            /*event_do(dspl_descr->cursor_buff->current_win_buff->token, KS_EVENT, 0, 0, 0, 0); RES 7/8/94, replace this line with next three statements */
+            if (WRITABLE(dspl_descr->main_pad->token))
+               event_do(dspl_descr->main_pad->token, KS_EVENT, 0, 0, 0, 0);
+            if (dspl_descr->pad_mode)
+               event_do(dspl_descr->unix_pad->token, KS_EVENT, 0, 0, 0, 0);
+            event_do(dspl_descr->dminput_pad->token, KS_EVENT, 0, 0, 0, 0);
+            break;
+         }
+      else
+         if ((temp_dmc->any.cmd == DM_undo) || (temp_dmc->any.cmd == DM_redo))
+            {
+               if (cc_ce) /* flush any other screens on undo, RES 8/15/94 */
+                  cc_joinln(dspl_descr->main_pad->token, -1);
+               break;
+            }
+if (dspl_descr->cmd_record_data)
+   rec_cmds(dm_list, dspl_descr);
+
+modifies_main_pad = False;
+
+/***************************************************************
+*  RES  01/29/1999
+*  If the AUTOCUT option is on, and this is a single command
+*  dm_list, and the command in the dm_list is an autocut type command,
+*  and an area is highlighted, do a cut to local paste buffer AUTOCUT.
+***************************************************************/
+if (AUTOCUT && /*!dspl_descr->pad_mode &&*/
+   (dm_list->next == NULL) && 
+   dmsyms[dm_list->any.cmd].autocut &&
+   dspl_descr->echo_mode &&
+   WRITABLE(dspl_descr->cursor_buff->current_win_buff->token) &&
+   (dspl_descr->cursor_buff->which_window == dspl_descr->mark1.buffer->which_window))
+
+   {
+      memset((char *)&autocut_dmc, 0, sizeof(autocut_dmc));
+      if (dmsyms[dm_list->any.cmd].autocut == AUTOCUT_ADD)
+         autocut_dmc.next      = dm_list;  /* splice on front */
+      else /* for AUTOCUT_DEL don't actually do the delete or backspace */
+         if (dm_list->any.temp)
+            free_dmc(dm_list); /* we know there is only 1 entry */
+
+      autocut_dmc.xd.cmd    = DM_xd;
+      /*autocut_dmc.temp    = False;  from memset */
+      /*autocut_dmc.dash_r  = False;  from memset */
+      /*autocut_dmc.dash_f  = False;  from memset */
+      /*autocut_dmc.dash_a  = False;  from memset */
+      autocut_dmc.xd.dash_l = True;
+      autocut_dmc.xd.path   = "AUTOCUT";
+      dm_list = &autocut_dmc;
+   }  
+
+#if defined(WIN32)
+/***************************************************************
+*  In Windows, lock the display description while we process
+*  commands to sync with the shell2pad thread.  This is for
+*  pad mode only.
+***************************************************************/
+if (dspl_descr->pad_mode || TRANSPAD || STDIN_CMDS)
+   lock_display_descr(dspl_descr, "keypress");
+#endif
+
+/***************************************************************
+*  Walk the list of DM commands.
+***************************************************************/
+while(dm_list != NULL)
+{
+   /***************************************************************
+   *  If a dm comment was entered to be executed, skip it.
+   ***************************************************************/
+   if (dm_list == DMC_COMMENT)
+      break;
+
+   /***************************************************************
+   *  If this command modifies the main window, record this fact.
+   ***************************************************************/
+   if ((dmsyms[dm_list->any.cmd].modifies_buff) && (dspl_descr->cursor_buff->current_win_buff->which_window == MAIN_PAD))
+      modifies_main_pad = True;
+
+   DEBUG4(dump_kd(stderr, dm_list, 1 /* print just the current key def */, False, NULL, dspl_descr->escape_char);)
+
+   /***************************************************************
+   *  If a cursor motion event has put part of the new cursor buff
+   *  out of date, bring it up to date.
+   ***************************************************************/
+   if (!dspl_descr->cursor_buff->up_to_snuff)
+      bring_up_to_snuff(dspl_descr);
+
+   /***************************************************************
+   *  If we are in vt100 mode and this command is not allowed,
+   *  Flag this fact.
+   ***************************************************************/
+   if (dspl_descr->vt100_mode && !VT100_CMD_VALID(dspl_descr->cursor_buff->which_window, dm_list->any.cmd))
+      {
+         snprintf(msg, sizeof(msg), "(%s) Command not allowed in VT100 mode", dmsyms[dm_list->any.cmd].name);
+         dm_error(msg, DM_ERROR_MSG);
+         break; /* forget rest of key event */
+      }
+
+   /***************************************************************
+   *  If the command modifies the buffer and we are in a read only
+   *  window, bail out with a message.
+   ***************************************************************/
+   if ((dmsyms[dm_list->any.cmd].modifies_buff) || (dm_list->any.cmd == DM_undo) || (dm_list->any.cmd == DM_redo))
+      {
+         if (!(WRITABLE(dspl_descr->cursor_buff->current_win_buff->token)))
+            {
+#ifdef PAD
+               if (dspl_descr->pad_mode && (dspl_descr->cursor_buff->current_win_buff->which_window == MAIN_PAD))
+                  {
+                     DEBUG5(fprintf(stderr, "Moving cursor to UNIXCMD window for command %s\n", dmsyms[dm_list->any.cmd].name);)
+                     dspl_descr->cursor_buff->which_window = UNIXCMD_WINDOW;
+                     dspl_descr->cursor_buff->win_line_no  = dspl_descr->unix_pad->file_line_no - dspl_descr->unix_pad->first_line;
+                     dspl_descr->cursor_buff->win_col_no   = dspl_descr->unix_pad->file_col_no  - dspl_descr->unix_pad->first_char;
+                     bring_up_to_snuff(dspl_descr);
+                     set_window_col_from_file_col(dspl_descr->cursor_buff);
+                     dspl_descr->cursor_buff->y = dspl_descr->cursor_buff->current_win_buff->window->sub_y + (dspl_descr->cursor_buff->win_line_no * dspl_descr->cursor_buff->current_win_buff->window->line_height);
+                  }
+               else
+                  {
+                     dm_error("Text is read-only", DM_ERROR_BEEP);
+                     break; /* forget rest of key event */
+                  }
+#else
+               dm_error("Text is read-only", DM_ERROR_BEEP);
+               break; /* forget rest of key event */
+#endif
+            }
+         else
+            {
+#ifdef EXCLUDEP
+               /* RES 12/4/95 test added to deal with x'ed out lines */
+               if (dspl_descr->cursor_buff->current_win_buff->win_lines[dspl_descr->cursor_buff->win_line_no].w_file_lines_here > 1)
+                  {
+                     snprintf(msg, sizeof(msg), "Line %d excluded, cannot be direct target for update", dspl_descr->cursor_buff->current_win_buff->file_line_no+1);
+                     dm_error(msg, DM_ERROR_BEEP);
+                     break; /* forget rest of key event */
+                  }
+#endif
+               if (cc_ce && (dspl_descr->cursor_buff->which_window == MAIN_PAD) && cc_line_chk(dspl_descr->cursor_buff->current_win_buff->token, dspl_descr, dspl_descr->main_pad->file_line_no))
+                  {
+                     snprintf(msg, sizeof(msg), "Line %d already in use in another window", dspl_descr->main_pad->file_line_no+1);
+                     dm_error(msg, DM_ERROR_BEEP);
+                     break; /* forget rest of key event */
+                  }
+            }
+         if (dspl_descr->cursor_buff->win_line_no < 0)
+            {
+               /* we are in the titlebar area of a writeable window */
+               dm_error("No text under cursor", DM_ERROR_BEEP);
+               break; /* forget rest of key event */
+            }
+         /* if this is the first modification since the last save, force a titlebar redraw */
+         if (!dirty_bit(dspl_descr->cursor_buff->current_win_buff->token))
+            redraw_needed |= TITLEBAR_MASK & FULL_REDRAW;
+      }
+
+   /***************************************************************
+   *  If the command we will be executing requires a clean work
+   *  buffer, and it is dirty (in use), clear it out.
+   *  On compound commands, force a full screen redraw to avoid
+   *  side effects.
+   ***************************************************************/
+   if (dmsyms[dm_list->any.cmd].needs_flush && dspl_descr->cursor_buff->current_win_buff->buff_modified)
+      {
+         flush(dspl_descr->cursor_buff->current_win_buff);
+         if (redraw_needed)
+            redraw_needed |= (dspl_descr->cursor_buff->current_win_buff->redraw_mask & PARTIAL_REDRAW);
+      }
+
+   /***************************************************************
+   *  If we will be modifying a buffer and we are
+   *  not in modify mode, we need to set up the local work buffer.
+   ***************************************************************/
+   if (dmsyms[dm_list->any.cmd].modifies_buff &&
+       ((dspl_descr->cursor_buff->current_win_buff->buff_ptr != dspl_descr->cursor_buff->current_win_buff->work_buff_ptr) ||
+        ((dspl_descr->cursor_buff->win_line_no + dspl_descr->cursor_buff->current_win_buff->first_line) != dspl_descr->cursor_buff->current_win_buff->file_line_no)))
+      {
+         if (((dspl_descr->cursor_buff->win_line_no + dspl_descr->cursor_buff->current_win_buff->first_line) != dspl_descr->cursor_buff->current_win_buff->file_line_no) ||
+             (dspl_descr->cursor_buff->which_window != dspl_descr->cursor_buff->current_win_buff->which_window))
+            bring_up_to_snuff(dspl_descr);
+         else
+            if (dmsyms[dm_list->any.cmd].needs_flush && dspl_descr->cursor_buff->current_win_buff->buff_modified)
+               flush(dspl_descr->cursor_buff->current_win_buff);
+
+         if (check_and_add_lines(dspl_descr->cursor_buff)) /* in mark.c */
+            redraw_needed |= (FULL_REDRAW & MAIN_PAD_MASK); /* force partial redraw in case line numbers need to be added */
+
+         strcpy(dspl_descr->cursor_buff->current_win_buff->work_buff_ptr, dspl_descr->cursor_buff->current_win_buff->buff_ptr);
+         dspl_descr->cursor_buff->current_win_buff->buff_ptr = dspl_descr->cursor_buff->current_win_buff->work_buff_ptr;
+      }
+
+
+   /***************************************************************
+   *  Switch on the command id to decide what to do.
+   ***************************************************************/
+   redraw_needed |= cswitch(dspl_descr,          /* in/out */
+                            dm_list,             /* input  */
+                            &new_dmc,            /* output */
+                            event_union,         /* input */
+                            read_locked,         /* input  */
+                            &warp_needed,        /* output */
+                            &wc_display_deleted, /* output */
+                            &stop_dm_list,       /* output */
+                            arg0);               /* input  */
+   if (wc_display_deleted)
+      {
+         DEBUG1(fprintf(stderr, "process_keypress: cc display deleted, bye bye\n");)
+         process_redraw(wc_display_deleted, (FULL_REDRAW & MAIN_PAD_MASK), False);
+#if defined(WIN32)
+         /***************************************************************
+         *  In Windows, lock the display description while we process
+         *  commands to sync with the shell2pad thread.  This is for
+         *  pad mode only.
+         ***************************************************************/
+         if (wc_display_deleted->pad_mode || TRANSPAD || STDIN_CMDS)
+            unlock_display_descr(wc_display_deleted, "keypress");
+#endif
+         return; /* the display is gone.  Do nothing more with it */
+      }
+
+   if (stop_dm_list)
+      {
+         DEBUG1(fprintf(stderr, "process_keypress: cmd list suspended\n");)
+         dm_list = NULL;
+      }
+
+   /***************************************************************
+   *  
+   *  If the command failed to modify the work buffer, revert the
+   *  buffer to the work buffer.
+   *  
+   ***************************************************************/
+
+   if ((dspl_descr->cursor_buff->current_win_buff->buff_ptr == dspl_descr->cursor_buff->current_win_buff->work_buff_ptr) &&
+       !dspl_descr->cursor_buff->current_win_buff->buff_modified)
+      dspl_descr->cursor_buff->current_win_buff->buff_ptr = get_line_by_num(dspl_descr->cursor_buff->current_win_buff->token, dspl_descr->cursor_buff->current_win_buff->file_line_no);
+
+   /***************************************************************
+   *  Go to the next command.  Free this one if required.
+   *  The dm_list can be null if the list was shunted to the
+   *  prompt stack by dm_prompt.
+   ***************************************************************/
+   if (dm_list != NULL)
+      if (dm_list->any.temp)
+         {
+            hold_dmc = dm_list->next;
+            dm_list->next = NULL;  /* only want to free 1 */
+            free_dmc(dm_list);
+            dm_list = hold_dmc;
+         }
+      else
+         dm_list = dm_list->next;
+
+   /***************************************************************
+   *  If there are no new dm commands to put on the list, see if
+   *  any prompts have been completed.
+   ***************************************************************/
+   if (new_dmc == NULL)
+      new_dmc = process_prompt(dspl_descr);
+
+   /***************************************************************
+   *  If new DM commands were created, put them on the front of the
+   *  list if there is anything else on the list.
+   *  This counts on the last dmc in the list being a temp.
+   ***************************************************************/
+   if ((new_dmc != NULL) && (new_dmc != DMC_COMMENT))
+      {
+         if (dm_list != NULL)
+            {
+               for (temp_dmc = new_dmc;
+                    temp_dmc->next != NULL;
+                    temp_dmc = temp_dmc->next)
+                  ; /* do nothing */
+               temp_dmc->next = dm_list;
+            }
+         dm_list = new_dmc;
+         new_dmc = NULL;
+      }
+} /* end of while walking dm_list */
+
+if (dspl_descr->cmd_record_data)
+   rec_position(dspl_descr);
+
+/***************************************************************
+*  autosave feature.
+***************************************************************/
+#ifdef PAD
+if (modifies_main_pad && AUTOSAVE && WRITABLE(dspl_descr->main_pad->token) && !find_padmode_dspl(dspl_descr))
+#else
+if (modifies_main_pad && AUTOSAVE && WRITABLE(dspl_descr->main_pad->token))
+#endif
+   {
+      key_count++;
+      if (key_count >= dspl_descr->auto_save_limit)
+         {
+            dm_error("Autosave: Saving file", DM_ERROR_MSG);
+            flush(dspl_descr->main_pad);
+            dm_pw(dspl_descr, edit_file, False);
+            redraw_needed |= (TITLEBAR_MASK & FULL_REDRAW);
+            key_count = 0;
+            dm_error("Autosave: Done", DM_ERROR_MSG);
+         }
+   }
+
+/***************************************************************
+*  
+*  If things have been added to the DM_OUTPUT pad, adjust the 
+*  window into the pad and re-expose.
+*  
+***************************************************************/
+
+if (dspl_descr->dmoutput_last != (total_lines(dspl_descr->dmoutput_pad->token)-1))
+   {
+      dspl_descr->dmoutput_last = 
+      dspl_descr->dmoutput_pad->file_line_no =
+      dspl_descr->dmoutput_pad->first_line = total_lines(dspl_descr->dmoutput_pad->token) - 1;
+      redraw_needed |=  DMOUTPUT_MASK & FULL_REDRAW;
+      dspl_descr->dmoutput_pad->buff_ptr = get_line_by_num(dspl_descr->dmoutput_pad->token, dspl_descr->dmoutput_last);
+      DEBUG12(fprintf(stderr, "Lines added to dmoutput window, need redraw, newline = %d\n", dspl_descr->dmoutput_last);)
+   }
+
+
+/***************************************************************
+*  If we resized the window. Wait until the configure event to
+*  move the cursor.
+***************************************************************/
+if (dspl_descr->redo_cursor_in_configure)
+   warp_needed = False;
+
+/***************************************************************
+*  If we need to redraw, do it.
+*  We redraw the pixmap and then send an expose event to copy
+*  it to the window.
+*  <find marker>
+***************************************************************/
+if (redraw_needed || warp_needed)  /* any bits on */
+   process_redraw(dspl_descr, redraw_needed, warp_needed);
+
+#if defined(WIN32)
+/***************************************************************
+*  In Windows, lock the display description while we process
+*  commands to sync with the shell2pad thread.  This is for
+*  pad mode only.
+***************************************************************/
+if (dspl_descr->pad_mode || TRANSPAD || STDIN_CMDS)
+   unlock_display_descr(dspl_descr, "keypress");
+#endif
+
+
+} /* end of keypress */
+

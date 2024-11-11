@@ -1,0 +1,129 @@
+
+CC          = 	cc
+
+# -DMVS_SERVICES
+
+DFLAGS  =  \
+ -DPAD\
+ -DDebuG\
+ -D_INCLUDE_HPUX_SOURCE -D_INCLUDE_XOPEN_SOURCE -D_INCLUDE_POSIX_SOURCE -D_INCLUDE_AES_SOURCE\
+ -DNeedFunctionPrototypes\
+ -DCE_DEV\
+ -DARPUS_CE
+
+# -Dbharding
+
+#CFLAGS  =  -g -Aa -I/usr/include/X11R5 -I/phx/include $(DFLAGS)
+CFLAGS  =  -O -Aa -I/usr/include/X11R5 -I/phx/include $(DFLAGS)
+
+
+#LIBS = /usr/lib/X11R5/libX11.sl /phx/lib/libmalloc.a -lV3
+#LIBS = /phx/lib/libls.a /usr/lib/X11R5/libX11.sl -lV3 /phx/lib/libudp.sl
+LIBS = /home/stymar/license/lice.hp.3.3/lib/libls.a \
+ /usr/lib/X11R5/libX11.sl\
+ -lV3
+
+# The following include sets variable CRPAD_OBS
+include makefile.objs
+
+EXTRA_OBJS    =  usleep.o
+
+
+
+SRCMODS  = $(CRPAD_OBS:.o=.c) $(EXTRA_OBJS:.o=.c)  delcc.c xdmc.c ceapi.c ce_isceterm.c
+
+default :  ce xdmc  ce_isceterm
+
+# The following include sets variable HFILES and sets up the .h file dependencies
+include makefile.depends
+
+dumpxevent_test: dumpxevent_test.o dumpxevent.o keysym.o
+	$(CC) $(CFLAGS) -o dumpxevent_test dumpxevent_test.o dumpxevent.o keysym.o
+
+# rule puts cflags at the end so we cans what is being compiled
+.c.o:
+	$(CC) -c $< $(CFLAGS)
+
+expidate.o: expidate.h expidate.c expistamp
+	$(CC) -c expidate.c $(CFLAGS)
+#	./expistamp 1001 expidate.o
+	./expistamp -n 130.131 1001 expidate.o
+#	expistamp expidate.o 1994/12/31 1001
+
+expi expistamp: expistamp.o
+	$(CC) $(CFLAGS) -o expistamp expistamp.o
+
+hppad:  hppad.c
+	$(CC) $(CFLAGS) -o hppad hppad.c
+
+md: memdata_test.o memdata.o debug.o undo.o search.o re.o
+	$(CC) $(CFLAGS) -o md memdata_test.o memdata.o debug.o undo.o search.o re.o
+
+keytest: keytest.o keysym.o
+	$(CC) $(CFLAGS) -o keytest keytest.o keysym.o $(LIBS)
+
+ccdump: ccdump.c debug.o cc.c hexdump.o usleep.o
+	$(CC) $(CFLAGS) -o ccdump ccdump.c  debug.o hexdump.o usleep.o $(LIBS)
+
+delcc: delcc.o
+	$(CC) $(CFLAGS) -o delcc delcc.o $(LIBS)
+
+xdmccc.o : cc.o  xdmccc.c
+	$(CC) $(CFLAGS) -DPGM_XDMC -c xdmccc.c
+
+xdmccc.c : 
+	ln -s cc.c xdmccc.c
+
+xdmc: xdmc.c getxopts.o debug.o xdmccc.o netlist.o hexdump.o link_date.o usleep.o
+	$(CC) -o xdmc $(CFLAGS) xdmc.c xdmccc.o getxopts.o debug.o netlist.o hexdump.o link_date.o usleep.o $(LIBS)
+
+ce: $(HFILES) $(CRPAD_OBS) $(EXTRA_OBJS) link_date.o  expistamp
+	$(CC) -o ce $(CFLAGS) $(CRPAD_OBS) $(EXTRA_OBJS) link_date.o $(LIBS)
+	chown root ce
+	chmod 4755 ce
+
+ce_isceterm: ce_isceterm.o hexdump.o
+	$(CC) $(CFLAGS) -o ce_isceterm ce_isceterm.o hexdump.o
+
+apipastebuf.o : pastebuf.o  apipastebuf.c
+	$(CC) $(CFLAGS) -DPGM_CEAPI -c apipastebuf.c
+
+apipastebuf.c : 
+	ln -s pastebuf.c apipastebuf.c
+
+apinormalize.o : normalize.o  apinormalize.c
+	$(CC) $(CFLAGS) -DPGM_CEAPI -UARPUS_CE -UPAD -c apinormalize.c
+
+apinormalize.c : 
+	ln -s normalize.c apinormalize.c
+
+libceapi.a: ceapi.o debug.o xdmccc.o apipastebuf.o apinormalize.o hexdump.o
+	rm -f libceapi.a
+	ar r libceapi.a `lorder ceapi.o debug.o xdmccc.o apipastebuf.o apinormalize.o hexdump.o | tsort 2> /dev/null`
+
+getxopts: getxopts.c  debug.o
+	$(CC) $(CFLAGS) -DGETXOPTS_STAND_ALONE -o getxopts getxopts.c debug.o $(LIBS)
+
+propnames: propnames.c
+	$(CC) $(CFLAGS) -o propnames propnames.c $(LIBS)
+
+pixels: pixels.c
+	$(CC) $(CFLAGS) -o pixels pixels.c $(LIBS)
+
+link_date.o: $(CRPAD_OBS) $(EXTRA_OBJS)
+	rm -f link_date.c
+	date '+char   *compile_date = "%h %d 19%y";' > link_date.c
+	date '+char   *compile_time = "%T";' >> link_date.c
+	$(CC) -c link_date.c $(CFLAGS)
+
+$(SRCMODS) $(HFILES) expistamp.c expilist.c:
+	ln -s Xlib/$@ $@
+
+z: z.o usleep.o
+	$(CC) $(CFLAGS) -o z z.o usleep.o $(LIBS)
+
+zp: zp.o
+	$(CC) -o zp zp.o $(LIBS) $(CFLAGS)
+
+
+

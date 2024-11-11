@@ -1,0 +1,132 @@
+SCCSID      = "%Z% %M% %I% - %G% %U% AG CS Phoenix"
+CC			= 	/bsd4.3/bin/cc
+
+# "%Z% %M% %I% - %G% %U% AG CS Phoenix"
+
+DFLAGS     = \
+ -DPAD\
+ -DDebuG\
+ -D_INCLUDE_SYS5_SOURCE\
+ -DNeedFunctionPrototypes\
+ -DARPUS_CE\
+ -DNO_LICENSE
+
+CFLAGS     = -I /phx/include -A cpu,3000 -g $(DFLAGS)
+
+GFLAGS     = 
+
+LIBS        = /usr/X11/lib/libX11.a\
+ /usr/apollo/lib/libmalloc.dbg
+
+#LIBS        = /usr/X11/lib/libX11.a
+SRC        = /phx/src/etg/ce
+
+# The following include sets variable CRPAD_OBS
+include makefile.objs
+
+
+default : ce xdmc ce_isceterm
+
+# The following include sets variable HFILES and sets up the .h file dependencies
+include makefile.depends
+
+
+SRCMODS  = $(CRPAD_OBS:.o=.c) xdmc.c ceapi.c ce_isceterm.c
+
+# rule puts cflags at the end so we cans what is being compiled
+.c.o:
+	$(CC) -c $< $(CFLAGS)
+
+expidate.o: expidate.h expidate.c expistamp
+	$(CC) $(CFLAGS) -c expidate.c
+	expistamp -n 130.131 1001 expidate.o
+#	expistamp expidate.o 9999/12/31 1001
+
+expistamp: expistamp.o
+	$(CC) $(CFLAGS) -o expistamp expistamp.o
+
+md: $(CRPAD_OBS) memdata_test.o link_date.o
+	$(CC) $(CFLAGS) -o md memdata_test.o $(CRPAD_OBS) link_date.o
+
+keytest: keytest.o keysym.o
+	$(CC) $(CFLAGS) -o keytest keytest.o keysym.o $(LIBS)
+
+ccdump: ccdump.c debug.o cc.c hexdump.o
+	$(CC) $(CFLAGS) -o ccdump ccdump.c  debug.o hexdump.o $(LIBS)
+
+wdfdump: wdfdump.o
+	$(CC) $(CFLAGS) -o wdfdump wdfdump.o $(LIBS)
+
+xdmccc.o : cc.o  xdmccc.c
+	$(CC) $(CFLAGS) -DPGM_XDMC -c xdmccc.c
+
+xdmccc.c : 
+	ln -s cc.c xdmccc.c
+
+xdmc: xdmc.o getxopts.o debug.o xdmccc.o netlist.o hexdump.o netlist.o 
+	$(CC) $(CFLAGS) -o xdmc xdmc.o xdmccc.o getxopts.o debug.o netlist.o hexdump.o link_date.o $(LIBS)
+
+ce: $(HFILES) $(CRPAD_OBS) link_date.o
+	$(CC) $(CFLAGS) -o ce $(CRPAD_OBS) link_date.o $(LIBS)
+
+ce_isceterm: ce_isceterm.o hexdump.o
+	$(CC) $(CFLAGS) -o ce_isceterm ce_isceterm.o hexdump.o
+
+getxopts: getxopts.c  debug.o
+	$(CC) $(CFLAGS) -DGETXOPTS_STAND_ALONE -o getxopts getxopts.c debug.o $(LIBS)
+
+link_date.o: $(CRPAD_OBS)
+
+apipastebuf.o : pastebuf.o  apipastebuf.c
+	$(CC) $(CFLAGS) -DPGM_CEAPI -c apipastebuf.c
+
+apipastebuf.c : 
+	ln -s pastebuf.c apipastebuf.c
+
+apinormalize.o : normalize.o  apinormalize.c
+	$(CC) $(CFLAGS) -DPGM_CEAPI -UARPUS_CE -UPAD -c apinormalize.c
+
+apinormalize.c : 
+	ln -s normalize.c apinormalize.c
+
+libceapi.a: ceapi.o debug.o xdmccc.o apipastebuf.o apinormalize.o hexdump.o
+	/bin/rm -f libceapi.a
+	ar r libceapi.a `lorder ceapi.o debug.o xdmccc.o apipastebuf.o apinormalize.o hexdump.o | tsort 2> /dev/null`
+
+stats:
+	src_stats $(SRCMODS) $(HFILES)  expilist.c expistamp.c
+
+MAKEFILES = makefile makefile.dec makefile.decosf makefile.hp makefile.hpc makefile.ibm makefile.linux makefile.sunos makefile.solaris makefile.stratus
+
+sync:
+	(echo "$(SRCMODS) $(HFILES)  expilist.c expistamp.c link_date.c makefile.apollo makefile.objs makefile.depends" | (from="/projects/ce/src.dev";to="/home/stymar/crpad/Xlib"; for i in `cat` ;do echo "$$to/$$i <pima> (f) ^$$from/$$i^" ; done) | node_audit -istdin -lstderr -q300 -x -z -a)
+#sync:
+#	(echo "$(SRCMODS) $(HFILES)  expilist.c expistamp.c link_date.c makefile.apollo makefile.objs makefile.depends" | ./na_sync)
+
+sync2:
+	(echo "$(SRCMODS) $(HFILES)  expilist.c expistamp.c link_date.c makefile.apollo makefile.objs makefile.depends" | (for i in `cat` ;do echo "/home/stymar/crpad/Xlib/$$i <pima> (f) ^/projects/ce/src.dev/$$i^" ; done))
+
+sync3:
+	(echo "$(SRCMODS) $(HFILES)  expilist.c expistamp.c link_date.c makefile.apollo makefile.objs makefile.depends" | ./na_sync2 /home/stymar/crpad/Xlib /projects/ce/src.dev)
+
+list:
+	ls $(SRCMODS) $(HFILES)  expilist.c expistamp.c link_date.c
+
+tar:
+	tar cf - $(SRCMODS) $(HFILES) $(MAKEFILES) expistamp.c expilist.c > ce.tar
+
+wbak:
+	wbak -dev floppy -nhi -f 1 -pdtu -l   $(SRCMODS) $(HFILES) $(MAKEFILES) expilist.c expistamp.c link_date.c
+
+
+zapi : zapi.o libceapi.a
+	$(CC) $(CFLAGS) -o zapi zapi.o libceapi.a $(LIBS)
+
+ce_gpb : ce_gpb.o libceapi.a
+	$(CC) $(CFLAGS) -o ce_gpb ce_gpb.o libceapi.a $(LIBS)
+
+rel fast: ce
+		ls -la ce
+		strip ce
+		ls -la ce
+

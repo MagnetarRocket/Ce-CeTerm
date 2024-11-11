@@ -1,0 +1,112 @@
+SCCSID      = "@(#) makefile.linux 1.20 - 14 Dec 2005 08:34:47 AG CS Phoenix"
+#  makefile for RedHat Linux and Fedora Core
+#  Remember to updated the make sync to and from directories
+#  between Ce releases.
+#
+CC           =  /usr/bin/gcc	
+
+DFLAGS       =\
+ -DSYS5\
+ -DPAD\
+ -DDebuG\
+ -DCE_LITTLE_ENDIAN\
+ -DNeedFunctionPrototypes\
+ -DARPUS_CE\
+ -DHAVE_GETPT\
+ -DHAVE_SNPRINTF\
+ -DHAVE_X11_SM_SMLIB_H\
+ -DNO_LICENSE
+
+#CFLAGS       = -O -I/usr/X11R6/include $(DFLAGS) 
+CFLAGS       = -g  $(DFLAGS) 
+GFLAGS     =
+
+SCCSDIR = SCCS
+SRC        = /phx/src/etg/ce
+
+LIBS         = -L /usr/X11R6/lib/ -lX11 -lICE -lSM
+
+# The following include sets variable CRPAD_OBS
+include makefile.objs
+
+EXTRA_OBJS    =  usleep.o
+
+MAKEFILES = makefile.apollo makefile.bsdi makefile.cygnus makefile.decalpha makefile.decultrix \
+ makefile.freebsd makefile.hpux10 makefile.hpux11 makefile.hpux9 \
+ makefile.ibm makefile.linux makefile.omvs makefile.sco makefile.sgi \
+ makefile.solaris makefile.solarisX86 makefile.stratus makefile.sunos makefile.unixware \
+ makefile.objs makefile.depends
+
+
+
+SRCMODS  = $(CRPAD_OBS:.o=.c) $(EXTRA_OBJS:.o=.c)  xdmc.c ceapi.c ce_isceterm.c
+
+default: ce xdmc ce_isceterm libceapi.a
+
+# The following include sets variable HFILES and sets up the .h file dependencies
+include makefile.depends
+
+
+# rule puts cflags at the end so we can see what is being compiled
+.c.o:
+	$(CC) -c $< $(CFLAGS)
+
+#expistamp: expistamp.o expidate.h
+#	$(CC) $(CFLAGS) -o expistamp expistamp.o
+
+#expidate.o: expidate.h expidate.c expistamp
+#	$(CC) $(CFLAGS) -c expidate.c
+#	./expistamp -d 9999/12/31 1001 expidate.o
+
+xdmccc.o : cc.o  xdmccc.c
+	$(CC) $(CFLAGS) -DPGM_XDMC -c xdmccc.c
+
+xdmccc.c : 
+	ln -s cc.c xdmccc.c
+
+xdmc:                      xdmc.o xdmccc.o getxopts.o debug.o netlist.o hexdump.o usleep.o link_date.o
+	$(CC) $(CFLAGS) -o xdmc xdmc.o xdmccc.o getxopts.o debug.o netlist.o hexdump.o usleep.o link_date.o $(LIBS)
+
+ce: $(HFILES) $(CRPAD_OBS) $(EXTRA_OBJS) link_date.o
+	$(CC) -o ce $(CFLAGS) $(CRPAD_OBS) $(EXTRA_OBJS) link_date.o $(LIBS)
+
+ce_isceterm: ce_isceterm.o hexdump.o
+	$(CC) $(CFLAGS) -o ce_isceterm ce_isceterm.o hexdump.o
+
+apipastebuf.o : pastebuf.o  apipastebuf.c
+	$(CC) $(CFLAGS) -DPGM_CEAPI -c apipastebuf.c
+
+apipastebuf.c : 
+	ln -s pastebuf.c apipastebuf.c
+
+apinormalize.o : normalize.o  apinormalize.c
+	$(CC) $(CFLAGS) -DPGM_CEAPI -UARPUS_CE -UPAD -c apinormalize.c
+
+apinormalize.c : 
+	ln -s normalize.c apinormalize.c
+
+libceapi.a: ceapi.o debug.o xdmccc.o apipastebuf.o apinormalize.o hexdump.o usleep.o
+	rm -f libceapi.a
+	ar r libceapi.a ceapi.o debug.o xdmccc.o apipastebuf.o apinormalize.o hexdump.o usleep.o
+
+sync:
+	(echo "$(SRCMODS) $(HFILES)  link_date.c makefile.linux makefile.objs makefile.depends" | (from="/projects/ce/releases/ce.r2.5.1/solaris";to="/home/stymar/ce.2.5.1"; for i in `cat` ;do echo "$$to/$$i <//holodeck> (f) ^$$from/$$i^" ; done) | node_audit -istdin -lstderr -q6061 -x -z -a)
+
+link_date.o: $(CRPAD_OBS)
+	rm -f link_date.c
+	date '+char   *compile_date = "%h %d %Y";' > link_date.c
+	date '+char   *compile_time = "%T";' >> link_date.c
+	$(CC) $(CFLAGS) -c link_date.c
+
+#$(SRCMODS) $(HFILES) expistamp.c expilist.c link_date.c:
+#	ln -s Xlib/$@ $@
+
+SCCS:
+	ln -s $(SRC) SCCS
+
+SOURCE: SCCS $(SRCMODS) $(HFILES)  $(MAKEFILES) TESTPLAN ce_init ce_install ce_deinstall ce_update ce_report 
+		$(GET) $(GFLAGS) SCCS/s.$@
+
+tar:
+	tar cf ce.tar $(SRCMODS) $(HFILES) $(MAKEFILES)  TESTPLAN ce_init ce_install ce_deinstall ce_update ce_report 
+

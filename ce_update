@@ -1,0 +1,72 @@
+#!/bin/sh
+###############################################################################
+#  
+#  Copyright 1988 - 2002 Enabling Technologies Group
+#  Copyright 2003   Robert Styma Consulting
+#  
+###############################################################################
+#
+#   Script syntax:  ce_update [system]
+#   Purpose:        Update a user's ce environment by updating the .Cekeys file.
+#                   The current default set of key definitions from are merged
+#                   without replace into the current .Cekeys file.  New key
+#                   definitions are appended to the bottom of the file.
+#
+#   Change history:
+#       1995.09.19 Styma   Initial creation from ce_init
+#       1995.12.09 Styma   Use ce_init to create keydef update file.
+#
+###############################################################################
+
+### if no command argument, we derive the system name ourselves
+if test "x$1" != "x"
+then
+   SYS="-s $1 "
+else
+   SYS=""
+fi
+
+ce_init $SYS -c /tmp/cekeys.$$ -u  #-x /tmp/xdefaults.$$
+#------------------------------------------------------------------------------
+# Set up some useful constants
+#
+    ### smooth sailing now
+    MYHOME="$HOME"
+    if test "$MYHOME" = "/"
+    then
+        MYHOME=""
+    fi
+
+    KEYS="$MYHOME/.Cekeys"
+
+#------------------------------------------------------------------------------
+# If there is no .Cekeys file, use the one ce_init generated.  Otherwise
+# run ce_merge to add in the new stuff
+#------------------------------------------------------------------------------
+if test -n "$CEKEYS"
+then
+   if test ! -r "$CEKEYS"
+   then
+      echo "The CEKEYS variable is set, but $CEKEYS is not found, creating $CEKEYS"
+      cp /tmp/cekeys.$$ $CEKEYS
+   else
+      /bin/cat /tmp/cekeys.$$ | ce_merge
+   fi
+else
+   if test ! -r $KEYS
+   then
+      echo "The CEKEYS variable is set, but $KEYS is not found, creating $KEYS"
+      cp /tmp/cekeys.$$ $KEYS
+   else
+      /bin/cat /tmp/cekeys.$$ | ce_merge
+   fi
+fi
+
+
+
+
+#------------------------------------------------------------------------------
+# Load the new key definitions
+#
+
+ce -reload

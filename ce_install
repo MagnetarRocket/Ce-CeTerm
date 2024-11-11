@@ -1,0 +1,1306 @@
+#!/bin/sh
+###############################################################################
+#  
+#  ARPUS/Ce text editor and terminal emulator modeled after the
+#  Apollo(r) Domain systems.
+#  Copyright 1988 - 2002 Enabling Technologies Group
+#  Copyright 2003 - 2005 Robert Styma Consulting
+#  
+#  This program is free software; you can redistribute it and/or
+#  modify it under the terms of the GNU General Public License
+#  as published by the Free Software Foundation; either version 2
+#  of the License, or (at your option) any later version.
+#  
+#  This program is distributed in the hope that it will be useful,
+#  but WITHOUT ANY WARRANTY; without even the implied warranty of
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#  GNU General Public License for more details.
+#  
+#  You should have received a copy of the GNU General Public License
+#  along with this program; if not, write to the Free Software
+#  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+#  
+#  Original Authors:  Robert Styma and Kevin Plyler
+#  Email:  styma@swlink.net
+#  
+###############################################################################
+# SCCS info %Z% %M% %I% - %G% %U%
+#
+#   Script syntax:  ce_install
+#   Purpose:        This script installs the 'ce' software in-place after it is
+#                   restored from media and untarred into a directory where it
+#                   will permanently reside.  This command takes no options or
+#                   arguments.  The installer's current directory must be set
+#                   to the 'ce' directory.
+#
+#   Change history:
+#       1992.09.25 longot   Created.
+#
+#		1994.11.30	Michael Hines	A few major changes for v3.2.1
+#
+#		1995.02.22	Michael Hines	Modified so that uid bit not set for SunOS 
+#
+#		1995.10.04	Robert Styma	Added ce_merge to list of binaries
+#
+#		1995.10.04	Robert Styma	Added ce_update to list of programs
+#
+#		1995.10.05	Robert Styma	Check for DomainOS and Solaris in setuid check
+#                                  Also add -noroot option.
+#
+#		1995.12.07	Robert Styma	Add chmod after customizing each file to 
+#                                  avoid umask complications.
+#
+#		1997.07.31	Robert Styma	Add resource customization code.
+#
+#		2005.04.22	Robert Styma	Remove setuid
+#
+###############################################################################
+#
+#	This comment section contains explicit instructions on how to install the
+#   ce software
+#
+#       (1) from media, and
+#       (2) from a backup directory containing ce installation tar files.
+#
+#   1. INSTALLING CE FROM MEDIA
+#
+#       For each platform, the media contains one tar file
+#       that contains the entire ce package for that platform.
+#
+#       Each tar file on the media ranges in size from 550 to 950 KBytes.
+#
+#       Instructions:
+#
+#           A.  The "<ce_backup>" directory.
+#               Select a 'backup' directory into which the entire media
+#               contents can be restored.  Ideally, it will be a directory on a
+#               host which can be reached by other hosts on which the software
+#               is to be installed.  We'll call that directory "<ce_backup>".
+#
+#           B.  Log on to a system with which you can restore the ce tar files
+#               from media.  You must be logged in as root.
+#
+#               The -noroot option allows you to attempt the installation without
+#               being root.  You must of course be able to write to the directories
+#               you specify to do the installation into (you will be prompted).
+#               On DomainOS systems and SunOS 4.1.* systems, this is enough.
+#               On HP/UX and Dec Ultrix systems, ceterm will not be functional.
+#               The setuid to root is required to open a pseudoterminal.
+#               On Sun Solaris, AIX, Dec OSF and most other systems, ceterm
+#               will work but will be unable to update the UTMP entry on the
+#               machine.  This means the who(1) command will not display ceterm
+#               sessions.  Note that the ce editor portion of the product will
+#               work just fine without the setuid.
+#
+#           C.  Set your directory to <ce_backup>.
+#
+#           D.  Place the media in the drive and execute these commands:
+#
+#                   % mt -f <device> rewind
+#                   % tar xvf <device>
+#
+#           E.  Now proceed to "2. INSTALLING CE FROM A BACKUP DIRECTORY".
+#
+#       You should only have to perform the above steps once.  Once the files
+#       have been restored to <ce_backup>, they can be used for all subsequent
+#       installs onto any hosts that can reach <ce_backup> in some way (ftp,
+#       rcp, NFS, ...).
+#
+#   2. INSTALLING CE FROM A BACKUP DIRECTORY
+#
+#       These steps should be repeated once for each host on which you are
+#       installing the software.
+#
+#       TOTAL INSTALLATION TIME:  5 MINUTES.
+#
+#       Instructions:
+#
+#           A.  The "<ce_backup>" directory.
+#               Determine the location of the <ce_backup> directory.  This is
+#               a directory into which the ce tar files have already been
+#               restored from secondary media.
+#
+#           B.  The "<ce_parent>" directory.
+#               Select a host on which you will install the software.  Select
+#               on that host a directory in which the 'ce' directory is to be
+#               created.  ce can be installed anywhere on the file system.  Be
+#               careful to choose a location for which the general user has at
+#               least directory read/search rights, such as /usr.  We'll call
+#               the selected directory the "<ce_parent>" directory.
+#
+#           C.  Set your directory to <ce_parent> (e.g., /usr).
+#
+#           D.  Copy the appropriate ce tar file from <ce_backup> into
+#               <ce_parent>, unless you can access the tar file directly from
+#               the <ce_parent> directory.
+#
+#           E.  Execute the command "tar xvf <ce_tar_file>".  When the command
+#               is finished, you can remove the tar file if you copied it at
+#               step D.
+#
+#                   NOTE:  If you are running on a Domain/OS system, you must
+#                          do the following step from a SYS5 shell.
+#
+#           F.  WITHOUT CHANGING YOUR CURRENT DIRECTORY, execute the command
+#               "ce/bin/ce_install".  "ce_install" is a script that embeds the
+#               local ce installation path into help files, sets permissions
+#               on the ce files so that the general user has appropriate
+#               rights, and moves the executable, date and help files in the
+#				desired locations.  The ce_install script prompts for the 
+#				locations to place the binaries, help files, data files and
+#				'man' pages. 
+#
+###############################################################################
+
+#------------------------------------------------------------------------------
+# must be in the right directory
+#
+    if test ! -r ce/bin/ce_install
+    then
+        /bin/echo "You must cd to the ce_parent directory to run ce_install."
+        exit 1
+    fi
+
+#------------------------------------------------------------------------------
+# set up useful variables
+#
+    cd ce
+    cdir=`/bin/pwd`
+    hdir="$cdir/help"
+    bdir="$cdir/bin"
+
+   if test -r /bin/tr
+   then
+        TRPATH="/bin/tr"
+    else
+        TRPATH="/usr/bin/tr"
+    fi
+   if test -r /bin/expr
+   then
+        EXPRPATH="/bin/expr"
+    else
+        EXPRPATH="/usr/bin/expr"
+    fi
+   SYSTYPE=`/bin/uname -s | $TRPATH "[A-Z]" "[a-z]"`
+   SYSRLSE=`/bin/uname -r`
+   SYSRLSE=`$EXPRPATH "$SYSRLSE" : "\(.\)"`
+
+
+#------------------------------------------------------------------------------
+# must be logged in as root
+#
+if test "x$1" != "x-noroot"
+then
+    if test "x$LOGNAME" != "xroot" -a "x$USER" != "xroot"
+    then
+        /bin/echo "You must be logged in as root to install ce or use the -noroot option."
+        cd ..
+        exit 1
+    fi
+else
+	if test "$SYSTYPE" != "domainos"
+	then
+		if test "$SYSTYPE" != "sunos" -o "$SYSRLSE" != "4"
+		then
+		    /bin/echo "WARNING: ceterm will not function properly on this machine type when not installed as root!"
+		fi
+	fi
+fi
+
+#------------------------------------------------------------------------------
+# Prompt the user for where to install the help, data and bin directories
+#
+/bin/echo ''
+/bin/echo ''
+/bin/echo 'Please select the installation directories:'
+/bin/echo 'The directories must already exist'
+/bin/echo ''
+
+invalid_dir=true
+while $invalid_dir ; do
+	/bin/echo Enter the Binaries install directory [default = /usr/bin]
+	read bin_dir
+	if test "$bin_dir" = "" ; then
+		bin_dir=/usr/bin
+	fi
+		
+	if test ! -d "$bin_dir" ; then
+		/bin/echo "$bin_dir is an invalid directory (use full path)"
+	else
+		invalid_dir=false
+	fi
+done
+
+invalid_dir=true
+while $invalid_dir ; do
+	/bin/echo Enter the Help install directory [default = "$hdir"]
+	read help_dir
+	if test "$help_dir" = "" ; then
+		help_dir=$hdir
+	fi
+		
+	if test ! -d "$help_dir" ; then
+		/bin/echo "$help_dir is an invalid directory (use full path)"
+	else
+		invalid_dir=false
+	fi
+done
+
+invalid_dir=true
+while $invalid_dir ; do
+	/bin/echo Enter the directory for the UNIX man pages [default = /usr/man/man1] 
+	read man_dir
+	if test "$man_dir" = "" ; then
+		man_dir=/usr/man/man1
+	fi
+		
+	if test ! -d "$man_dir" ; then
+		/bin/echo "$man_dir is an invalid directory (use full path)"
+	else
+		invalid_dir=false
+	fi
+done
+
+invalid_dir=true
+while $invalid_dir ; do
+	/bin/echo "Enter the directory for the site wide key definition files [default = $help_dir] "
+	/bin/echo "Files .Cekeys.site, .Cekeys.site.A and .Cekeys.site.U will be created in this directory"
+	read sitedef_dir
+	if test "$sitedef_dir" = "" ; then
+		sitedef_dir=$help_dir
+	fi
+		
+	if test ! -d "$sitedef_dir" ; then
+		/bin/echo "$sitedef_dir is an invalid directory (use full path)"
+	else
+		invalid_dir=false
+	fi
+done
+
+invalid_dir=true
+while $invalid_dir ; do
+   /bin/echo "The app-defaults file must be a directory in the users XFILESEARCHPATH or XAPPLRESDIR"
+	/bin/echo "Enter the directory for the Ce app-defaults file [default = /usr/lib/X11/app-defaults] "
+	read appd
+	if test "$appd" = "" ; then
+       appd="/usr/lib/X11/app-defaults"
+	fi
+		
+	if test ! -d "$appd" ; then
+		/bin/echo "$appd is an invalid directory (use full path)"
+	else
+		invalid_dir=false
+	fi
+done
+
+if test "$appd" != "/usr/lib/X11/app-defaults" ; then
+	/bin/echo "Be sure to set environment variable XFILESEARCHPATH or XAPPLRESDIR to $appd to pick up application defaults"
+fi
+
+#echo " 
+#   The HTML documentation needs to be installed into a directory accessible
+#   to your web server.  If you choose to not install it now, it will be
+#   left in the Ce install directory as a tar file.  You can later move the
+#   tar file to the appropriate machine and untar it.  The HTML documentation
+#   is self contained.  You will only need one URL link to the main_directory/ce.html
+#   and everything will work.  The installation process will create a directory named
+#   ce in the target HTML directory."
+#
+#invalid_dir=true
+#while $invalid_dir ; do
+#   /bin/echo "Enter the directory for the HTML documentation [default = <Leave HTML doc tar'ed>] "
+#   read html_dir
+#   if [ "$html_dir" = "" ]
+#   then
+#      invalid_dir=false
+#   else
+#       if test ! -d "$html_dir" ; then
+#         /bin/echo "$html_dir is an invalid directory (use full path)"
+#       else
+#         invalid_dir=false
+#      fi
+#   fi
+#done
+#
+#if [ "$html_dir" = "" ]
+#then
+#echo " 
+#   Copy $cdir/html.tar to the desired location.  When you un'tar it, you
+#   will create a directory named ce in the current working directory.
+#   Link to file ce.html in this directory and the html documentation will
+#   be online
+#   "
+#fi
+
+echo " 
+   Ce now comes with sample programs which interact with Ce as source files.
+   These are refered to as the contributed programs.  They provide some useful
+   functionality themselves and serve as examples of how to perform similar
+   functions.  For example, there is an HTML parser which colorizes the HTML
+   document you are editing.  If you choose to not install it now, it will be
+   left in the Ce install directory as a tar file.  You can later move the
+   tar file to the appropriate machine and untar it."
+
+invalid_dir=true
+while $invalid_dir ; do
+   /bin/echo "Enter the directory for the contributed program source [default = (Leave dir tar'ed)] "
+   read contrib_dir
+   if [ "$contrib_dir" = "" ]
+   then
+      invalid_dir=false
+   else
+       if test ! -d "$contrib_dir" ; then
+         /bin/echo "$contrib_dir is an invalid directory (use full path)"
+       else
+         invalid_dir=false
+      fi
+   fi
+done
+
+if [ "$contrib_dir" = "" ]
+then
+echo " 
+   Copy $cdir/contrib.tar to the desired location.  When you un'tar it, you
+   will create a series of directories in the current working directory.
+   Each directory represents one program.
+   "
+fi
+
+echo " 
+   ce_install will now ask a few questions to determine how you 
+   want ARPUS/Ce set up at your site. These modifications will go into
+   file $appd/Ce."
+
+echo "
+   Ce supports two modes of regular expressions, AEGIS and UNIX.
+   AEGIS regular expressions are the form used on the Apollo Domain
+   systems and characterized by the @ character being the escape
+   character.  UNIX regular expressions are the form used by
+   grep, sed, ed, and other standard UNIX tools.
+
+   If you are upgrading from a previous version of ARPUS/Ce, you
+   should let the site default default to 'A' to avoid breaking
+   users existing key definitions.  For new installs, defaulting
+   to 'U' is recommended.
+
+   What type of regular expressions do you wish to use?"
+
+invalid_expr=true
+while $invalid_expr ; do
+   echo "enter A or U [default is A] \c"
+   read dflt_expr
+
+   if [ x$dflt_expr = x ]
+   then
+      invalid_expr=false
+      dflt_expr=A
+   else
+      dflt_expr=`echo "$dflt_expr" | tr '[a-z]' '[A-Z]'`
+      if [ $dflt_expr = A -o  $dflt_expr = U ]
+      then
+         invalid_expr=false
+      else
+         echo "Invalid response, $dflt_expr"
+      fi
+   fi
+
+done
+
+
+echo "
+   If you are running ceterm (the terminal emulator portion of Ce
+   and you are using HP/UX machines at release 10.20 or later and
+   your users primarily use csh, you need to have a special option
+   set in your app-defaults file.  This option controls the 
+   method by which ceterm determines that the user is being prompted
+   for a password and switched to 'dot' mode.  In dot mode, 
+   data typed in the UNIX command window is displayed as dots.
+   In a mixed environment, use of this option does not adversely
+   affect other users other than that automatic switching to vt100
+   emulation mode will not work.
+
+   Do you want to set the special 'dot' mode option?"
+
+invalid_expr=true
+while $invalid_expr ; do
+   echo "enter Y or N [default is N] \c"
+   read dot_mode
+
+   if [ x$dot_mode = x ]
+   then
+      invalid_expr=false
+      dot_line="!!"
+   else
+      if [ $dot_mode = Y -o  $dot_mode = y  -o  $dot_mode = yes  -o  $dot_mode = YES ]
+      then
+         dot_line="ceterm.dotmode : 1"
+         invalid_expr=false
+      else
+         if [ $dot_mode = N -o  $dot_mode = n  -o  $dot_mode = no  -o  $dot_mode = NO ]
+         then
+            dot_line="!!"
+            invalid_expr=false
+         else
+            echo "Invalid response, $dot_mode"
+         fi
+      fi
+   fi
+
+done
+
+
+echo "
+   Ce allows the user to pick the default paste buffer used by copy
+   and paste commands.  The two commonly used ones are PRIMARY and
+   CLIPBOARD.  To allow Ce to interoperate with other X clients
+   easily, choose the one used by most clients on your system.  For
+   SunOS 4.1.*, CLIPBOARD is commonly used.  For all other systems
+   PRIMARY is used.
+
+   If you are upgrading from a previous version of ARPUS/Ce, you
+   should let the site default default to 'CLIPBOARD' to avoid breaking
+   users existing key definitions.  For new installs, defaulting
+   to 'PRIMARY' is recommended.
+
+   What default paste buffer do you wish to use?"
+
+invalid_expr=true
+while $invalid_expr ; do
+   echo "enter CLIPBOARD or PRIMARY [default is PRIMARY] \c"
+   read dflt_paste
+
+   if [ x$dflt_paste = x ]
+   then
+      invalid_expr=false
+      dflt_paste=PRIMARY
+   else
+      dflt_paste=`echo "$dflt_paste" | tr '[a-z]' '[A-Z]'`
+      if [ $dflt_paste = CLIPBOARD -o  $dflt_paste = PRIMARY ]
+      then
+         invalid_expr=false
+      else
+         echo "Invalid response, $dflt_paste"
+      fi
+   fi
+
+done
+
+
+echo "
+   This concludes the questions.  There are many X resources used by
+   Ce.  You can go into the file $appd/Ce and make modifications
+   after we generate it."
+
+
+#------------------------------------------------------------------------------
+# let's go!
+#
+    /bin/echo "Beginning installation..."
+
+#------------------------------------------------------------------------------
+# change pathnames within files to those selected by the user
+#
+#    /bin/echo "[Localizing installed files...]"
+#	for d in bin
+#	do
+#		cd $d
+#		for n in `ls`
+#		do
+#			/bin/echo "[   $d/$n]"
+#			sed -e "s|\$CEHELPDIR|$help_dir|g" -e "s|\$CEBINDIR|$bin_dir|g" -e "s|\$CEMANDIR|$man_dir|g" -e "s|\$CEAPPDIR|$appd|g" $n > /tmp/sed.$$
+#			mv /tmp/sed.$$ $n
+#           /bin/chmod 644 $n
+#		done
+#		cd ..
+#	done
+/bin/echo "[Localizing ce_init ]"
+sed  -e "s|\$CEAPPDIR|$appd|g" bin/ce_init > /tmp/sed.$$
+mv /tmp/sed.$$ bin/ce_init
+chmod 755 bin/ce_init
+
+/bin/echo "[Localizing ce_deinstall ]"
+sed  -e "s|\$CEBINDIR|$bin_dir|g" -e "s|\$CEAPPDIR|$appd|g" bin/ce_deinstall > /tmp/sed.$$
+mv /tmp/sed.$$ bin/ce_deinstall
+chmod 755 bin/ce_deinstall
+
+#------------------------------------------------------------------------------
+# If the target ce executable already exists rename it.
+# ce -> ce.r2.3.2  and so on
+#
+if [ -f $bin_dir/ce ]
+then
+   v=`$bin_dir/ce -ver 2>&1 | sed -e 's/^.*Version //' -e 's/,.*//'`
+   set oldce="$bin_dir/ce.r$v"
+	echo "Renaming existing copy of ce($bin_dir/ce) to $oldce"
+   mv $bin_dir/ce  $oldce
+fi
+
+#------------------------------------------------------------------------------
+# Move all of the files that we need to the specified directories
+# (and create a few links)
+#
+
+	echo Moving the Binaries to $bin_dir ...
+	mv bin/ce $bin_dir
+	mv bin/ce_init $bin_dir
+	mv bin/ce_report $bin_dir
+	mv bin/ce_isceterm $bin_dir
+	mv bin/xdmc $bin_dir
+	mv bin/ce_update $bin_dir
+	ln -f -s $bin_dir/ce $bin_dir/cv
+	ln -f -s $bin_dir/ce $bin_dir/ceterm
+	ln -f -s $bin_dir/ce $bin_dir/ce_merge
+
+
+	if test ! "$help_dir" = "$hdir" ; then
+		echo Moving the Help Files to $help_dir ...
+		for n in help/*.hlp help/.*hlp help/*.1
+		do
+			mv $n $help_dir
+		done
+	fi
+
+##------------------------------------------------------------------------------
+## If a target was specified for the HTML, untar it there.
+##
+#if [ "$html_dir" = "" ]
+#then
+#   echo "Installing HTML"
+#   (cd $html_dir;tar xvf $cdir/html.tar)
+#   if [ $? = 0 ]
+#   then
+#     echo "HTML install completed successfully"
+#   else
+#     echo "HTML install failed"
+#   fi
+#fi
+
+#------------------------------------------------------------------------------
+# If a target was specified for the contributed programs, untar them.
+#
+if [ "$contrib_dir" != "" ]
+then
+   echo "Installing contrib programs"
+   (cd $contrib_dir;tar xvf $cdir/contrib.tar)
+   if [ $? = 0 ]
+   then
+     echo "Contributed programs install completed successfully"
+   else
+     echo "Contributed programs install failed"
+   fi
+fi
+	
+#------------------------------------------------------------------------------
+# Install the manual page
+# Also, copy a few of the help files for cv, ceterm and xdmc
+#
+
+	/bin/echo ''
+	/bin/echo Installing the manual pages in $man_dir ...
+	mv $help_dir/ce.1 $man_dir/ce.1
+	ln -s  $man_dir/ce.1  $man_dir/cv.1
+	ln -s  $man_dir/ce.1  $man_dir/ceterm.1
+	cp $help_dir/ce_isceterm.1 $man_dir/ce_isceterm.1
+	cp $help_dir/xdmc.1 $man_dir/xdmc.1
+	cp $help_dir/ce_init.1 $man_dir/ce_init.1
+	/bin/echo "You may need to use the catman command to update the CAT pages and windex file for this directory"
+
+#------------------------------------------------------------------------------
+# install /usr/lib/X11/app-defaults/Ce
+#
+/bin/echo "[Installing the app-defaults file...]"
+echo "
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+!!  ARPUS/ce, Version XXX (%G%)    (SCCS %I%)
+!!  /usr/lib/X11/app-defaults/Ce
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+!!
+!!  Last update:  July 31, 1997
+!!
+!!  This template contains X resource lines for each of the 'ce' X resources.
+!!  When this template is installed, the resource directives are commented
+!!  out so that 'ce' uses default settings for each of the resources when it
+!!  is invoked.
+!!
+!!  Each of the resources is represented below by (i) a description of the
+!!  purpose of the resource and (ii) several examples of how the resource may
+!!  be set via this file.  If you see a resource setting that you would like
+!!  to have in effect when you run 'ce' or 'cv', enable that setting by
+!!  removing all leading exclamation points (!) from the line.  You can enable
+!!  more than one setting for a particular resource, but only the last setting
+!!  processed for that resource will take effect.
+!!
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+!!
+!!  RESOURCE:  AUTOCLOSE
+!!    DESCRIPTION: 
+!!      This option applies only to ceterm windows. If set to 'yes', the window
+!!      associated with the ceterm process is automatically closed when the
+!!      ceterm process is terminated. If set to 'no' (the default), the ceterm
+!!      window transitions into a ce window, with the ceterm's transcript pad
+!!      becoming the ce session's edit text. See the help file for 'pn' for
+!!      details on saving the resultant ce session to a specific file.
+!!
+!!  DEFAULT: no autoclose
+!!  EXAMPLES:
+!!  Ce.autoclose:  yes
+!!  Ce.autoclose:  no
+!!
+!!
+!!  RESOURCE:  AUTOHOLD
+!!    DESCRIPTION:  Controls the default setting for the autohold feature
+!!      in ceterm.  If set to 'yes' ceterm will automatically place the
+!!      transcript pad into hold mode whenever commands run in the ceterm shell
+!!      generate enough output to fill one ceterm window. See the help files
+!!      for 'wa' and 'wh' for specific details on the behavior of this
+!!      feature.
+!!
+!!  DEFAULT:  no autohold
+!!  EXAMPLES:
+!!  Ce.autohold:  yes
+!!  Ce.autohold:  no
+!!
+!!
+!!  RESOURCE:  AUTOSAVE
+!!  DESCRIPTION:  Instructs ce to automatically update the file to disk
+!!    every <n> keystrokes.
+!!  DEFAULT:  no autosave
+!!  EXAMPLES:
+!!  Ce.autosave:  100
+!!  Ce.autosave:  543
+!!
+!!
+!!  RESOURCES:  BACKGROUND AND FOREGROUND COLORS
+!!  DESCRIPTION:  Set the background and foreground colors of the main text
+!!    window.  The foreground color is the color used to draw the characters.
+!!    If the wdc commands are not working, there probably exists *.background
+!!    somewhere in the X resources.  To cancel this for Ce, code:
+!!  Ce.background:
+!!  Ce.foreground:
+!!  Ce.background:
+!!  Ce.foreground:
+!!    This explicetly nulls out the Ce resources, allowing wdc to work.
+!!
+!!  DEFAULT:  Use data from the wdc commands. 
+!!            If none:  background=white, foreground=black
+!!  EXAMPLES:
+!!  Ce.background:  blue
+!!  Ce.foreground:  yellow
+!!  Ce.background:  black
+!!  Ce.foreground:  green
+!!
+!!
+!!  RESOURCE:  BACKUP TYPE
+!!  DESCRIPTION:  Indicates how to create the backup version of an edited
+!!    file.  See the ce_shell help file.
+!!  DEFAULT:  dm
+!!  EXAMPLES (the only acceptable ones):
+!!  Ce.bkuptype:  dm
+!!  Ce.bkuptype:  vi
+!!  Ce.bkuptype:  none
+!!
+!!
+!!  RESOURCE:  HELP DIRECTORY LOCATION     
+!!  DESCRIPTION:  The references in the help (.hlp) files and the
+!!    help (F9) key definition reference the environment variable 
+!!    CEHELPDIR.  This variable could be set in the users .profile or
+!!    .login file.  If ce/ceterm detect that this environment variable
+!!    is not set, it retrieves the value from the CEHELPDIR X resource
+!!    and adds it to the environment.  This variable is normally set
+!!    in the app-defaults file created during installation.
+!!  Ce.CEHELPDIR:  <dir>
+Ce.CEHELPDIR : $help_dir
+!!
+!!
+!!  RESOURCE:  SITE WIDE CEKEY DEFINITIONS
+!!  DESCRIPTION:  Path to file containing site wide key definitions.
+!!    During key definition loading, Ce does an implied include (cmdf)
+!!    of this file to pick up site wide definitions.  The users personal
+!!    .Cekeys file can override these.  The lookup is actually a search.
+!!    First a check is made for the specified file with either a '.A' or
+!!    '.U' attached depending upon whether the user is in Aegis regular
+!!    expression mode (.expr resource) or UNIX regular expression mode.
+!!    If that file does not exist, the name as specified in the file is
+!!    checked for.  This allows for expression mode dependent key definitions.
+!!    You can of course include (via cmdf) the base file from the expression
+!!    mode specific files.
+!!  DEFAULT:  dm
+!!  Ce.cekeys:  <dir>
+Ce.cekeys : $sitedef_dir/.Cekeys.site
+!!
+!!
+!!  RESOURCE:  INITIAL COMMANDS
+!!  DESCRIPTION:  These commands are executed as soon as a window
+!!    comes up.
+!!  DEFAULT:  dm
+!!  EXAMPLES 
+!!  ce.cmd:      ww -c 72;tl;en;au
+!!  ceterm.cmd:  tmw;es '. /home/stymar/.aliases';en
+!!  ceterm.cmd:  cmdf ~/.Cerc
+!!
+!!
+!!  RESOURCE:  DEFAULT PASTE BUFFER (New in release 2.4)
+!!  DESCRIPTION:  This is the name of the default paste buffer
+!!    used for xc(copy), xp(paste), xd(cut), and xl(copy literal) commands. 
+!!    It is often changed system wide on non-Sun systems to the value PRIMARY.
+!!  DEFAULT:  CLIPBOARD
+!!  EXAMPLES 
+!!  Ce.dfltPasteBuf:      PRIMARY
+!!  Ce.dfltPasteBuf:      CLIPBOARD
+Ce.dfltPasteBuf:      $dflt_paste
+!!
+!!
+!!  RESOURCE:  CETERM PASSWORD DOT MODE
+!!  DESCRIPTION:
+!!    This option is needed on HP/UX machines of release 10.20 and
+!!    beyond where the users primarily use the csh shell.  
+!!    When ceterm detects that the user is typing a password, the
+!!    program goes into dot mode.  The characters typed are displayed
+!!    as dot's and undo processing is disabled so you cannot undo to
+!!    get the password back.  At HP/UX 10.20, it was not possible to
+!!    find a combination of tty settings which would correctly indicate
+!!    that a password was being entered for the csh (ksh works fine).
+!!    To rectify this, a simpler method of detecting password prompting,
+!!    namely watching for "pas" in the prompt string (case insensitive),
+!!    was added.  In this mode, you can optionally set the prompt fragment
+!!    to look for.
+!!  VALUES:
+!!      0  -  Nodot mode, never display dots, passwords are visible
+!!      1  -  Scan prompt for string,  Note, if you use hostname in your
+!!            UNIX prompt and your node name is Pascal, you are sunk.
+!!      2  -  Normal mode, watch the tty bits to determine password entry.
+!!  DEFAULT:  2
+!!  EXAMPLES:
+!!  ceterm.dotmode : 0
+!!  ceterm.dotmode : 1
+!!  ceterm.dotmode : 1password
+!!  ceterm.dotmode : 2
+$dot_line
+!!
+!!
+!!  RESOURCE:  EXPAND ENVIRONMENT VARIABLES (New in release 2.3.2)
+!!  DESCRIPTION:  Initial setting for whenter environment variables are
+!!    expanded in file names when executing the cv and ce commands.  
+!!    This may be changed by the envar Ce command dynamically.
+!!    See the help page on the envvar command.
+!!  DEFAULT:  y
+!!  EXAMPLES 
+!!  Ce.envar:  n
+!!  Ce.envar:  y
+!!
+!!
+!!  RESOURCE:  REGULAR EXPRESSION MODE
+!!  DESCRIPTION:  Instructs ce to use either AEGIS regular expression syntax
+!!    or Unix regular expression syntax for search and replace operations.
+!!  DEFAULT:  AEGIS
+!!  EXAMPLES (the only acceptable ones):
+!!  Ce.expr:  A
+!!  Ce.expr:  U
+Ce.expr:  $dflt_expr
+!!
+!!
+!!  RESOURCE:  FIND BORDER
+!!  DESCRIPTION:  The number of lines between the top or bottom of the
+!!    screen and a line found.  For example, if findbrdr is set to 2
+!!    and a find in the forward direction is done, Ce will position the
+!!    window so that there are 2 lines displayed between the found string
+!!    and the top of the window.
+!!  DEFAULT:  0
+!!  EXAMPLES:
+!!  Ce.findbrdr:  1
+!!  Ce.findbrdr:  2
+!!
+!!
+!!  RESOURCE:  FONT
+!!  DESCRIPTION:  Set the font that is used in the text window.  On most
+!!    systems you can use the 'xlsfonts' program to generate a list of
+!!    available fonts.  Use of variable-width fonts is strongly discouraged,
+!!    since (i) more processing is required to render variable-width font
+!!    strings and (ii) certain operations, such as rectangular cut and copy,
+!!    do not make sense with such fonts.
+!!  DEFAULT:  fixed
+!!  EXAMPLES:
+!!  Ce.font:  6x13bold
+!!  Ce.font:  8x13
+!!
+!!
+!!  RESOURCE:  GEOMETRY
+!!  DESCRIPTION:  Indicate the size and location of the edit window when
+!!    the program is invoked.  For window size, the indicated geometry can
+!!    be specified in terms of (x,y) pixels or (col,row) columns and rows.
+!!    The location is always specified in terms of (x,y) pixel coordinates.
+!!    Type "man X" for complete details on acceptable geometry syntax.
+!!  DEFAULT:  Use data from wdf commands.
+!!  EXAMPLES:
+!!  Ce.geometry:  c80x24+100+100        !! leading 'c' means 80cols*24rows
+!!  Ce.geometry:  600x750+50+50         !! no 'c' means 600*750 pixels
+!!
+!!
+!!  RESOURCE:  ICONBITMAP
+!!  DESCRIPTION:  Indicate the name of the file to use as an icon bitmap.
+!!    This is a file of the format created by the X11 "bitmap" command and
+!!    readable by the X11 call XReadBitmapFile.
+!!  DEFAULT:  Use the internal ce and ceterm icons
+!!  EXAMPLES:
+!!  Ce.iconBitmap:  ~/mybitmaps/bitmap1.h
+!!  Ce.iconBitmap:  /usr/openwin/include/X11/bitmaps/Term 
+!!
+!!
+!!  RESOURCE:  ICONIC
+!!  DESCRIPTION:  
+!!    This option causes Ce to communicate to the window manager that it is
+!!    to be started as an icon instead of a window.
+!!    This X resource should be used with great care.
+!!  DEFAULT:  Start as a normal window
+!!  EXAMPLES:
+!!  Ce.iconic:  yes
+!!  Ce.iconic:  no
+!!
+!!
+!!  RESOURCE:  ISOLATIN
+!!  DESCRIPTION:  
+!!    If this option is set to 'yes', isolatin characters can be entered
+!!    using the required modifier keys. Since the modifier keys vary from
+!!    system to system, you will need to refer to your system's documentation
+!!    for specific details. The purpose of this option can be seen by the
+!!    following example. On many HP/UX keyboards, the <extend-char>h
+!!    combination yields the Yen symbol when using an isolatin font. If a
+!!    non-isolatin font is used, it generates a non-printable character. If a
+!!    user is making use of the special symbols and European characters
+!!    accessed via the <extend-char> key, it is desirable to insert the code
+!!    for these special characters into the file just as if they were a
+!!    standard character. However, if one is using an American font and not
+!!    using these characters and there is no Ce key definition for *yen, it
+!!    is desirable to do nothing. This makes the action consistent with
+!!    pressing *F2 when *F2 has not been defined. This option is normally set
+!!    as an X resource in either the users .Xdefaults file or in the
+!!    /usr/lib/X11/app-defaults/Ce file.
+!!  DEFAULT:  no
+!!  EXAMPLES:
+!!  Ce.isolatin:  yes
+!!  Ce.isolatin:  no
+!!
+!!
+!!
+!!  RESOURCE:  LINE NUMBERS
+!!  DESCRIPTION:  Instructs ce to display along the left margin a window of
+!!    line numbers corresponding to the file text.
+!!  DEFAULT:  no
+!!  EXAMPLES (the only acceptable ones):
+!!  Ce.lineno:  no
+!!  Ce.lineno:  yes
+!!
+!!
+!!  RESOURCE:  KEY DEFINTION PROPERTY
+!!  DESCRIPTION:  After reading the key definitions from the .Cekeys file,
+!!    Ce stores them in a property on the root window.  This option allows
+!!    the user to change the name of that property.  Used with the -kdp option
+!!    the user can have multiple sets of key definitions active and use different
+!!    sets of key definitions in different windows.  This option should not be
+!!    set in the app-defaults file.
+!!  DEFAULT:  CeKeys
+!!  Ce.keydefProp:  CeKeys2
+!!
+!!
+!!  RESOURCE:  FILE LOCKING (New in release 2.4)
+!!  DESCRIPTION:
+!!    Enables SYS5 type advisory file locking.
+!!    Works for local file systems and most NFS implementations.
+!!    Not supported by AFS.  Works with other ce windows and any
+!!    other editor which uses SYS5 file locking (lockf(3)).
+!!  DEFAULT:  yes
+!!  EXAMPLES (the only acceptable ones):
+!!  Ce.lockf:  no
+!!  Ce.lockf:  yes
+!!
+!!
+!!  RESOURCE:  LOGIN SHELL
+!!  DESCRIPTION:
+!!    This option indicates that the shell that is started in the ceterm
+!!    window be a login shell (i.e. the first character of argv[0] will be
+!!    a dash, indicating to the shell that it should read the user's .login
+!!    or .profile).
+!!  DEFAULT:  no
+!!  EXAMPLES (the only acceptable ones):
+!!  ceterm.loginShell:  no
+!!  ceterm.loginShell:  yes
+!!
+!!
+!!  RESOURCE:  LANGUAGE SENSITIVE FILTERS
+!!  DESCRIPTION:
+!!    This option enables language sensitive filter and indent processing.
+!!    It allows preprocessing and postprocessing of files by external
+!!    filters based on file name.  For example, "zcat" would be a good
+!!    input filter for files ending in '.Z'.   See the documentation for
+!!    the 'lsf' and 'ind' commands to see how to use this feature.
+!!  DEFAULT:  no    (NOTE: THIS RESOURCE IS AVAILABE IN THE 2.5.1 RELEASE)
+!!  EXAMPLES (the only acceptable ones):
+!!  ceterm.lsf:  no
+!!  ceterm.lsf:  yes
+!!
+!!
+!!  RESOURCE:  EAT VT100 CONTROL SEQUENCES
+!!  DESCRIPTION:
+!!    This resource causes ceterm to eat any vt100 control sequences
+!!    which are sent to it by the shell when in non-vt100 emulation
+!!    mode.
+!!    DEFAULT: no
+!!  EXAMPLES (the only acceptable ones):
+!!  ceterm.man:  no
+!!  ceterm.man:  yes
+!!
+!!
+!!  RESOURCE:  CONNECT MOUSE AND TEXT CURSORS
+!!  DESCRIPTION:
+!!    This resource tells ce how to coordinate the text cursor with
+!!    the mouse cursor. The default behavior (Ce.mouse: on) is for
+!!    the cursor to follow each other: when the text cursor moves,
+!!    the mouse cursor follows it, and vice versa. If the mouse
+!!    cursor is moved and text is entered, the text appears at the
+!!    mouse cursor's current position. When Ce.mouse is set to 'no',
+!!    the cursors move independently. If the mouse cursor is moved,
+!!    the text insertion position does not change. This behavior
+!!    works in concert with the 'sic' command, which tells ce to move
+!!    the text cursor to the mouse cursor's current position.
+!!    DEFAULT: on
+!!  EXAMPLES (the only acceptable ones):
+!!  Ce.mouse:  on
+!!  Ce.mouse:  off
+!!
+!!
+!!  RESOURCE:  CHOOSE MOUSE CURSOR
+!!  DESCRIPTION:
+!!    This supplies two numbers used to set the mouse cursor for the
+!!    main Ce area and the pull down menu area respectively.
+!!    The numbers are taken from the values in the file
+!!    /usr/include/X11/cursorfont.h  (/usr/openwin/include/X11/cursorfont.h)
+!!    There is no good reason for this options existence unless
+!!    you like to play around or the default cursors do not properly
+!!    display on your system.
+!!    DEFAULT: 132 34
+!!  EXAMPLES:
+!!  Ce.mouseCursor:  142   146   !! Star Trek main cursor, Umbrella pulldown cursor
+!!
+!!
+!!  RESOURCE:  DISABLE CE READ AHEAD
+!!  DESCRIPTION:
+!!    Normally, ce reads in enough data from the file being edited
+!!    to display the first screen, displays the screen, and spends
+!!    the time in between user actions reading the file in a
+!!    background mode. The -noreadahead parameter instructs ce not
+!!    to do this and only read in data as it is needed. This is
+!!    useful when looking at the top few lines of very large files.
+!!    DEFAULT: Read file in background mode.
+!!    DEFAULT: no
+!!  EXAMPLES (the only acceptable ones):
+!!  Ce.noreadahead:  no
+!!  Ce.noreadahead:  yes
+!!
+!!
+!!  RESOURCE:  OFF SCREEN GEOMETRIES (New in release 2.4)
+!!  DESCRIPTION:
+!!    This option overrides a normal "safety" feature of Ce for use
+!!    with virtual window managers such as olvwm. Normally Ce will not
+!!    allow the specification of a window geometry which has no portion
+!!    of the window visible. This is because such a window is very
+!!    difficult to interact with. When using a virtual window manager
+!!    it may be desireable to bring up Ce windows in parts of the
+!!    virtual workspace which are not currently visible. This is
+!!    especially true during login startup processing. When set to 'y',
+!!    the offdspl argument or X resource allows the specification of
+!!    geometries which are off screen. Whether this option is required
+!!    depends upon how the virtual desktop is managed. Managers such as
+!!    HP/VUE and CDE unmap the windows which are not in the currently
+!!    displayed desktop. Window managers like olvwm move the window to
+!!    geometry values which are off screen. It is for this second type
+!!    of window managers that the offdspl option is supplied.
+!!    DEFAULT: no
+!!  EXAMPLES (the only acceptable ones):
+!!  Ce.offdspl:  no
+!!  Ce.offdspl:  yes
+!!
+!!
+!!  RESOURCE:  PASTE BUFFER DIRECTORY
+!!  DESCRIPTION:  Indicates to ce where to create paste buffer files.
+!!  DEFAULT:  ~/.CePaste
+!!  EXAMPLES:
+!!  Ce.pasteBuffDir:  /tmp/.CePaste
+!!
+!!
+!!  RESOURCE:  PULL DOWN MENUS
+!!  DESCRIPTION:
+!!    This feature controls whether the pull down menu bar is displayed.
+!!  DEFAULT:  yes
+!!  EXAMPLES (the only acceptable ones):
+!!  Ce.pdm:  yes
+!!  Ce.pdm:  no
+!!
+!!
+!!  RESOURCE:  CASE SENSITIVITY
+!!  DESCRIPTION:  Indicate whether searches are upper-case/lower-case
+!!    sensitive.  If this resource is set to 'yes', for instance, then a
+!!    the search command '/arpus/' would NOT find the string 'ARPUS'.  Note
+!!    that search-and-substitute operations are always case-sensitive and
+!!    hence are not effected by this resource.
+!!  DEFAULT:  no
+!!  EXAMPLES (the only acceptable ones):
+!!  Ce.caseSensitive:  yes
+!!  Ce.caseSensitive:  no
+!!
+!!
+!!  RESOURCE:  CETERM SCROLL MODE
+!!  DESCRIPTION:
+!!    This feature controls the scrolling behavior of a ceterm
+!!    transcript pad. When enabled, output is scrolled one line at
+!!    a time. Otherwise the output is scrolled one window at a
+!!    time. See the help file for the 'ws' command for details on
+!!    setting this value from within a ce session.
+!!  DEFAULT:  no
+!!  EXAMPLES (the only acceptable ones):
+!!  Ce.scroll:  yes
+!!  Ce.scroll:  no
+!!
+!!
+!!  RESOURCE:  SCROLL BAR
+!!  DESCRIPTION:
+!!    This feature determines when and if ce and ceterm display 
+!!    verticle and horizontal scroll bars.  Valid values are:
+!!    auto   -  display scroll bars when needed
+!!    yes    -  always display scroll bars
+!!    no     -  never display scroll bars
+!!    This setting can be changed on the fly using the Ce 'sb' command.
+!!  DEFAULT:  auto
+!!  EXAMPLES (the only acceptable ones):
+!!  Ce.scrollBar:  yes
+!!  Ce.scrollBar:  no
+!!  Ce.scrollBar:  auto
+!!
+!!
+!!  RESOURCE:  SCROLL BAR COLORS
+!!  DESCRIPTION:
+!!    This feature can set the 4 colors to draw the scroll bars.
+!!    This feature is rarely used, as the defaults work just fine:
+!!    color1 -  Scroll bar gutter
+!!    color2 -  Light shadow
+!!    color3 -  Top of slider and arrows
+!!    color4 -  Dark shadow
+!!  DEFAULT: gray59  gray87  gray70 gray37
+!!  EXAMPLE:
+!!  Ce.scrollBarColors : red yellow green blue
+!!
+!!
+!!  RESOURCE:  SCROLL BAR WIDTH (HORIZONTAL SLIDER WIDTH)
+!!  DESCRIPTION:
+!!    This feature controls the behaviour of the horizontal scroll
+!!    bar.  Most horizontal scroll bars size the scroll bar slider  
+!!    based on the width of the window compared to the width of the
+!!    longest line displayed.  This feature allows the user to set
+!!    the minimum width for a line.  This allows the user to use the
+!!    scroll bar to scroll sideways on short lines.  If the longest line
+!!    displayed is longer than the Ce.scrollBarWidth, the longest line
+!!    lenght is used.
+!!  DEFAULT: 256 chars
+!!  EXAMPLE:
+!!  Ce.scrollBarWidth : 0    !! disables the horizontal scroll bar
+!!  Ce.scrollBarWidth : 1    !! Always use longest line length
+!!  Ce.scrollBarWidth : 300  !! Size scrollbar as if a 300 character line is visible
+!!
+!!
+!!  RESOURCE:  TAB STOPS
+!!  DESCRIPTION:  Tells ce to set tab stops in columns 's1, 's2', ..., 'sn'.
+!!    If '-r' is present, add additional stops spaced according to the
+!!    difference between the last two specified stops.  See the 'ts' help
+!!    file for complete details.  Note that the format of the resource
+!!    specification is equivalent to that of the 'ts' command.
+!!  DEFAULT:  ts 1 2 -r
+!!  EXAMPLES:
+!!  Ce.tabstops:  ts 5 10 -r
+!!  Ce.tabstops:  ts 5 9 13 17 21 25
+!!
+!!
+!!  RESOURCE:  WINDOW MANAGER TITLE
+!!  DESCRIPTION:
+!!    This  option  sets  the window manager's  window  title.
+!!  EXAMPLES:
+!!  Ce.title:  My Ce window
+!!
+!!
+!!  RESOURCE:  TERMINAL TYPE       
+!!  DESCRIPTION:
+!!    This  tells a ceterm window how to set the TERM and term environment
+!!    variables.  By default ceterm uses the value vt100. This may be
+!!    overridden with this resource or the -termtype command line argument.
+!!    WARNING:  Changing this value may cause vt100 emulation mode in ceterm
+!!    to behave erratically.
+!!  EXAMPLES:
+!!  Ce.termtype:  xterm
+!!
+!!
+!!  RESOURCE:  TITLEBAR FONT
+!!  DESCRIPTION:  Tells Ce what font to use in the titlebar which is part
+!!    of Ce.  This line is not the window manager title.  It is shown in
+!!    reverse video and contains the name of the file and various flag boxes.
+!!    The font is also used for the pulldown menu's when active.
+!!    A null  (blank) value tells Ce to use the main font for the titlebar.
+!!  DEFAULT:  fixed
+!!  EXAMPLES:
+!!  Ce.titlebarfont:  
+!!  Ce.titlebarfont:  -misc-fixed-medium-r-normal--13-120-75-75-c-70-iso8859-1
+!!
+!!
+!!  RESOURCE:  INHIBIT UTMP UPDATE
+!!  DESCRIPTION:
+!!    This options performs the same function as the xterm -ut
+!!    option. It affects ceterm only. Normal operation calls for
+!!    ceterm to generate a Unix utmp entry which is viewable via the
+!!    Unix who(1) command. Specifying this option inhibits the
+!!    generation of the utmp entry. On some platforms, specifying
+!!    -ut allows a ceterm to be started without the program having
+!!    special setuid privileges.
+!!  DEFAULT: False (Build utmp entry normally)
+!!  EXAMPLES (the only acceptable ones):
+!!  Ce.utmpInhibit:  True
+!!  Ce.utmpInhibit:  False
+!!
+!!
+!!  RESOURCE:  VT100 EMULATION CONTROL
+!!  DESCRIPTION:
+!!    This option applies only to ceterm windows. If set to 'auto'
+!!    ceterm will automatically enter vt100 emulation mode whenever
+!!    the shell requests that the "echo" line discipline is
+!!    disabled. This more accurately reflects the behavior of the
+!!    terminal windows on an Apollo Domain system. Use of this
+!!    feature will cause ceterm to enter vt100 mode whenever a
+!!    password is being requested and whenever a telnet or rlogin
+!!    is performed. The value "auto" disables the toggle action of
+!!    the "vt" command. The value "on" will cause ceterm to start
+!!    in vt100 emulation mode. The value "off" will cause ceterm to
+!!    start in normal mode. The "vt" command may be used to change
+!!    this state on the fly.
+!!  DEFAULT: off
+!!  EXAMPLES (the only acceptable ones):
+!!  Ce.vt:  on
+!!  Ce.vt:  off
+!!  Ce.vt:  auto
+!!
+!!
+!!  RESOURCE:  WINDOW MANAGER POSITION ADJUSTMENT
+!!  DESCRIPTION:
+!!    Some window managers, notably the Sun olwm adjust window
+!!    position requests by a fixed offset. When a Ce window closes,
+!!    it saves its geometry. If the next Ce window opens without
+!!    specifying a geometry via a parameter or X resource, the
+!!    window will be put in the same place as the one just closed.
+!!    If the window manager is adding constants to the requested
+!!    geometry, the window will slowly creep across the screen as
+!!    the window is opened and closed. The Ce.wmAdjustX and
+!!    Ce.wmAdjustY options are used to compensate for this effect.
+!!  DEFAULT: 0
+!!  EXAMPLES:
+!!  Ce.wmAdjustX : -4
+!!  Ce.wmAdjustY : -25
+!!
+!!
+!!
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+!!  END ARPUS/ce /usr/lib/X11/app-defaults/Ce  !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!" > $appd/Ce
+
+#------------------------------------------------------------------------------
+# install Site wide key definitions
+#
+/bin/echo "[Installing the site-keydefs files...]"
+echo "
+mi File/0 'Save         (^w)'pw;msg 'File saved' ke
+mi File/1 'Save As'pn -c -r &'New Name:';ro -off;pw ke
+mi File/2 'Print'lbl;rd;1,\$! -c -m lp;glb ke   # Tailor this line to your print command
+mi File/3 'Close/Save   (^y)'wc ke
+mi File/4 'Close/NoSave (^n)'wc -q ke
+mi File/5 ' ' ke
+mi File/6 'Exit'wc -f ke
+
+mi Edit/0 'Copy'xc ke
+mi Edit/1 'Cut'xd ke
+mi Edit/2 'Paste'xp ke
+mi Edit/3 'Undo'undo ke
+mi Edit/4 'Redo'redo ke
+mi Edit/5 'Text Flow'tf ke
+mi Edit/6 'Find Matching Delim'bl -d ke
+mi Edit/7 'Uppercase area'case -u ke
+
+mi Modes/0 'Case'pd Case ke
+mi Modes/1 'Insert'pd Insert ke
+mi Modes/2 'hex'pd Hex ke
+mi Modes/3 'Lineno'pd Lineno ke
+mi Modes/4 'ScrollBar'pd ScrollBr ke
+mi Modes/5 'Vt100'pd vt ke
+mi Modes/6 'Track Mouse'pd Mouse ke
+mi Modes/7 'Read-Write'ro ke
+
+mi Macro/0 'No Macros Defined' ke
+
+mi Help/0 'Ce'cv -envar y \$CEHELPDIR/ce.hlp ke
+mi Help/1 'Intro'cv -envar y \$CEHELPDIR/.hlp ke
+mi Help/2 'Menubar'cv -envar y \$CEHELPDIR/menubarCon.hlp ke
+mi Help/3 'Commands'cv -envar y \$CEHELPDIR/commands.hlp ke
+mi Help/4 'options'cv -envar y \$CEHELPDIR/xresources.hlp ke
+mi Help/5 'whats new'cv -envar y \$CEHELPDIR/rlse.hlp ke
+
+mi Case/0 'Sensitive find'sc -on ke
+mi Case/1 'Insensitive find'sc -off ke
+
+mi Insert/0 'Insert'ei -on ke
+mi Insert/1 'Overstrike'ei -off ke
+
+mi Hex/0 'On'hex -on ke
+mi Hex/1 'Off'hex -off ke
+
+mi Lineno/0 'On'lineno -on ke
+mi Lineno/1 'Off'lineno -off ke
+
+mi ScrollBr/0 'On'sb -on ke
+mi ScrollBr/1 'Off'sb -off ke
+mi ScrollBr/2 'Auto'sb -auto ke
+
+mi vt/0 'On'vt -on ke
+mi vt/1 'Off'vt -off ke
+mi vt/2 'Auto'vt -auto ke
+
+mi Mouse/0 'On'mouse -on ke
+mi Mouse/1 'Off'mouse -off ke
+
+mi Menubar/0 'File'pd File ke
+mi Menubar/1 'Edit'pd Edit ke
+mi Menubar/2 'Modes'pd Modes ke
+mi Menubar/3 'Macro'pd Macro ke
+" >> $sitedef_dir/.Cekeys.site
+
+echo "
+cmdf $sitedef_dir/.Cekeys.site
+" >> $sitedef_dir/.Cekeys.site.A
+
+echo "
+cmdf $sitedef_dir/.Cekeys.site
+" >> $sitedef_dir/.Cekeys.site.U
+
+
+#------------------------------------------------------------------------------
+# set protections
+#
+#
+    /bin/echo "[Setting protections]"
+    /bin/chmod 755 $help_dir
+    /bin/chmod 755 $bin_dir/ce $bin_dir/ce_init $bin_dir/ce_report $bin_dir/ce_isceterm $bin_dir/xdmc
+    chown root $bin_dir/ce
+    /bin/chgrp bin $bin_dir/ce
+    ls -ld $bin_dir/ce $bin_dir/ce_init $bin_dir/ce_report $bin_dir/ce_isceterm $bin_dir/xdmc
+
+#	Check the OS prior to setting the UID bit	MGH - 02/22/95
+#  Remove setuid bit RES 04/22/2005
+
+
+#------------------------------------------------------------------------------
+# done!
+#
+    cd ..
+    /bin/echo "Done."

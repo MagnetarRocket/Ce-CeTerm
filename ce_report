@@ -1,0 +1,36 @@
+#!/bin/sh
+###############################################################################
+#  
+#  Copyright 1988 - 2002 Enabling Technologies Group
+#  Copyright 2003   Robert Styma Consulting
+#  
+###############################################################################
+#
+#   Script syntax:  ce_report
+#   Purpose:        Create a blank bug/enhancement report form in the caller's
+#                   home directory, and instruct him or her on how to complete
+#                   it and return it to Enabling Technologies Group, Inc.
+#
+#   Change history:
+#       1992.09.30 longot   Created.
+#       1997.11.24 stymar   Added chmod.
+#
+###############################################################################
+
+
+#------------------------------------------------------------------------------
+# copy the blank report file to the user's home directory
+#
+    DESTPATH="$HOME/ce_report.$$`date '+%H%M%S'`"
+    /bin/cp $CEHELPDIR/bug.hlp $DESTPATH
+    chmod 755 $DESTPATH
+
+#------------------------------------------------------------------------------
+# and let the user know which file to edit/ send
+#
+    /bin/echo ""
+    /bin/echo "    Please edit the file $DESTPATH and provide the requested
+    /bin/echo "    information.  That file contains instructions on how to send
+    /bin/echo "    the report.
+    /bin/echo "    Thank you for taking the time to create and send the report.
+    /bin/echo ""

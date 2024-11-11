@@ -1,0 +1,53 @@
+#define  TEXT_ATOM_NAME       "TEXT"
+#define  TARGETS_ATOM_NAME    "TARGETS"
+#define  TIMESTAMP_ATOM_NAME  "TIMESTAMP"
+#define  INCR_ATOM_NAME    "INCR"
+#define  LENGTH_ATOM_NAME    "LENGTH"
+
+
+
+
+
+
+                     DEBUG2(fprintf(stderr, "Pastebuff atom %d, %s found after %d tries, state = %s\n", 
+                                    pastebuf_entry->selection_atom,
+                                    pastebuf_entry->name,
+                                    pastebuf_XIfEvent_event_counter,
+                                    ((event_union.xproperty.state == PropertyDelete) ? "Deleted" : "NewValue"));)
+                     fake_stream = get_pastebuf_data(&event_union, cmd, display, main_x_window, pastebuf_entry);
+
+
+
+
+
+
+
+CE_paste_buff
+
+
+CE_paste_buff
+
+CE_paste_buff
+
+
+
+                     DEBUG2(fprintf(stderr, "Pastebuff atom %d, %s found after %d tries, state = %s\n", 
+                                    pastebuf_entry->selection_atom,
+                                    pastebuf_entry->name,
+                                    pastebuf_XIfEvent_event_counter,
+                                    ((event_union.xproperty.state == PropertyDelete) ? "Deleted" : "NewValue"));)
+                     fake_stream = get_pastebuf_data(&event_union, cmd, display, main_x_window, pastebuf_entry);
+
+
+
+
+
+
+
+
+
+
+
+
+
+              ce -ver

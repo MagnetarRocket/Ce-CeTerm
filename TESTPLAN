@@ -1,0 +1,3308 @@
+###############################################################################
+#
+#   Ce Regression test plan  "%Z% %M% %I% - %G% %U% AG CS Phoenix"
+#   Test Type Legend:  S  - Search and Substitute
+#                      C  - Cursor Placement
+#                      D  - Drawing / Highlighting / Mouse Dropping
+#                      V  - VT100 emulation
+#                      P  - Cmd Parsing & Option Processing
+#                      O  - Other (Misc.)
+#                      U  - Undo Redo
+#                      E  - Event Processing
+#                      M  - Data Manipulation
+#                      X  - Copy, Paste, Region, and Color
+
+    ************************************** R2.6.2 *****************************************
+    ************************************** R2.6.2 *****************************************
+    ************************************** R2.6.2 *****************************************
+    In Ce (Type E)
+    Open a window on a new file.  Type some junk.  Then use the exit button to
+    log off.  Log back on.  The file should have been saved or at least saved 
+    as a crash file.  Make sure this works on both Solaris and Linux.
+
+    In Ce (Type D)
+    Browse a file with -bell visual and try to type in the main window.  The
+    DM output window should flash.  Use -bell VISUAL and repeat, the main 
+    window should flash.  Use -bell on and the terminal should beep (assuming
+    there is a speaker hooked up.)  Use -bell off and no flash or beep should
+    occur.  One of these is the default in your .Xdefaults.
+
+    ************************************** R2.6.1 *****************************************
+    ************************************** R2.6.1 *****************************************
+    ************************************** R2.6.1 *****************************************
+    In Ceterm (Type O)
+    Make sure ^c is defined as 
+    kd ^c cntlc -h 03  PRIMARY ke
+    Start a long ls and use ^c to interupt it.  Then mark a region of text
+    and use ^c to copy it.  Paste it somewhere to see that it was copied.
+
+    ************************************** R2.6 *******************************************
+    ************************************** R2.6 *******************************************
+    ************************************** R2.6 *******************************************
+    In Ce: (Type X)
+    Label a line:  lbl bbb
+    Turn on lineno so you see the label
+    break the line with en both before and after the label.
+    The label should stay with the text.
+
+    In Ce: (Type X)
+    Color a line.
+    Type before the colored area in insert mode.  The colored area should move.
+    Type before the colored area in overstrike mode.  The colored area should not move.
+
+    ************************************** R2.5.5 ****************************************
+    ************************************** R2.5.5 ****************************************
+    ************************************** R2.5.5 ****************************************
+    In Ceterm: (Type C)
+    Start typing in the UNIX command window.  Type a bit then type 321 (Escape key)
+    to move you to the "Command:" prompt.  Use the arrow up key (au) to move back to
+    the UNIX line and the press the End key (tr).
+
+    In Ce: (Type C)
+    In a file with more than one screen of data, press ^b.  Type on the last line.  Include
+    the string 321 'Escape Key' which moves to the Command: prompt.  Use the arrow key (au)
+    to get back into the main window and press the end key (tr).  Make sure the cursor goes
+    to the end of the line.
+
+
+    In Ceterm: (Type C)
+    Create shell script /tmp/zz containing a long string. 
+    Line below will create shell script
+    echo 'echo "addddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd\c"' > /tmp/zz
+    Start a ceterm in the np 7 postion (upper left corner)
+    pwd
+    sh /tmp/zz
+    Cursor should not fly out of the window.
+    exit
+    Cursor should not fly out of the window.
+
+    In Ceterm: (Type M)
+    Start a ceterm with   ceterm -cmd "pn -r /tmp/z1"
+    Do an ls -la
+    Close the window using the window manager.
+    Make sure the file /tmp/z1 contains the transcript pad.
+
+    ************************************** R2.5.4 ****************************************
+    ************************************** R2.5.4 ****************************************
+    ************************************** R2.5.4 ****************************************
+    In Ceterm: (Type X)
+    With: kd ^4 tmw;pb;tb;tl;ca yellow ke
+    Start a ceterm and do an ls -la to fill the screen.
+    Press ^4, the last line of text should be highighted and the cursor should
+    return to the unix prompt.
+    do another ls -la.  Put the cursor in the main window and scroll back a bit.
+    Press ^4.  The cursor should not appear to move.  Scrolling down should show the
+    last line has been colored.  This tests the sl and rl commands.
+
+    In Ce: (Type X)
+    In a ce started from a UNIX shell, so stderr goes to the pad.
+    With: kd ^4 tmw;pb;tb;tl;ca yellow ke
+    create_data 10 400 > /tmp/z123
+    ce /tmp/z123
+    Press ^4
+    Go up to the line of t's and press Esc.
+    ! create_data 8 132000
+    run the command debug color
+    make sure there are no errors about bits being wrong.  debug colorbits adds more info.
+    
+    In Ceterm: (Type C)
+    In a ce started from a UNIX shell, so stderr goes to the pad.
+    With: kd ^3 sl;tmw;pb;tb;tl;ca red;rl ke
+    in a reasonably large dir like crpad, do la -la.
+    Leave the cursor on the input line and press ^3.  The last line should color to red
+    and the cursor should not move.  Do another ls -la.  Move the cursor to the
+    middle of the screen and press ^3.  The last line should color red and the
+    cursor not move.  Do another ls -la.  Scroll back a page or so.  Press ^3 and
+    nothing should appear to happen.  Scrolling down should show the colored line.
+
+    In Ceterm: (type X)
+    run from UNIX:
+    echo "\002\002sl;tmw;pb;tb;tl;ca blue;rl"
+    The echo of the command should be blue.  The cursor should remain
+    in the UNIX window.
+
+
+    In Ceterm: (Type D)
+    On Linux, resize the window using the window manager handles, make sure 
+    1.  The ce window does not snap to a small size.
+    2.  You do not get a bunch of prompts stacking up on the command line.
+
+    In Ceterm: (Type P)
+    On Linux, make sure cp brings up a live ceterm window.
+
+    ************************************** R2.5.3 ****************************************
+    ************************************** R2.5.3 ****************************************
+    ************************************** R2.5.3 ****************************************
+
+    In Ceterm: (Type O)
+    Make sure linux goes into dot mode correctly for rlogin, su, telnet, and
+    ftp.
+
+    In Ceterm: (Type P)
+    Run ceterm -cmd init.cmdf
+    Where init.cmdf contains
+    pn;tdmo;tl;dr;tr;xl -l name "title '";xc -a -l name;cmdf -p name;msg '';tmw
+    Run a pwd or so and then execute exit.  Make sure the title changes to
+    <STDIN>.
+
+    ************************************** R2.5.2 ****************************************
+    ************************************** R2.5.2 ****************************************
+    ************************************** R2.5.2 ****************************************
+
+    In Ce: (Type O)
+    Open a window displaying back to a windows machine running Hummingbird Exceed.
+    In this newly opened window run the commands:
+    geo 500x500+100+100
+    geo 350x350-100-100
+    One at a time.  Then slide the window using the title bar so the 
+    "Command:" prompt is off the bottom the screen.  Then press escape to move
+    the window back on screen.  The bug was exceed would crash after any geo command.
+    Make sure the pulldown menu's and scrollbars are visible.
+
+    In Ceterm: (Type D)
+    Turn on recording, (rec -p cemacro) and make sure the lower case r box
+    comes on.  Then turn recording off (rec) and make sure the box turns off.
+    Turn scroll mode (ws) on and off make sure the S box and J box toggle.
+    Turn overstride mode on and off (ei) and make sure the I box and O box
+    toggle back and forth.
+
+    ************************************** R2.5.1 ****************************************
+    ************************************** R2.5.1 ****************************************
+    ************************************** R2.5.1 ****************************************
+
+
+    In Ce: (Type M) (From External Customer Hugh McCutchen, Jr.)
+    create a command file with the following lines in buffer t1:
+    es 'This i a long line which is the first line of the file';en
+    es 'this is line 2 and it is intermediate length';en
+    es 'and this is a short line'
+    define:   kd ^1 cmdf -p t1 ke
+    edit a new file with:
+    ce -w  -cmd "ei -off" /tmp/zblabbo
+    use ^1 to add the three lines.  Move the cursor under the i in "file"
+    on the first line.  Begin pressing backspace.  Make sure that nothing
+    get magically pasted when the backspace crosses line the end of line 2.
+
+    In Ce: (Type O)
+    Where neither /tmp/z nor $HOME/z exist:
+    ce /tmp/z
+    ce $HOME/z
+    Make sure you do not get a false cc window detection
+
+    In ceterm (Type O)
+    Especially to an HP
+    remsh numenor /projects/ce/hpux10/ceterm -display desoto:0
+    Make sure the pseudo terminal opens correctly and the pseudo
+    terminal name does not end up in the transcript pad.  For Boeing.
+
+    In Ce: (Type D)
+    1. Create a file with a tab followed by text, E.G.
+   	aaaa
+       Make sure there is enough data to fill the screen so you can
+       scroll down.
+    2. ca some text, E.G. the middle two a's.
+    3. Scroll down and then back up.  Make sure the color is set
+       up correctly.
+    4. Add enough lines above the colored line to push it off the
+       screen.  Now cut those lines and make sure the color is ok
+       when the line returns.  Make sure line 1 is not deleted,
+       thus causing a partial redraw.
+
+    In Ceterm (Type D)
+    create_data 16384 1
+    With scroll bars on.
+    Make sure the horizontal scroll bar works.
+
+    In Ce (Type D)
+    In any file, on one line.  Color 2 words red.  Then color
+    two later words in the same line blue.  Make sure the red
+    does not go away.  Execute "debug color", then add a bit of
+    green completely contained in the blue area.  Then type some
+    data in the green area.  Execute "debug color" and make sure the
+    blue area is split.
+
+    In Ce (Type X)
+    Run the following commands, make sure the cursor does not find the
+    red on line 5.
+    5,6ca red
+    5ca blue
+    1nc red   # Error is: currsor goes to line 5 even though it is no longer red
+    1nc blue  # also goes to line 5.
+    Then press Return (tr;en) on the blue line,  The newly created
+    line should be the default colors.
+
+    In Ce (Type D)
+    Try to make the window real small. Make sure it will not let you
+    get too small.
+
+    In Ce (Type X)
+    Open a file and do an xc. Then create a cc window.  In the cc window,
+    do an xc and then close the first window.  Go to a different
+    window and do an xc.  Try to paste in the original cc window.
+    Make sure the correct data gets processed.
+
+    In ceterm (Type X)
+    Open a new ceterm. ceterm -geo 500x500-1+1
+    Do an "again" on line zero, the empty first line in the transcript
+    pad.  Do a pwd in the UNIX window and press enter.  Then
+    go to line zero in the transcript pad and try to do an again
+    on the pwd command.  Make sure the pwd is transfered.  The
+    problem was the area to the left of the cursor was transfered.
+
+    In Ce (Type D)
+    Execute:
+    [7,1];dr;[15,9] ca red blue
+    [20,5]dr;[20,15] ca yellow green
+    kd BackSpace ee -w ke
+    On the line above the yellow/green, do line deletes until the
+    line moves up.  Make sure the color moves properly.
+    Undo and repeat using BackSpace to the left of the green area.
+    Make sure the color moves up one line properly.
+  
+    in ceterm (Type D)
+    With scroll bar mode set to auto.
+    do a few ls's to fill the screen and have the horizontal scroll bar
+    off.  Then do a phone command or something with will generate wide
+    output.  Make sure the scroll bar is not covering the last line
+    of data when it turns on.
+
+
+    ************************************** R2.5 ****************************************
+    ************************************** R2.5 ****************************************
+    ************************************** R2.5 ****************************************
+
+    in ceterm (Type O)
+    telnet to another node.
+    type a bad userid and password
+    use ^d to close the session.
+    Bug is login does not recognize the EOF
+    Neither does the Solaris machines
+
+
+    in Ce (Tupe D)
+    In scroll bar mode auto.  If you do a ^b (pb;tb;tr) and the
+    horizontal scroll bar is off in the current window and on
+    in the window at the bottom of the file, the last line should not
+    get covered up by the scroll bar.
+
+
+    In Ce (Type D)
+    Open a file and do a cc
+    make changes in one window.
+    undo the changes.  Make sure the M flag goes
+    off in the cc window at the same time as in the main window.
+
+
+    In ceterm (Type D)
+    put window in NP9 position.
+    sb -auto
+    Do an ls -la in the crpad directory so the horizontal scroll
+    bar shows up.  Then do 3 pwd's.  Go to the main pad
+    and scroll up (pp 0.5) twice.  The scroll bar should go away
+    on the second scroll.  Problem was window scrolled incorrectly.
+   
+
+    In Ce (Type S)
+    In aegis mode:
+    Run "s/@n@t{[~>]}/ @1/"
+    Over the following data:
+    Col 1 (note col 1 has a tab in it)
+    |
+    V
+    	> > condition is considered to be advanced and, thus, yesterday I began
+    	my
+    	first
+    	> > day of chemotherapy treatment.
+    	> >
+    	> > I will undergo chemotherapy for at least nine weeks and then,
+    	depending on
+
+
+    In Ce (Type S)
+    In aegis mode:
+    Run "s/@[{?*}@]/ PRED(@1)]/"
+    Over the following data:
+    Col 1
+    |
+    V
+    Here's the contents of the file.
+    The command was run on the line indicated below with '>'.
+        [i_inactive2_t312_timer]     := VALUE ( 
+            [FIRST(bri_secondary_timer_type_sbr)..
+    >       [i_t312_timer]     := VALUE ( 
+            [i_t312_timer]     := VALUE ( 
+            [i_t312_timer]     := VALUE ( 
+             LAST(bri_secondary_timer_type_sbr)] := invalid_bri_secondary_timer_start_translation
+    The error was a memory fault.
+
+
+    In Ce (Type S)
+    In aegis mode,  Make sure
+    1,$s/<?a>//
+    works on lines that end in '</a>'
+
+    In ceterm (must use ceterm) (Type S) (Promoted to be done earlier, was just below 2.2)
+    on a line where the file name is the last thing on the
+    line (no trailing spaces).
+    Put the cursor on the last character of the file name and click m1.
+    It should work.  The bug was,
+    The grab word grabs the next word on the next non-blank line.
+
+    In ce: (Type S) (Promoted to be done earlier)
+    In the following text segment:
+    col 1
+    |
+    V
+    yyyxxx
+    yyyxxx
+    yyyxxx
+    yyyxxx
+    yyyxxx
+    yyyxxx
+
+    The following cases should be tested for one line and multiple
+    lines:  (Undo between each s command.)
+    Use following keydefs with testplan in NP4 pos and target
+    in NP3 position.
+    kd SunAudioMute [,6];dr;tr;xc e;(914,724) ke
+    kd SunAudioLowerVolume tdm;tl;xd  -l junk;es \'7,13\';xp e;tr ke
+
+
+     s/x@ny/a@nb/
+     s/x@ny/a@n/
+     s/x@ny/@n/
+     s/x@ny/a/
+
+     s/@ny/a@nb/
+     s/@ny/@nb/
+     s/@ny/a@n/
+     s/@ny/@n/
+     s/@ny/a/
+
+     s/x@n/a@nb/
+     s/x@n/@nb/
+     s/x@n/a@n/
+     s/x@n/@n/
+     s/x@n/a/
+
+     s/@n/a@nb/
+     s/@n/@nb/
+     s/@n/a@n/
+     s/@n/@n/
+     s/@n/a/
+
+     s/x/a@nb/
+     s/x/@nb/
+     s/x/a@n/
+     s/x/@n/
+
+
+
+    In Ce (Type U)
+    Make a few changes in a file (delete some lines).
+    Save the file out, the 'M' box goes away.
+    Make a change and them 'M' box comes back.
+    Do an undo and the 'M' box stays even though the
+    file now matches what is on the disk.  Undo back to
+    the beginning and the 'M' box goes away even though
+    the memory image no longer matches what is on the
+    disk.
+
+    In Ce (Type U)
+    Set up the following key definition.  Edit a test file.
+    Run the key.  Make sure it does not memory fault.
+    kd ^1 undo;es'12345';redo;undo;undo;es'12345';redo ke
+
+
+    In Ce (Type S) (Failed at 2.5 & 2.5.1 & 2.5.2)
+    in unix mode
+    s/[^x]/x/ caused infinite loop on any line
+    Try on a line with and x and also without.
+
+
+    In Ce (Type C)
+    On a long file (mcat /ibm/... | cv)
+    start the command and move out of the window.  The bug was
+    that the cursor jumps back when the "loaded 10,000 lines" message
+    came out.                                              
+
+
+    In ceterm (Type O) (Failed at 2.5.2)
+    type $ su
+    and type a passwd backspace over it, and type it again.
+    you can now undo it and see it.
+
+
+
+    In ce (Type D)
+    In a file that has 75,000 lines
+    Mark line 2; go to line 74998 and "ca green blue;sb -off".
+    go 24000  mark - go 26000 leave pad to the right;
+    go back in Make sure highlight is correct.
+
+
+    In ce (Type E)
+    Activate a pulldown with m1.  Drag off the bottom and release.
+    Move back into the menu bar and press m1.  Make sure the
+    menu appears.
+
+
+    In ce (Type D)
+    Put window in NP3 position.
+    Do ^t
+    Put window in NP5 position.
+    Make sure there is no mouse dropping.
+
+
+    in Ceterm (Type D)
+    execute a command like pathlook 'xmk*'
+    As soon as the first line appears, before the prompt returns,
+    goto the main window and start moving the cursor.  When the
+    prompt appears make sure a mouse dropping is not generated.
+    Sometimes this takes two or three times to reproduce.
+
+
+    In Ce (Type S)
+    Define:  kd ^r // ke  # This is the default
+             kd ^e so ke  # Repeat substitute (also the default)
+    Over the following data:
+    Col 1
+    |
+    V
+    This is an ABC test ABC test abc
+    more of ABC ABC
+    Put the cursor on the first line and run:
+    so /ABC/DEF/
+    This will change the first occuance.  Then press ^r.
+    It should find the next abc.  Error was that ce reports that
+    it cannot find ABC in the rest of the file.  Note that this only
+    happens with upper case.  Lower case is ok.  Also if case sensitivity
+    is on, it works ok.  Thus to demonstrate the error you must be in
+    the default (sc -off) mode.
+
+
+    in Ce (Type P)
+    Test the following subsitute commands.
+    so/#//
+    so/;//
+
+
+    in Ceterm (Type V)
+    Go into vt mode.  Edit a file with the following data with vi.
+    ^d down a page.  arrow down to the line starting
+    with a #.  Arrow right.  The wrong data gets written out.
+    Col 1
+    | 
+    V
+    date=`/bin/date "+%a %h %d, 19%y  %r"`
+    
+    if [ "$PASSWORD_EXPIRES" -le 7 -a "$PASSWORD_EXPIRES" -ge 5 ]
+    then
+       print "\nPassword expires in "$PASSWORD_EXPIRES" days.\n"
+    fi
+    
+    if [ "$PASSWORD_EXPIRES" -le 4 -a "$PASSWORD_EXPIRES" -ge 2 ]
+    then
+       print "\nPassword expires in >>> "$PASSWORD_EXPIRES" <<< days!\n"
+    fi
+    
+    if [ "$PASSWORD_EXPIRES" -eq 1 ]
+    then
+       /usr/bin/X11/xdialog -title Password "Your Password expires tomorrow, better change it now!!!"
+    fi
+    
+    # set -o allexport noclobber
+    set +o nounset
+    
+    FCEDIT=pad
+    
+    # Other standard environment variables
+    export ENV=$HOME/.kshrc
+    export FPATH=$HOME/flib
+    export VISUAL='/phx/bin/ce -w -font fixed -cmd "[0,0]ww -c 72;tl;en;au"'
+    export HISTORY=100
+    export CDPATH=.:$HOME:/:..   
+    #export CDPATH=.:..:$HOME
+    export PS1="$LOGNAME:=> "  
+    export PS2='More: '
+    export LD_LIBRARY_PATH=/usr/openwin/lib:/phx/lib:/lib:/usr/openwin:/pkg/softbench/lib/SB4.0:/usr/ucblib
+    #export LD_LIBRARY_PATH=/usr/dt/lib:/usr/openwin/lib:/phx/lib:/lib
+    export OPENWINHOME=/usr/openwin
+    export HISTSIZE=1000
+    export MAIL=/home/yountm/Mail/Mailbox
+    export MAILPATH="/sys5/usr/mail/$LOGNAME%You have mail."
+    export MAILCHECK=60000
+    export MAILER=~/bin/elm
+    export SHELL=/bin/ksh
+    export XUSERFILESEARCHPATH=:$HOME/app-defaults/%N:/usr/vue/app-defaults/%N:/usr/lib/X11/app-defaults/%N:/phx/app-defaults/%N
+    export LPDEST=pxqmb61
+
+
+    In Ce (Type D)
+    Make sure automatic horizontal scrolling works when typing hits the
+    scroll bar, the end of window when scroll bar is off,  or the edge
+    of the screen when the window hangs off the right side of the screen.
+
+
+    in Ceterm (Type C)
+    sleep 5; create_data 10 600
+    During the 5 seconds move the cursor to the 3rd (or so)
+    line column 1 in the main pad from the bottom.  Let it run.
+    Move the cursor both with the mouse and via arrow keys.
+    Press arrow right with 
+    kd Right [,+1] ke
+    Cursor jumped to another line.  HP display only.
+
+
+    in Ce (Type E)
+    in one window xc a large area 6000 lines x 80 chars.
+    paste it in another window.  problem was that the
+    paste did not appear until the mouse was touched.
+
+
+    In Ce (Type P)
+    Execute the commands:
+    alias html  rd; 1,$ xc -f /tmp/html.cmdf;1,$! -c -e /projects/ce/bin/html.p /tmp/html.cmdf yellow black green red cyan cyan white cyan  cyan   cyan cyan cyan cyan cyan cyan white cyan cyan cyan cyan cyan cyan   cyan   white cyan cyan cyan cyan cyan  cyan    cyan cyan cyan       cyan cyan cyan ke
+    kd ^*Home   mk bison; tt; mk deer; html; gmk deer; gmk bison; cms ke # ^*Home
+    Print the definition and make sure it prints ok.
+    Run it on an HTML file.
+
+    In Ce (Type S & D & X)
+    edit a file with:
+    Col 1
+    | 
+    V
+    -----------------------
+    <html><p>
+    <body>
+
+    <title>Ce/Ceterm</title>
+
+    <CENTER><H1>Ce/Ceterm Home Page</H1></CENTER>
+    <P> 
+    <B></B> 
+    </B> 
+    --------------------------
+    Parse it with ^*Home and edit the line begining with 
+    <CENTER>.  Run "s/e/aaaaaaa/" on this line.  Make sure the
+    colors move as appropriate.  Undo the substitute.  Put the
+    cursor on the '<' at the beginning on '</H1>' and type.
+    The color should be the same as the preceding word 'Page'.
+
+
+    In Ceterm (Type D)
+    run:
+    create_data 16385 3
+    Problem was pad only scrolls 3 lines and scrolling is off
+    after that point.
+
+
+    in Ce (Type O)
+    set tabstop to  ts 25 5 -r
+    Error was that this put ce into an infinite loop
+
+
+    In ce (Type E)
+    rm /usr/tmp/file
+    ce /usr/tmp/file
+    debug cclist    
+    Look at the cclist, it should have a made up inode, the
+    create date should be the The directory inode, and the
+    size should be zero.
+    From a UNIX window, ce /usr/tmp/file, the cc should be
+    recognized. Telnet to another machine, ce /usr/tmp/file, the
+    cc should not be recognized. Close the other node window.
+    Type a few characters in /usr/tmp/file and save it.
+    debug cclist
+    There should be real inode, create date, and size information.
+    Run ce /usr/tmp/file, the cc should be recognized.
+    Close the cc window.
+    Add some more characters and save.
+    debug cclist
+    The cclist should have a new inode.  The create date may
+    have changed, The new size should be shown.
+    Add some more characters and save.
+    debug cclist
+    The cclist should have the same inode as last time.
+    ce /usr/tmp/file.  The cc should be recognized.
+    
+
+    In ce (Type P)
+    In the enclosing ceterm window:
+        ceopt="-cmd '$'"
+        cv $ceopt ~/.profile
+        (Go to top of file in first window)
+        cv $ceopt ~/.profile
+    Make sure the second window comes up and goes to the bottom.
+    Use debug @4 to make sure the cc window message parses ok.
+
+    In Ceterm (Type C & D)
+    create a long prompt  PS1='ddddddddddddddddddddddddddd'
+    Make the window so 1/2 character fits past the prompt.
+    Bug was you could position the cursor so it does not shift when you
+    type and the letters assemble in the window backwards.
+
+    In ce (Type X)
+    In file crpad.c with lineno on.
+    Copy the following into the default paste buffer and use cmdf -p
+    Make sure it creates both labels.
+    lbl                 # create a label at the current position
+    1                   # Go to line 1 column 1
+    /main *(/;lbl main  # Find the main procedure and set label
+    /static void dump_atom/;lbl dump_atom   # find routine dump_atomand set label
+    glb                 # Go back where we started
+
+
+    In ce (Type X)
+    Set some labels with lbl and some colored areas.  Make sure that
+    one of the colored areas overlaps a label.  Try 1,$dlb and make
+    sure the labels go away, but the color is ok.  Then use undo to
+    bring back the labels and try 1,$ca to get rid of the color and
+    leave the labels.  Make sure the color overlapping the label goes
+    away correctly.
+
+    In Ce (Type X)
+    Over the following C code:
+    Do a rectangular mark starting just past the "  on the last
+    printf line and extending UP to the 8 on the first printf line.
+    This way the [ is included in the marked region.
+    Press escape and execute the command: s/  *\[/='%./
+    It should work went you mark from bottom left to top right
+    and also for top left to bottom right.
+    printf("loadid                   [8];   /* c */
+    printf("module                   [31];  /* c */
+    printf("storage_name             [8];   /* c */
+    printf("whole_iss                [2];   /* c */
+    printf("common_loadid            [8];   /* c */
+    printf("current_base_id          [12];  /* c */
+    printf("old_sccs_id_or_ptiss     [12];  /* c */
+    printf("last_user_mod            [7];   /* c */
+    printf("domestic_transfer_mod    [1];   /* c */
+    printf("partial_uncid_this_load  [1];   /* c */
+    printf("no_longname              [1];   /* c */
+    printf("exterior                 [1];   /* cl*/
+    printf("processor_code           [1];   /* cl*/
+    printf("lang_type                [1];   /* cl*/
+    printf("remote_owner             [1];   /* c */
+    printf("remote_site              [1];   /* c */
+
+    printf("target_id                [8];   /* c */
+
+
+    In ce (Type P)
+    Turn on record.
+    type "%08X\n",   (then arrow down and arrow left 8 times)
+    turn record off playback
+    Problem was \ got lost MSG: (es) Command syntax error - missing delimiter (5: es '\')
+
+
+    In Ce (Type C)
+    kd ^1 rm;echo ke
+    mark a region of text and to a substitute over it which
+    fails.  Then press ^1, the area should rehighlight as it
+    does when you execute the commands manually.
+
+    In Ce (Type O)
+    In a 2 line file: (/tmp/ztrans)
+    R: r4000 cm05b 08/26/97 10:05:45 gsccofr:_s 2.2 d ew
+    R: r4000 cm05b 08/26/97 10:06:05 gsccofr:new_s 2.2 d ew
+    Run the following line.  Make sure both lines appear in the initial display
+    /bin/tail -f /tmp/ztrans | ce -name psrc11999 -readlock -transpad  -font 7x13bold -geo c58x16+510 -bg '#ffffc8' -fg black  -title 'PSRC Promote/Repoint Log' -pd n -sb n
+
+
+    In Ce (Type P)
+    On any file:
+    Set the Xdefaults to contain:
+    ce.lineno:      y
+    cv.lineno:      y
+    ceterm.lineno:  n
+    Ce.lineno:      n
+    cc the window.  Make sure line numbers are on unless the
+    window as a ceterm.
+
+    In Ce (Type P)
+    create_data 10 600 > /tmp/z
+    ce /tmp/z
+    Put window in upper left corner
+    cc
+    Put new window in upper right corner and ^b
+    Cut 3 lines from the left window and paste them in the right
+    window.  Make sure they are drawn in their new location.
+    Repeat with lineno on, make sure line numbers draw correctly.
+
+    In Ce (Type X)
+    Execute the following line on a line at least 50 characters
+    long:
+    [7,1],[7,9]ca red blue;[7,21],[7,23]ca red blue;[7,36],[7,39]ca red blue;
+    Split the line in the middle of the center colored section.
+    Undo. Redo.  Go to the end of the first line which just got
+    split.  Do a character delete to rejoin the lines.  Make sure
+    the color looks the same.  Do the same in the last colored
+    area.
+    Split the line just after the last character of the first
+    colored area. The start of the new line should not be colored.
+    Move right two characters on the new line and split the line.
+    The two characters on a line by themselves should not change
+    color. Grab a bunch of lines into a paste buffer and paste
+    them at the begining, middle, and end of a colored region.
+    Also, just before and after.  Make sure the results are as
+    expected.
+    Undo the changes back to the original line being colored.
+    Split at the middle of the center colored section.  Delete
+    with 'ed' the newline at the end of the line to rejoin.  Do
+    this 3 times. Split one more time.  This time move the cursor
+    a few characters to the right of the newline and do 'ed'.
+    This does a join with padding.  Repeat substituting a cut
+    (xd) for the delete (ed).
+
+    In Ce (Type P)
+    Make sure the following DM command string does not cause a
+    memory fault.   It should cause error messages.
+    ca blue white PS1='${HOSTNAME}:${PWD#$HOME/}> ^B^Btmw;tb;tl;ca blue white
+
+    In Ce (Type C)
+    Ce a new file, use NP9 size and position (upper right corner)
+    put in one short line
+    a line long enough to activate the horizontal scroll bar
+    two more short lines
+    Insert a line after the long line and put in a form feed "er 0c"
+    Scroll down twice.  Move cursor to last line on window.  Scroll
+    up twice.  Problem was program would try to reposition cursor  
+    when scroll bar came on.  Since it was in the area below the
+    form feed, it would scroll the window back down.
+
+    In Ce (Type D)
+    In CC mode with the cc window on another screen.
+    In the place past the end of file, type a line.
+    Try to type in the other window and get the line
+    locked message.  Leave the cursor alone.  In the first
+    window, type some more on the line and
+    then break the line with an 'en'.  From the previously
+    locked out screen.  Type a letter.  The problem was the
+    Line that last letter got typed on got trashed.
+    
+    In ceterm (Type D)
+    run the command
+    ceterm -geo 85x25+65+0
+    Make sure it does not abort.  The size was too small and caused
+    a resize request from "main_subarea" before the first drawing.
+
+    In ce (Type X)
+    execute:  xl -f ztst.xl 'testing'
+    Make sure file ztst.xl is created in the current working
+    directory and that it contains the string 'testing'.  Note
+    there should be no newline in this case.
+
+    In ce (Type X)
+    execute:  alias tst xl CLIPBOARD '"$@"' ke
+              tst /this   is a  test/
+    Then paste CLIPBOARD You should paste "/this" "is" "a" "test/"
+    execute:  alias tst xl CLIPBOARD '"$*"' ke
+              tst /this   is a  test/
+    Then paste CLIPBOARD You should paste /this is a test/
+
+    In ce (Type X)
+    Set key definitions such as:
+    kd `Left   ph -1  ke
+    kd `Right  ph  1  ke
+    Highlight one word of text on a line and color it with
+    ca orange
+    (any color will do)  Use the Alt-Right key to scroll over a
+    few characters.  Make sure the color stays over the same word.
+    Scroll back and make sure the color stays in place.
+
+    In ceterm (Type D)
+    With both horizontal and vertical scroll bars on and the
+    window in the NP6 position. Use create_data 100 100 to
+    create data which turns on both scroll bars.  Use the
+    copy key to copy a more than one line of text and paste
+    it into the UNIX command window.  Make sure the scroll bars
+    position correctly.  The problem was they would draw over
+    the unix window.
+
+    In Ce (Type D)
+    Scroll bars on auto.
+    In a window where there is no horizontal scroll bar but the
+    line just above the top of the window will cause the horizontal
+    scroll bar to be turned on.  Put the cursor on the bottom line
+    of the window and use Shift Up to scroll up a line at a time.
+    The problem was that when the scroll bar appeared, cursor 
+    repositioning moved the window down a line, which pushed the 
+    window line back off which turned off the scroll bar.
+    The window kind of got stuck.
+
+    In Ce (Type X)
+    Using the key definition
+    kd F19 ar;ar;/ /dr;tr;xd -l junk;+1; ke
+    And the data
+    Col 1
+    | 
+    V
+    EXCEPT                 2
+    EXTRMLM               13
+    FINDMEM                6
+    FIXUP                 23
+    FSMDRAW                1
+    FSMGEN                 2
+    FSMSCAN                3
+    GODESET                2
+    GTAPE                  1
+    GXREF                 27
+    G5DBCRPM              53
+    G5MODREP              10
+    G5SRCE                54
+    LDLINTER              16
+    LGCPCODE              27
+    LGSBCODE              29
+    LINKCOMP               5
+    LISTGEN                9
+    LISTSCAN              17
+    LOADTAB                2
+    The key definition deletes the number and goes to the next
+    line.  When it gets to the bottom of the screen make sure
+    that the data scrolls up onto the screen and numbers go away.
+    The bug was that the whole line went away at the bottom of 
+    the screen.
+
+    In Ce (Type D)
+    With scroll bars in auto mode.
+    Geo 580x610+567+24   On a window with the 
+    horizontal scroll bar not exposed.  Put the following line
+    in the file:
+    Col 1
+    | 
+    V
+    			hello
+    (Note the tabs)
+    Put the cursor on column 0 of this line and use the
+    RightS key to do a PH 20.  
+    The problem was the window would scroll right and then
+    jump back.
+
+
+    In Ce (Type S)
+    In a file with 7 lines of 'kevin' do a '1,$s/@n/ /'
+    go to [0,0] and try xc.
+    paste buffer overflow during fputs
+
+    In ceterm (Type X)
+    test cat | ce and ^m builds /tmp/file name.
+
+
+    In ce (Type X)
+    Mark a region of text and color it with both background and foreground.
+    Go to a short line in the colored area and position the cursor
+    past the end of the line using the mouse.  Start typing. 
+    Make sure the area from the end of the last line to the typing
+    area colors in.
+
+    In Ce (Type C)
+    On the HP (can display back to Sun)
+    With "sb -auto"
+    On the first page a line is long enough to cause the
+    horizontal scroll bar to exist.  Put the cursor in the middle
+    of the window, press escape, do a find for something off
+    screen on a window where there will be no horizontal scroll
+    bar.  Drag the cursor right slowly after the find works. The
+    bug was the cursor jumped to a new location.
+
+    In Ce (Type D)
+    create a new file with  "sb -auto"
+    Create a few lines and copy them, then do repeated
+    pastes to create more lines than fit on the window.  Make
+    sure the scroll bar appears at the correct time.
+    Do the same pasting process to make a line longer to trigger the
+    horizontal scroll bar.
+
+    ************************************** R2.4+  **************************************
+    ************************************** R2.4+  **************************************
+    ************************************** R2.4+  **************************************
+
+    In Ce (Type P)
+    Run the keys command.  A bug occurred which caused the
+    x'9E' special characters to be displayed.
+
+    In Ceterm (Type P)
+    Execute ! -c -e echo rw
+    When you exit the shell, the window would not leave pad mode
+    and leave the defunct process hanging.
+
+    ************************************** R2.4.2 **************************************
+    ************************************** R2.4.2 **************************************
+    ************************************** R2.4.2 **************************************
+
+
+    In Ce (Type C)
+    lkd m1 sic;dr;echo;mouse -on ke
+    lkd m1U xc;mouse -off ke
+    Run in mouse off mode normally.  The m1 button should
+    temporarily turn on motion event processing making m1 behave
+    as desired.
+
+
+    In Ce (Type X)
+    xl -l "" 
+    Bug was this command caused a memfault.
+
+
+    ************************************** R2.4.1 **************************************
+    ************************************** R2.4.1 **************************************
+    ************************************** R2.4.1 **************************************
+
+
+    In Ce (Type C)
+    Balance (bl -d) problem
+    In the following code.  Put the cursor on the open paren for
+    the first VALUE. Press *b.  It goes to the correct matching
+    paren.  Press *b again and it goes to the paren for the 
+    paren matching the close paren immediately to the
+    left of where it stopped the first time.  
+    ***************************************************************
+
+     CONST
+    {*** Report heading text contsants for SI, EH, and ED reports. ***}
+     syst_summ_repo_const = syst_summ_repo_text VALUE (
+                       (
+                                  ))
+                  (
+                                                           ))
+   ***************************************************************
+
+
+    In Ceterm on the HP only (Type C)
+    Make a prompt longer than the window is wide.  Go into the main
+    window and press Return.  The program memory faulted.
+
+    In Ce (Type P)
+    Execute the commands:
+    alias mk =;tdmo;tl;[,+5];dr;/,/xc -l ln$1;/:/[,+1];dr;/,/xc -l col$1;tmw;msg ' ' ke
+    alias gmk tdm;tl;xd -l junk;es'[';xp ln$1;tr;es',';xp col$1;tr;es']';en ke
+    alias  uc         1,$ case -u ke                      # make file all upper case
+    kd Greek_EPSILONS mk uc;uc;gmk uc ke
+    Make sure the kd for Greek_EPSILONS is the concatination of all these
+    aliases expanded.  The problem was only the first command in each of the
+    first two aliases was included.
+
+    ************************************** R2.4 **************************************
+    ************************************** R2.4 **************************************
+    ************************************** R2.4 **************************************
+
+    In Ce (Type M)
+    kd Num_Lock rec -p cemacro ke       # macro record on
+    kd KP_Divide rec ke                 # macro record off
+    kd KP_Multiply cmdf -p cemacro ke   # macro play
+    Press Num_Lock, Type a # and use the arrow keys to move down
+    and to the left 1.  Press KP_Divide.  Then play back the macro
+    with KP_Multiply.  Make sure the macro playback does not
+    damage the lines.
+
+
+    In Ceterm (Type D)
+    With autovt on:
+    Fill the screen with data and then do an su.
+    The screen will go to vt100 mode for the password.  When
+    it goes back to normal mode, make sure the last line of data 
+    shows up in the window.
+
+    In Ce (Type P)
+    execute 
+    title bob;title
+    Make sure it does not memory fault.
+
+    In Ce (Type M)
+    In mouse off mode with 
+    lkd m1 sic ke
+    On a line with tabs, click m1 past the first tab and
+    then type a character.  Make sure the character goes to the
+    correct spot on the line.
+
+    In Ce (Type S)
+    Execute:
+    /[~ ]/
+    (Unix mode:)
+    /[^ ]/
+    This finds a non-blank.  Repeat to end of line and make
+    sure it finds the newline at the end of the line.  It should
+    stop just past the last character.
+
+    In Ce (Type D)
+    On a sun running olvwm.
+    ceterm -offdspl y -geo c80x24+1200+1200
+    The window manager control window should show the window
+    appear in the work space right 1 and down 1 from the current.
+    Move to that window.  The ceterm should finish initialization
+    without moving the cursor into the window.
+
+    In Ceterm (Type D)
+    start a ceterm -scroll y
+    kd ^1 wp -t ke
+    Do a few ls's to get a few screens full of data.
+    Go into the transcript window and scroll up a few times.
+    Mark and copy a word from the transcript pad.
+    Press ^1
+    Press Paste
+    Press Return
+    Make sure the window scrolls all the way to the bottom.
+
+    In Ceterm (Type P)
+    Start ceterm with:
+    ceterm -w -mouse off     -cmd "es 'elm';en;vt"
+    Make sure elm comes up.  Problem was that in mouse of mode
+    the -cmd stuff was not executed until you hit a real key
+    stroke in the window.
+
+
+    In Ce (Type P)
+    Press the help key (Help or F9). You will be prompted.  Then
+    press ^x (abrt).  The prompt should go away.  Press Help a
+    few times in a row and then press ^x.  The prompt should
+    return to "Command:" and a entering pwd should give the
+    working directory in the message window rather than bring up a
+    help page.
+
+    In Ceterm (Type D)
+    In scroll mode (S box is on), start a long ls -la and interupt it
+    after it starts displaying.  The pad should scroll to the bottom.
+
+    In Ce (Type P)
+    Edit a file with -w and make changes and press ^q in the calling
+    window. A crash file should be created. Bring up ce on the file
+    again. A message about the existence of the crash file should be
+    generated.
+
+    In Ce (Type O)
+    lockf testing, with lockf enabled.
+    On two separate displays, using non-afs files.
+    1.  Screen 1, Bring up a file and go into r/w mode
+    2.  Screen 2, Bring up the same file with ce.  It should be force
+                  to r/o mode.
+    3.  Screen 2, Try ^m, you should get an error.
+    4.  Screen 1, Use ^m to switch to r/o mode.
+    5.  Screen 2, Use ^m to switch to r/w mode, should work.
+    6.  Screen 2, Modify file and save with pw (^w).
+    7.  Screen 1, Try ^m, should fail with message about file changed.
+
+    In Ceterm on HP (Type D)
+    Run:
+    ceterm -geo 575x865-0+35 -vt on -w -fgc yellow -bgc black -font 7x13  /phx/usr/bin/elm
+    with 4 mail messages.  The first one should have a subject long 
+    enough to overflow the screen.  It should not wrap.  Arrow down
+    highlighting should work and not damange the data on the screen.
+    When you exit elm, make sure the title changes right away.
+
+    In Ce (Type S)
+    Set up the following key definitions:
+    kd F3     tl; s/%{?}/    @@1/; [+1] ke            # Shift line/region right 4 spaces
+    kd F3s    tl; s/%    //; [+1] ke                  # Shift line/region left 4 spaces
+    (or in Unix mode):
+    kd F3     tl; s/^\\(.\\)/    \\1/; [+1] ke        # Shift line/region right 4 spaces
+    kd F3s    tl; s/^    //; [+1] ke                  # Shift line/region left 4 spaces
+    Make sure they work when typed in.  Then back out of ce and go
+    back in so they are reloaded from the server.  Make sure they
+    still work.  Bug was the second definition did not work when
+    loaded from the server.
+
+    in Ce (Type S)
+    On a line with the word "else" in it.  Put the cursor on the
+    beginning of the line and escape to the "Command:" window.
+    Execute s/else/face/ and the word should change.  Do an undo and
+    escape back to the command window.  Execute "so" by itself.  The
+    change should happen again.  Undo again.  Escape back to the
+    command window and execute so/abc/.  The word else should change
+    to abc.
+
+    in Ce (Type D)
+    With a cc window up on the same screen.  Leaving one window
+    should release the line for typing on the other window.
+
+    In Ceterm (Type P)
+    with autoclose on.
+    do a sleep 5 in the unix window, press enter and
+    do a ^d (eef)
+    Then move the mouse out of the window.  The window should
+    come down when the shell terminates.
+
+    In Ce (Type C)
+    In a pair of unobscured windows occupying the
+    top and bottom half of the machine.  Define the
+    Find (F19) key to be
+    kd F19 ti ke
+    Make sure ti goes back and forth between the
+    two windows and the box cursor stays in tact.
+    Before trying this do a ce -iconic on some file.
+
+    In Ce (Type C)
+    Take the string:
+    return((c = memcmp(DRAWING_DATA(m), s, sl)) ? c : (d=(ml -sl)) / ABS(d));
+    and size the window so the last paren is just off screen.
+    Put the cursor on the first paren and do a 'bl -d'.
+    The window did not shift and the cursor was put on the
+    second to the last paren.
+
+   In Ce (Type C)
+   lkd ^r //; [+3]; [-6]; [+3] ke
+   with resource
+   Ce.findbrdr: 2
+   Do a find on something that will be found past the first
+   screen and then do a ^r.  The bug was that the cursor went
+   to absolute line number 3.
+
+    In Ce (Type S)
+    On the following block of text:
+    Col 1
+    |
+    V
+            This is a test line
+            This is a test line
+            This is a test line
+            This is a test line
+            This is a test line
+
+    Highlight the block of text using normal highlighting.
+    Stop the highlight in col 1 of the last line.
+    Execute:
+    s/%   //     (s/^   // in UNIX mode)
+    The bug is that the last line changed gets shifted all the
+    way to the left.
+
+    In Ceterm (Type S)
+    lkd Return tr;en;[-2];tr;/[~ ]/;[+1];es' ';[,-1];ed ke
+    Unix mode:
+    lkd Return tr;en;[-2];tr;/[^ ]/;[+1];es' ';[,-1];ed ke
+    Put the cursor in an empty "Command:" window and press return.
+    Bug was that the ceterm aborted.
+
+    In Ce (on Solaris) (Type D)
+    do create_data 10 1000 > /tmp/data
+    cv  -font  '-bitstream-swiss 742-medium-r-normal--14-90-85-85-p-81-iso8859-1' /tmp/data
+    Scroll over half a page and start typing the alphabet.
+    Bug was characters start getting messed up.  rw fixes it.
+    Trick is to start typing past the end of the existing
+    line.
+ 
+    In Ce (Type C)
+    Type a blank in the middle of the DM input window.
+    arrow up and arrow over to over the dm output window.  
+    arrow down into the dm output window.
+    arrow left into the dm input window. Bug was that the cursor jumped to
+    the last place it was in the DM input window rather than the last char
+    in the window.
+
+    In Ce (Type S)
+    Create data
+    create_data 10 2000 > /tmp/file
+    edit the file and mark from ^t to ^b
+    execute Unix mode so/.//
+    or Aegis mode     so/?//
+    This should delete the first char on each line
+    check the last line to make sure all the chars don't go away.
+
+    In Ce (Type P)
+    set up the following 2 key definitions.
+    kd Greek_EPSILON sic;dr;echo -r;mouse -on ke
+    kd Greek_EPSILONU xc;mouse -off ke
+    Run in mouse off mode.  Greek_EPSILON should start a highlighed drag 
+    and releasing it should do the copy.
+
+    In Ce (Type P)
+    Make a copy of the help directory and execute in that
+    directory: Set permissions to 777.
+    ce -cmd '1,$s|\\$CEHELPDIR/|/phx/lib/ce/help/|;wc' a* b*
+    Make sure everything gets executed.  Then try:
+    ce -iconic -cmd '1,$s|\\$CEHELPDIR/|/phx/lib/ce/help/|;wc' c* d*
+
+    In Ceterm (Type D)
+    execute pwd
+    Do an undo in the UNIX window.  Make sure it puts the pwd
+    back and leaves the number of lines in the UNIX window at
+    1.
+    execute la -lad .
+    Move the mouse into the transcript pad to the 'p' in pwd
+    and do an xc of the first pwd. Move to the
+    UNIX window and paste in the pwd. The UNIX window should
+    expand to 2 lines. Use arrow down (ad) to submit the line.
+    Then do an undo. You should get the pwd back and the UNIX
+    window should revert to 2 lines.
+
+    In Ce (Type S)
+    In a large file (80000 lines) with -noreadahead enabled:
+    Using key definitions:
+    kd ^KP_7  /[~a-zA-Z._@@-$0-9~`]/dr;  \[~a-zA-Z._@@-$0-9~`]\;/?/xc find_data;   tdm;tl;xd junk;es '\';xp find_data;tr;es '\';en ke
+    (Unix mode:)
+    kd ^KP_7  /[^a-zA-Z._@-$0-9~`]/dr;  ?[^a-zA-Z._@-$0-9~`]?;/./xc find_data;   tdm;tl;xd junk;es '?';xp find_data;tr;es '?';en ke
+    scroll down a few pages, put the cursor over a word and
+    press ^KP_7.  It should find the previous occurance of the
+    word and not read in any more lines.  Problem was that it
+    read to end of file.
+
+    In Ce (Type P)
+    Put in the key defintions:
+    kd ^1 s/&'from: '/&'to: '/ ke
+    kd ^2 s/&`from: `/&`to: `/ ke
+    Over the following data:
+    Col 1:
+    |
+    V
+      aaaaaaaaaaaaaaaa
+      aaaaaaaaaaaaaaaa
+      aaaaaaaa
+    Mark the range of text and try ^1 and ^2.  
+    For from: use space a (leading space)
+    For to: use b
+    In def ^1 all the a's should change.  In def ^2
+    only the first a on each line should change.
+    Now back out and go in and repeat the exercise using the keydefs as
+    loaded from the X server.  This resolves problems with reloading multiple
+    prompt key definitions.
+
+    In Ce (Type C)
+    Do a find for a single character such as 'e'. Move the
+    character so it is at the right edge of the window. Both
+    just past and just inside and so the character after the e
+    just starts to show. Make sure a repeat find gets the 'e'
+    correctly. It should shift the window when the e is 1 char
+    from the edge of the screen.
+
+    In Ceterm (Type X)
+    Turn mouse off.  Arrow up into the transcript window and
+    use the again key.  The bug was that the whole line was
+    copied instead of just from the cursor right.
+
+    In Ceterm (Type C)
+    In a window with a thousand lines or so in the output pad
+    Start with the cursor in the Unix window.
+    Press Escape
+    enter command "tmw"
+    The transcript pad should not scroll.
+    
+    In Ce (Type C)
+    Define the following key.
+    kd ^1 //; [+3]; [-6]; [+3] ke
+    In a file with a form feed. Position to the page above the
+    form feed. do a find on something which is on the first
+    line with the form feed. back up one page and do the ^1.
+    The bug was that the cursor ended up in the blank area
+    past the form feed.
+
+    In Ce (Type D)
+    Define the following key:
+    kd ^1 tl; es'> '; [+1] ke
+    kd ^2 es'#';pp .5 ke
+    Put the cursor on a non-blank line and press ^1.
+    The bug was the line the cursor was on got redrawn with
+    the wrong data. Put the cursor on the last line of the
+    window and press ^2 The bug was the modfied line was
+    trashed when it scrolled to the new position
+
+    In Ce (Type P)
+    Put in the following key definition:
+    kd ^1 tl;s / *$//tl;es '~';tl;dr;/[~ @t]/xc  ai_buff;tl;ed;tr;en;tl;xp ai_buff;tl;ed;tr ke
+    Go to the DM command window and just press enter.
+    The bug was a bus error.
+
+    In Ce (Type P)
+    Using a keydef such as F2S copy one line rectangularly.
+    Make sure a buffer overflow does not occur.
+
+    In Ce (Type X)
+    Over the following data, rectangularly cut the blank box.
+    Col 1
+    |
+    V
+    fprintf(stdout, "status        = %d\n",     status);
+    fprintf(stdout, "time_active   = %);double   time_active);
+            				hours   = apollo_stat_buff.total_time;
+    						hours = hours / 3600;
+            				minutes = apollo_stat_buff.total_time;
+    						minutes = minutes / 60;
+    						minutes = minutes % 60;
+            				seconds = apollo_stat_buff.total_time;
+    						seconds = seconds % 60;
+    						fprintf(stderr, "Total time      : %02d:%02d:%02d\n",hours,minutes,seconds);
+    fprintf(stdout, "total_time);double   total_time);
+    fprintf(stdout, "total_requests);long     total_requests);
+
+
+
+    In Ce (Type S)
+    Create data
+    create_data 10 2000 > /tmp/file
+    edit the file and mark from ^t to ^b
+    execute Unix mode so/.//
+    or Aegis mode     so/?//
+    This should delete the first char on each line
+    check the last line to make sure all the chars don't go away.
+
+    ************************************** R2.3.2 **************************************
+    ************************************** R2.3.2 **************************************
+    ************************************** R2.3.2 **************************************
+
+    In Ce (Type P)
+    Make sure cp and ceterm from the DM window work by
+    themselves in a window started from a root shell which
+    does not have ce in it's default path.
+
+    In Ce (Type P)
+    start a ceterm with the cp command.
+    Do an env.  Make sure the CE_DMWIN_MSG  environment
+    variable is not set.
+
+    In Ceterm (Type E)
+    Do a pad name pn -r /tmp/face
+    Make sure xdmc can still find the window: 
+    xdmc "es'abc'"
+
+    In Ce (Type P)
+    Define.
+    kd Up [-1,] ke
+    Check the definition in the current window and in another window.
+    Bug was that other windows showed [-1,1] as the definition.
+
+    In Ce (Type E)
+    1) create a file say "tmp" using "ce tmp".
+    2) write some text in the file and write it out to disk.(^w)
+       This creates the file tmp.
+    3) open another window on the same file.
+    4) This second window should be a CC window, but it is NOT.
+    5) Write test in first window for file tmp and second instance of tmp.
+    6) The last one to write out the file wins.
+    The bug is the second ce on tmp should be a CC but is NOT.
+
+    In ceterm (Type C)
+    Start a long running shell (such as path_anal) with -xv
+    turned on.  Go into hold mode.  After this point, moving
+    the mouse generates lots of mouse droppings.
+
+    In ce (Type P)
+    With the display environment variable set and -display
+    not set. do a cv from the DM command line and make sure
+    it works.
+
+    ************************************** R2.3.1 **************************************
+    ************************************** R2.3.1 **************************************
+    ************************************** R2.3.1 **************************************
+
+    In Ce
+    echo Hello > /tmp/\$abc
+    echo Hello2 > /tmp/\$def
+    ce '/tmp/$abc'
+    From the dm command window
+    cv /tmp/$def
+    Try:
+    cv /tmp/\$def
+    From the Unix window try:
+    cv $HOME/.profile   (should get your .profile)
+    cv '$HOME/.profile' (should get your .profile - Ce processes $HOME)
+    Put $HOME/.profile in a file and click on it.  Should get the .profile.
+    Put an escape character before the \\\$HOME/.profile and click on
+    it again.  You get an error.
+
+    In ce
+    Over the following data:
+    Col 1
+    |
+    V
+    BEGIN RECORD - 4
+    Project                     = 1722
+    Test Plan Name              = ctp-1722-2.3
+    Test Case Name              = c_cpx0_dx_tcu_cxi_cfg_cpxl_sx1
+    Test Case Pathname          = /procedures.boo/mainline.boo/cpx_configuration.boo/non_conventional.doc
+    Eligible Projects           = 1722
+    Test Format                 = Manual
+    Tested Functional Area      = CRD
+    Responsible Functional Area = CRD
+    Tested Functional Subarea   = Config
+    Associated Hardware         = CPX
+    Capability                  = Config (ACDC)
+    Viewpoint                   = Mainline
+    Usefulness Level            = 1
+    Execution Time              = 01:00
+    Keyword                     = NOT APPLICABLE
+    Test Equipment              = 
+    Used For                    = Integration Testing
+    Abstract                    = IROC
+    Processor                   = NOT ENTERED
+    Requirement Tracing         = 
+    Spare                       = NOT ENTERED
+    END RECORD
+    execute the line:
+    /Eligi/;/=/;ar;ar;dr;tr;xd ;[+1];dr;tr;xd ;[+1];dr;tr;xd ;[+1];dr;tr;xd ;[+1];dr;tr;xd ;[+1];dr;tr;xd ;[+1];dr;tr;xd ;[+1];dr;tr;xd ;[+1];dr;tr;xd ;[+1];dr;tr;xd ;[+1];dr;tr;xd ;[+1];dr;tr;xd ;[+1];[+1];dr;tr;xd ;[+1];dr;tr;xd ;[+1];dr;tr;xd ;[+1];dr;tr;xd ;[+1]
+    with the cursor at the start of the data.  The result
+    should be that all the data after the equal sign should be
+    deleted starting with the line with 1722 on it.  The
+    Integration Testing line should remain.
+
+    In Ceterm (Type P)
+    With hold turned on, put several lines in the Unix window.
+    go to the middle of the third line and press a key to do
+    an 'en'. The line should split and the cursor end up on
+    the correct char.
+
+    In Ce (Type C)
+    execute "ts -r",  an error message should be generated.
+    Bug was a memory fault occurred.
+
+    In Ce (Type P)
+    Bring up a file and make a change in it.  Go to a
+    shell window and bring up the file again with cv.
+    Make sure the new window comes up in edit mode since
+    it is a cc.
+
+    In Ce (Type P)
+    Make sure "ceterm -vt on" works.  It was ignored.
+
+    In ce (Type P)
+    do an er with no parameters.  Should get an error message about missing
+    parameter.  Bug was, memory fault.
+
+    in ceterm (Type C)
+    Bring up a new window in a situation where nothing gets
+    written into the output pad.
+    Move the mouse to the middle of the transcript pad and do
+    a mark. The problem was a memory fault.
+
+    ************************************** R2.3 **************************************
+    ************************************** R2.3 **************************************
+    ************************************** R2.3 **************************************
+
+    In Ce (Type C)
+    In a file with tabs.  Put the cursor on a line with
+    no tabs above a line with tabs past the first tab
+    position.  Arrow down to the line with the tabs.
+    Type a letter.  Make sure the letter is put in the
+    correct place.
+
+    In ceterm (Type X)
+    Use the again key on a command.
+    Press the again key again.  It should repaste the data.
+
+    in Ce (Type P)
+    on the hpux machine,
+    cv -autos 3 .profile
+    Type 20 char of garbage in the DMINPUT window.
+    Go up to text; ro; type four characters; move cursor to DMINPUT
+    and hit enter.  ce memfaults
+
+    in Ce (Type P & E)
+    edit a file and icon it.
+    edit the file again to have it do a cc.
+    close the new file
+    edit the file again to have it do a cc.
+    The problem was the second cc never started a new window.
+
+    In Ce (Type P)
+    ce a new file and put in some data
+    back in the Unix window, ce the same file
+    with -mouse off.  Make sure mouse is on in
+    one window and off in the other.
+
+    In Ce (Type D)
+    in any window.  Put the mouse in the DM window an click
+    the m3 (read a file).  Do it a second time.  Make sure the
+    command window prompt does not go away.  The bug was that
+    the "Command:" window scrolled down.
+
+    in Ceterm (Type E)
+    run: xdmc "title Ce - /"
+    Make sure it works changes the window manager title
+    to 'Ce - /' (without the quotes)
+
+
+    in Ce (Type E)
+    Do an "xdmc -list" to make sure all the ce windows are registered.
+    Restart the window manager.
+    Do another "xdmc -list" and verify that all are still listed.
+
+    in Ce (Type P)
+    open two files with the ce command from the Unix prompt.
+    The first is writable and the second is not.  Make sure
+    the second window comes up read only.
+  
+    in ce (Type M)
+    Take a paragraph tf -b -p -r 40)
+    replicate the formatted paragraph.
+    Text flow one of the paragraphs to 75 characters
+    with "tf -p -b -r 75" and then format it back to 40.
+    It should look like the original paragraph formated at
+    40 chraracters.
+
+    in ce (Type X)
+    Do a mark and drag the region down into the dm command
+    window. This creates an illegal marked range.  Do the
+    untab, xc, ! -c sort, case, and tf commands.  Each should
+    kd ^1 untab ke
+    kd ^2 ! -c sort ke
+    kd ^3 case ke
+    generate an error message. Each of the commands must be
+    under a key definition.
+
+    in ce (Type S)
+    In Aegis RE mode
+    /%[ @t]*$/
+     Should find a blank line or a null line
+
+    in ce (Type S) 
+    In Aegis RE mode
+    /%[ @t]@n/
+    Should find a line containing one blank or one tab but not
+    more than one blank or tab.
+
+    in ce (Type S) 
+    Do in Aegis RE mode, do a find on
+    /%[ @t]*@n/
+    No error message should be generated.  The bug was
+    that the message:
+    "Newline characters, Brackets, and Asterisk may not\
+     all be used together in a regular expression."
+    was produced.
+ 
+    in ce (Type S) 
+    In Aegis RE mode
+    Mark a range of text which ends with a blank line.
+    s/@n/@n/
+    Should not change the number of newlines.
+
+    in ceterm (Type O)
+    ACR 6371
+    when rlogin'ed to another machine, make sure dq and eef
+    work correctly.  Also check using telnet.
+
+    in Ceterm on sun (Type D)
+    Set up two windows in the upper and lower halfs of the
+    screen. Make sure the upper window is on the top of the
+    window stacking order. do an ls -la in the lower window to
+    generate some output. Scroll to the top and turn on line
+    numbers. Use np9 to position the lower window. It should
+    disappear under the upper window. Pop the upper window to
+    the back. The exposed window in the np9 postion should
+    stay at line 1. Bug was that it scrolled to the bottom.
+    Total disappearance may be relevant.
+
+    in Ceterm (Type E)
+    Compile the following program:
+    #include <stdio.h>   /* /usr/include/stdio.h  */
+    #include <string.h>  /* /usr/include/string.h */
+    main(int argc, char *argv[])
+    {
+    char      buff[80][1024];
+    int       count = 0;
+    int       i;
+
+    while(gets(buff[count++]) != NULL)
+    ; /* just read into the buffer */
+
+    sleep(2);
+    for (i = 0; i < count; i++)
+      puts(buff[i]);
+    } /* end of main */
+    Run the program in a ceterm window.  Enter two or three
+    lines and then press ^d for eof.  The program should wait
+    the two seconds and echo out the lines typed in.  The bug
+    was that the lines were not echoed until you move the
+    cursor or caused some X event.  Do not enter more than 80
+    lines.
+
+    In ce (Type O)
+    create directory /tmp/z
+    cd to this directory
+    rmdir /tmp/z  # in a different window
+    ce /tmp/file
+    Problem caused a memory fault.
+
+    in ce on the HP (Type P)
+    execute geo c29xc80
+    An error should be flagged.
+
+    in ce (Type P)
+    in .Xdefaults
+    ce.tabstops:	ts 5 9 -r
+    cv.tabstops:	ts 5 9 -r
+    ceterm.tabstops:	ts 9 17 -r
+    start a ce from a command window and put in a few tabs on the top 
+    line of the file.  Note the spacing caused by the tabs.
+    Close the ce session and start a cv from the command: prompt of a
+    ceterm.  Make sure the correct tabstops are used.
+    do a head on the file in the ceterm and the ceterm tabstops should
+    be used.
+
+    in ce (Type P)
+    mark a rectangular region and do a !sort in read
+    only mode.  Causes an error.
+    Try another rectangular mark.  Make sure it works.
+
+    in Ce (Type X)
+    do ls -la | cv -cmd "pn -r /tmp/z1;ro"
+    go to the bottom of the file (^b)
+    page down 1 more time (1/2 screen).  Mark rectangular over
+    the file size number area and extend into the area past
+    the end of the file.
+    Press escape, to do a tdm
+    !sort
+    Bugs were:  1.  mess up highlighting on escape
+                2.  Memory fault
+
+    in ce (Type M)
+    save an ls -la in a file ce the file with lineno on put a
+    form feed in the file. Position so the form feed is in the
+    middle of the window. Mark a rectangular region going into
+    the area below the form feed and do a !sort. Make sure the
+    results are as expected.
+
+    in ce (Type D)
+    Put the window in the np9 position. Highlight a few lines
+    of text and do an xc move down from the end point of the
+    highlight. do a mark (dr;echo) press the np7 key. Problem
+    was that the area between the current cursor position and
+    the last position from the previous xc flashed.
+
+    In ceterm (Type O)
+    with a ceterm up try to run finger.  Make sure it works.
+    Error was a utmp problem where the wrong pty name was used.
+
+    In ce (Type P)
+    Open a file read only file with a cv (one that you can
+    actually write to) with autosave set to 5.  Do 5 
+    keystrokes and make sure the autosave does not kick in.
+
+    In ce (Type D)
+    Start ce on a file and do a cc right away.  the
+    file must be more than 512 lines.  Do a find in the
+    cc window on something which will not be found.  Make
+    sure the message appears in the correct window.
+
+    In ce (Type X)
+    Use any copy key to copy a line of text
+    Then do a cc in this window and use the same copy key to
+    copy a different line of text.
+    Go to another window and do a paste.  Make sure the correct
+    line (the second one) gets pasted.  Then go to the first
+    window and do a paste.  Make sure the correct line gets
+    pasted.  Repeat this exercise with the second window on
+    another workstation.  In this case the first line is the
+    correct one.  While the second window is up on the 
+    other workstation, do a cc -display back to the original
+    workstation.  Go to the original workstation and try to
+    do a paste in the new window.  It should get the copy
+    from the original window on that workstation.
+
+    In ceterm (Type D)
+    do a cc to a different display.
+    In the other display, do an inv.  
+    Only the window doing the inv should be affected.
+
+    In Ce (Type O)
+    Bring up a Ce and do a "cc -display" to another display.
+    Preferably an Xstation.  Type in each window a bit and
+    make sure the cursor does not disappear in either window.
+    Then turn off the Xstation.  The other window should run
+    for a while and then get a message about the CC window dieing.
+    The session should continue.
+
+    In a debug copy of ce on the HP (Type M)
+    Bring up a file with 30000 lines of text 12 columns wide.
+    Delete the first 191 lines and do a "debug dump"  the
+    first data block should have header blocks to index 127
+    and the first one should have one line.  Then delete the
+    first line in the file and do another "debug dump".  There
+    last header should now be number 126 in the first data
+    block.
+
+    in ce on the HP (Type E)
+    bring up a file and cc it.  Position both windows.
+    Log off saving the current sessions.  Look at the
+    .vue/sessions/current/vue.session file after logging
+    back on.  The -DELAY argument should be added to one
+    of the cv commands.  Also, an xdmc -list should show
+    that both cv windows have the same cepid.
+
+    in ce (Type E)
+    with serveral windows up.  Do an xdmc -list and
+    make sure some of the windows are obscurred and/or
+    icon'ed in the bits shown by xdmc
+
+    in ceterm (Type E)
+    Have serveral ceterms up.  In one window do /bin/ksh
+    to start another level of shell.  Use xdmc -list to make
+    sure the shell you have chosen is in the middle of the
+    list.  Then do an xdmc "ex'abc'" and make sure it goes
+    to the correct window.
+
+    in ce (Type D)
+    in a file with form feeds with lineno on and a cc window.
+    page to where a form feed splits the window.
+    move the cursor into the blank portion of the
+    window past the more.  pres escape to do a tdm.
+    execute es 's' and press enter.  The s should go
+    in the correct place and the lines get added in both windows.
+    Do the same thing in the space past end of file and
+    do the same thing using the s key to do the es.
+
+    in ce (Type X)
+    With a cc window active on another display.
+    1.  Type in the first window.
+    2.  Try to type in the second window on the same line.
+        An error should be displayed.
+    3.  Go to the second window and type on the line below the
+        busy line in the first window.
+    4.  Go back to the first window and delete a character on
+        the first window's busy line.  Everything should stay ok.
+    5.  Turn on line numbers.
+    6.  In the first window, add some lines above the pair of
+        busy lines.  The second window should move the first 
+        displayed line up to keep the busy line on the screen.
+    7.  Scroll the second window down a ways and add more lines
+        to the first window.  The line numbers and line number
+        in the title line should change.
+    8.  Type some in the second window.  In the first window mark
+        a range over the second window busy line and do an XD.
+        A msg should occur in both windows (different message text).
+    9.  Type some in the second window.  Do a rectangular paste
+        in the first window which will impact the busy line.
+        The busy line should remain unchanged.
+
+    in ce (Type P)
+    for a key with bl -d under it.
+    do a kd on the key for when it is loaded from the server
+    and also when it was loaded by this ce.
+    The displayed key definition should be the same.
+
+    in ce (Type P)
+    using the licence manager, and also without
+    change a file,
+    wc -q (^n)
+    Should get the prompt.  Respond no
+    wc -q (again),
+    Should get the prompt again.
+
+    in ce (Type E)
+    with -readlock specified.
+    cv -readlock zjunk.test
+    cc
+    cv ~/.profile
+    Bug is corruption error message in first two windows.
+
+    in ce (Type D)
+    1.  press mark.
+    2.  type a few characters
+    3.  press copy
+    4.  move the cursor somewhere downscreen and paste
+    5.  move to a new location somewhere below the first mark.
+    6.  press mark.
+    7.  type a character. make sure the region between the original mark
+        and the current position does not highligh for an instant.
+
+    in ce (Type O)
+    type a geo command with no parameters.  Make sure that
+    typing, and the arrow keys still work.
+    Bug was that the text and mouse cursors disconnected and the
+    text cursor went away.
+
+    in ceterm (Type O)
+    ceterm -vt no
+    execute a vt -off when not in vt100 mode.  Make sure that
+    typing, and the arrow keys still work.
+    Bug was that the text and mouse cursors disconnected and the
+    text cursor went away.
+
+    in ce (Type U)
+    type some letters then backspace over a few then type some more
+    first undo should get rid of last typed.
+    next undo should put back the characters backspaced over
+    next undo should get rid of the original typeing.
+
+    in ceterm (Type O)
+    If you are starting in a ksh, start a /bin/sh and "unset PWD".
+    Bring up a ceterm /bin/sh  (Borne shell)
+    1.  Make sure $PWD is not set.
+    2.  cd to a sub directory and from the Unix window cv a file
+        using a relative path (just the file name).
+        Make sure the correct file is found.
+    Bring up a ceterm /bin/ksh
+    1.  cd to a different directory and make sure $PWD is set correctly
+    2.  Bring up a ceterm /bin/sh from the ksh Unix window.
+        cd to a different directory.  $PWD should be set wrong.
+        cv a file using a relative path name (just the file name).
+        Make sure the correct file is found.
+
+
+    ************************************** R2.2 **************************************
+    ************************************** R2.2 **************************************
+    ************************************** R2.2 **************************************
+
+    In Ceterm on HP (Type O)
+    Set the SHELL environment variable to csh.
+    Then fire up a new ceterm.  Make sure the program
+    does not go into dot mode in the Unix window.
+ 
+    in ce (Type C)
+    Create a file which has more than 512 lines.
+    on line 600 put a unique string such as abcdef
+    Do a ^t and move the cursor to the middle of the page.
+    press escape and do a find for the unique string.
+    make sure the cursor is positioned correctly.
+
+
+    in ce or ceterm(Type P) (Got no error in 2.5)
+    type msg with no message.
+    should get a syntax error
+
+    in ceterm (Type D)
+    with -vt auto active.
+    telnet to another node (activates autovt).
+    start with a tall screen (like np6 geometry)
+    do an ls to fill the screen
+    do a geometry to shrink the screen.
+    make sure typing works normally in the main window.
+
+    in ce (Type P)
+    create three empty files with touch
+    touch /tmp/f1 /tmp/f2 /tmp/f3
+    type ce  /tmp/f1 /tmp/f2 /tmp/f3
+    The first file came up with the modified flag set.
+
+    In ce (Type D)
+    move the edit window so the dm input window is off 
+    the physical screen and hit tdm.  The cursor should end
+    up in the correct place.
+
+    in ceterm (Type D)
+    with autovt on, start vi on a file
+    and back out of it.  Make sure vi
+    comes up ok and prompt is restored when
+    vi quits.
+
+    in ce (Type M)
+    load a variable width font.
+    Turn on window wrap.
+    scroll over a half page.
+    type on the end of a line and cause a word wrap.
+    Make sure the cursor is placed correctly.
+
+    in ce  (Type D)
+    load a variable width font.
+    Put the cursor past the end of a line and do a rectangular
+    mark.  The rectangle should behave properly.
+
+    in ce (Type D)
+    create the definition
+    kd ^1 ! sort;rm;echo -r ke
+    kd ^2 ! sort;rm;echo  ke
+    highlight a rectangular region of text.  Put the
+    ce session in read only mode and do the ^1.
+    The region should rehighlight correctly.  Then try
+    it with a normal region of text after modifying the.
+    key definition to remove the -r from the echo.
+    
+    in ce (Type S & P)
+    Set up the key definition
+    kd ^1 s/abc/def @@&/ ke
+    (Unix mode:)
+    kd ^1 s/abc/def \\&/ ke
+    On a line containing 'abc', this should replace the 'abc'
+    with 'def abc'.
+    The key defintion:
+    kd ^1 s/abc/def &'hello '/ ke
+    Should prompt (using prompt hello) and then replace
+    'abc' with 'def <value>'. Where <value> is what was
+    entered in the prompt.
+
+    In ceterm (Type D)
+    create two overlapping windows.
+    In one window make the prompt long, such as:
+    PS1="This is a long prompt a little long: "
+    Position the other window so it overlaps the long
+    prompts so the edge of the window splits one of the 
+    letter l's.  Pop the non-long prompt window to
+    the front and then to the back.  Watch to see if the split
+    l gets distorted.  Do an rw in the long prompt window.
+    See if any fields change.  Try this in the command window
+    with the edge of the d in command.
+
+    In Ce or ceterm (Type D)
+    define the np2 key to make a horizontal window followed by
+    a wp -t
+    kd np2  geo 1200x517+0+480;wp -t ke
+    kd KP_2  geo 1050x380+94+425;wp -t ke   #Solaris (desoto)
+    Create three windows.  
+    One in the np1 position, one in the np6 position, and one
+    in the np8 position. The np8 window overlaps the np6
+    window. Pop the np6 window to the front with a wp key.
+    Then use np2 on the window in the np1 position. It should
+    end up on top of the np6 window.
+
+    In Ce (Type P & D & C)
+    Start ce with
+    ce -w -cmd "[0,0]ww -c 72;tl;en;au" zjunk.test
+    The cursor should end up on the first character of the
+    first line.
+
+    In Ce (Type X)
+    Mark a rectangular region and do a tf.
+    move the cursor to a different line below the
+    original mark.
+    do an xc followed by an xp.
+    Only the line you are on should be copied.  Bug in 2.1
+    was that the mark was not cleared.
+
+    In Ce (Type C) 
+    Try the following commands:
+    [5,5]    # row 5, column 5
+    [5]      # row 5, no change in column (was wrong in 2.1)
+    [5,]     # row 5, no change in column
+    [+5]     # bump row by 5, no change in column
+    [ +5,]   # bump row by 5, no change in column
+    [-5]     # decrement row by 5, no change in column
+    [ +1 , +1 ] # bump row and column by 1
+    [,3]     # current row, column 3
+    [,-4]    # current row, go left 4 columns
+    [-2,-2]  # go up two rows, go left 2 columns
+    []       # do not move cursor
+    15       # go to line 15, column 1
+
+    In Ce (Type C)
+    start two windows and overlap them.  Pop the
+    window in the back.  Make sure the cursor goes
+    to the correct place.
+
+    In ce (Type D)
+    do a ce -ver to display version.
+    Make sure cursor is redrawn
+    Not broke in 2.1
+
+    In ceterm (Type D)
+    with autovt on.
+    Telnet to another node and set the display back.
+    use the DM ce command to open an edit window on the
+    original host.  Make sure scrolling and other non-vt100
+    commands work in the edit window.
+
+    In ce on the Apollo (Type D)
+    start ce with:
+    ./ce -lineno y -geo  600x470+615+520 -font courr12 ./zjunk.test
+    execute geo 600x471
+    Then 472, 473, and so on until another line appears on the pad.
+    The lineno number and the real line must appear at the same time.
+
+    In ce (Type P)
+    Run the keys commmand and pn the output to /tmp/keys
+    in a command window run CEKEYS=/tmp/keys ce -reload
+    The file should parse cleanly
+    Run the keys command again and pn the output to /tmp/keys2
+    diff the two files.  They should be identical.
+
+    In ce (Type D)
+    start two windows.  In one turn on debug @15 or
+    use and xev window instead.  In the non-debug
+    window exeute the rs command.  You should see
+    expose events occur in the other window.
+    
+
+    In ceterm or ce (Type O)
+    execute the DM command:
+    cp -vt off "rlogin slc_14"
+    (or some other node which you do not have a .rhosts file on)
+    You will be prompted for the password.  Make sure that
+    the password does not print and that you cannot undo
+    to get to the password.
+    Try the same thing with -vt auto and make sure you
+    can exit the application.
+    
+
+    In ce (Type P)
+    check the value of XAPPLRESDIR and in the directory
+    it specifies (set it to . if necessary), create
+    a file named Ce (the class name).  In this file place:
+    Ce.mouse : off
+    Running Ce in this directory should come up with
+    mouse off.
+
+    In ceterm on the RS6000 (Type P)
+    Go to the DM input window.  Type cd /
+    It should work.
+
+    In ce (Type P)
+    create a file with 11 blank lines and the chars 'abc' on
+    line 12 and 12 more blank lines (blank = empty).
+    on line 8  er @f
+    Save the file and back out.
+    ce -geo c40x11 -lineno yes <file>
+    do a ^t 
+    press escape to do a tdm and then do a find /abc/
+    bug was that the screen shifted but the cursor was
+    not positioned on the abc.
+
+    In ce On the IBM or SUN (Type M)
+    IBM: /bin/man fseek | ce
+         /bin/man fseek | ce -man
+    SUN: /usr/ucb/man fseek | ce
+         /usr/ucb/man fseek | ce -man
+    Verify control characters are removed in one case but
+    not the other.
+
+    In ceterm (Type M)
+    running ceterm without -man and with -man
+    ex <any_file>
+    Verify control characters are removed in one case but
+    not the other.
+
+    In ce (Type S)
+    the following regular expression
+    s/{[~ ]*}[ ]*/@1@n/ 
+    should put each word in the marked range
+    on its own line with a blank line after
+    each original line.
+    The bug was an infinte loop.
+
+    In ce (Type S)
+    the following regular expression
+    s/{?*}/   case "@1"/
+    Should match from the current cursor position to the end of line
+    and put that data in a case statement.
+
+    In ce (Type S)
+    execute
+    1,$s/@n@n/@n/
+    This should compress multiple null lines to half as many lines.
+    1,$s/% *@n//
+    Every pair of empty lines should become a single null line.
+    Every empty line by itself goes away.
+
+
+    In ceterm/ce on the sun (Type O)
+    bring up a ceterm.
+    From the dm window of this ceterm, fire up a ce.
+    Use the window manager to quit the ce session (not ^n).
+    The bug was that the shell in the ceterm died.
+
+    in ce (Type X)
+    in a file with tabs
+    mark a rectangular region after the first tab.
+    Verify that what is marked is what is copied.
+    Ex: copy from "char" on the 3b line to "=" on the 3e line.
+    Paste to verify.
+    col 1
+    |
+    |char 0x3A = ':'
+    |			char 0x3B = ';'
+    |char 0x3C =	 '<'
+    |char 0x3D = '='
+    |ch			ar 0x3E = '>'
+    |char 0x3F = '?'
+
+    in ceterm on the sun (Type X)
+    Go into hold mode.  Put three lines of data in the Unix
+    command window.  Rectangular highlight a piece.  Do a ph 1.
+    The box should remain intact.  The bug trashes the
+    rectangle.  Window refresh (rw) also messes things up.
+
+    in ce (Type X)
+    Do an xc on a line. Then do an xc -A on the line. Then do
+    a xp. There should be 2. copies of the line pasted. The
+    bug was -a option did not work for X paste buffers. grab a
+    word. Then grab a word by marking it and doing an xc -a,
+    then do an xp. Both words should paste. Do it again
+    grabbing the first word in one window and the second in
+    another window. It still paste both windows. Also, copy
+    the first word in one window and then close the window.
+    Then xc -a the second word in another window. The paste
+    should paste both words.
+
+    in ceterm (ACR 6369) (Type O)
+    First try to do a pw.  An error should be printed telling
+    you to name the pad with 'pn' first.  Then do a pn and
+    close the window.  The new name should stick (not revert
+    to <stdin> and the pad be saved as a file.
+
+    in ce (Type S)
+    Verify correction of the following bug.  The command
+    \?\
+    searches backward for "any single character except
+    newline". claimed most of the time except when the cursor
+    is on the first or second column of a line, then it jumps
+    2 lines backward!!
+
+    in ceterm (Type C)
+    When the window is moved with the numeric pad keys, the cursor
+    should go to the Unix commmand window. If you resize or move
+    with the window manager area, the cursor should not warp
+    anywhere.
+
+    in ce (Type C)
+    Create a file with a form feed 5 lines from the bottom of
+    the file. The file should be 150 lines long or so, so
+    that it is more than one window long. Two lines above the
+    form feed, put the string "abcde". Then go to the top of
+    the file and do a find on abcde. The cursor should be
+    positioned correcty.
+
+    in ce (Type P)
+    from the DM command window
+    enter the command:
+    cv ~/.profile ~/.Xdefaults
+    Two new windows should pop up.
+
+    In ce. (Type P)
+    fl *-14-*
+    fl
+    Make sure the full name of the font shows up.
+
+    search errors: 11/30/93
+      s/@n/5/ -> cursor placement is off
+      22,25s/'@n/5/ does not join lines
+
+    in ce (Type D)
+    start two ce sessions with the same geometry one right
+    after another.  When the lower session is unobscurred, the
+    window should be drawn properly.  The bug was that the lower
+    session did not redraw the 'command:'
+
+    in ce (Type D)
+    in the dm command window
+    define the key
+    kd ^1 er 09 ke
+    type "12345"
+    positon the cursor box over the 3
+    press ^1,  a tab should be inserted
+
+    in ce on the Sun (Type S)
+    in a file with the following two lines
+    char 0x85 = '…'
+    char 0xA5 = '¥'
+    fl -adobe-courier-bold-r-normal--18-180-75-75-m-110-iso8859-1
+    With an iso font loaded which has all the special Euopean
+    characters.  With case sensitivity set to off.  Define 
+    kd ^1 er a5 ke
+    This will make ^1 type in a yen symbol.
+    do a find on the yen symbol.  It should not find the 0x85
+    which is the upper case equivilant (x20 masked out) of the
+    yen symbol.
+
+    In ce. (Type D)
+    In a file longer than the window, with the window partially
+    off the edge of the display.
+    Go to the bottom of the file.
+    escape to the dm window, enter pt
+    The pt should work normally.  Bug was that the screen would return to
+    it's original position.
+
+    ************************************** R2.1 **************************************
+    ************************************** R2.1 **************************************
+    ************************************** R2.1 **************************************
+
+    in ce on sun (Type P)
+    put the key defintion "kd F2S \& ke"
+    in the .Cekeys file and reload it.
+    do a kd on F2S.  Bug was, the program memory faulted.
+
+    in ce (Type D)
+    mark a rectangular region. pop the window down. then
+    pop it back up.  the marking should remain rectangular.
+
+    in ce from Apollo Change Request 6303: (Type S)
+    execute /@n/, it should find the end of the line.
+    execute /[@n]/, it should also find the end of the line.
+
+    in Ce. (Type S)
+    tr to the end of a line where three lines have the same
+    length.  do a rectangular mark (dr;echo -r).
+    move right and down.  Do a cut.  The bug was a printed error
+    message and the cut did the wrong thing.  Then do a 
+    regular rectangular mark region and a cut.
+
+    in Ce (Type P)
+    Add some resources to the .Xdefaults under an arbitrary name like pogo.
+    for example pogo.geometry : 100x100+100+100
+    xrdb -load .Xdefaults
+    ce -name pogo -lineno yes
+    The geometry should be picked up for pogo.  Line numbers should be
+    on per the command line and Ce. class options should be picked up
+    from the .Xdefaults.
+
+    In ceterm (Type P)
+    Under vt mode, try to do a ph in the main window by:    
+    1.  Using the horizontal scroll key
+    2.  tdm to the dm window and type the ph command
+    3.  Slide the cursor with the mouse to the dm window and type the
+    ph command.  These should all fail.
+
+
+    ************************************** R2.0E **************************************
+    ************************************** R2.0E **************************************
+    ************************************** R2.0E **************************************
+
+    10/20/93
+    In ce and ceterm, from ACR 6266.
+    On the hp.
+    Put the display in explicit focus mode and use ALt-tab
+    to move the focus around.  The cursor does not show up
+    in the window till the mouse cursor is moved in.
+
+    10/14/93
+
+    in ceterm.
+    In a pad with a bunch of lines (multiple screens full)
+    Scroll to the top and then resize the window.  The file
+    should not scroll back to the bottom.
+
+
+    in ceterm
+    Quit the shell with from window manager.
+    Make sure the ceterm process terminates.
+
+    ceterm on the sun.
+    In a ceterm in the upper half of the window (KP_8 for
+    position), type ceterm and enter. The cursor goes to near
+    the bottom of the display.  The cursor should first go
+    back to the unix prompt in the upper window and then to
+    the new window's unix prompt.
+
+
+    In ceterm.
+    Rectangular highlight on the unix cmd window when there is
+    more than one line in the window (hold mode on).  The
+    scrolling should work correctly with the highlighting.
+
+
+   in ceterm the hp
+   from ACR 6258
+   start a new window.  Remove several .o files from crpad
+   directory and start a make.  Icon the window and let at least one
+   compile complete.  Un-icon the window.  The window should look proper.
+   Problem was that the data was scrolled off screen and line numbers
+   were garbage.
+   
+   in ceterm on the hp.
+   go into vt mode and run xdb crpad.
+   The messages should come up the same way as in an hpterm including the
+   scrolling region.
+
+   in ceterm on the dec ultrix
+   put /usr/i/informix/bin in your PATH
+   go into vt mode
+   run the command dbaccess
+   The arrow keys should highlight the values across the top.
+
+   in ce on any box
+   come up in mouse off mode
+   define the insert key to do sic;dr;echo and another key to
+   just do an sic.  The first key should establish a mark position.
+   The second should highligh regions of text from the mouse position.
+
+   in ceterm
+   /bin/sh does not come up on the HP.
+   run ceterm with /bin/sh and make sure it comes up.
+
+
+    In ceterm
+    Verify the correction of the following bug.
+    geo does not move cursor correctly
+    With the cursor at the normal position in the Unix cmd window
+    Using the numeric pad geo keys, press np9
+    followed by np8.  In the error case, the cursor
+    does not move to the correct place on the line.
+    press np1 followed by np 9.  In the error case the
+    cursor does not move with the window.
+
+    in ce (Type D)
+    Verify the correction of the following bug.
+    on an new empty file.
+    ^t goes to a wrong place on sun if window is off lower part of screen
+    ^b too.
+
+    in ceterm on the HP 9.01
+    Verify the correction of the following bug.
+    do an ls -la with scroll on, on a large directory.
+    The warp pointer calls stack up as the prompt moves
+    around if the pointer is held outside the DM window.
+
+    In ce
+    in a file with several lines ending "222'"
+    1,$s/'@n/@n/
+    The quote should be removed.
+
+    in ce (Type S)
+    in a file with 255 lines.
+    exeucte 1,$s/@n/@n@n/
+    There should now be 510 lines.
+    1,10s/@n/@n@n/ 
+    Should double space the first 10 lines.
+
+    in ce
+    Verify the correction of the following bug.
+    in the DM command window, type:
+    s/@n/@n@n/
+    scroll right, all is ok,
+    scroll left, only one char is scrolled.
+    scroll left again, all is ok
+
+    in ce (Type M)
+    Verify the correction of the following bug.
+    with ww on, ww -c 60
+    in the middle of a paragraph, start
+    typing and cause a wrap.  An extra blank
+    line gets added.
+
+
+    in ce
+    Verify the correction of the following bug.
+    window wrap problem.
+    create a line 38 chars long.
+    do a ww -c 40
+    go to the end of the line,
+    type a blank, nothing happens (ok),
+    type another blank, a newline is added and
+    the cursor does not move to the next line.
+
+    In ce.
+    Verify the correction of the following bug.
+    EDITOR="ce '-cmd ww 75'" 
+    $EDITOR /tmp/file
+    The problem was that ce memory faulted.  It should 
+    generate an error message or open file 75'.
+    EDITOR="ce -cmd 'ww-c75'" 
+    The syntax shown above should work.
+
+
+    in ce
+    kd ^1 es '-----------------------------------------------------------------------------' ; ke
+    ^1 adds a bunch of spaces if you are in a small window
+
+
+    in ce and ceterm
+    #define  aegis = unix = 1
+    the .Xdefaults
+    Ce.expr : unix
+    the unix gets translated to 1 on some machines.  
+    the value 1 is now flagged with an error message.
+    -expr a|u should also accept unix|aegis  <- must use Unix or Aegis
+         
+
+
+    in ce
+    make the window 60 lines tall
+    put a formfeeds at lines 55 and 65
+    scroll down a half page twice
+    scroll up a half page
+    The bug was that the form feed at line 65 was
+    not processed
+
+    in ceterm
+    bring up a ceterm -lineno y
+    press ^q
+    The bug was that funny line numbers appeared.
+
+    in ce
+    enter command 80 (causes scroll)
+    use mouse to move cursor to middle of first line on screen
+    type a character, The bug was that the line gets trashed
+
+    
+    In ce
+    Verify the correction of the following bug.
+    An edit change gets lost.
+    1) Open a file that is longer than your window.
+    2) Make a minor edit near the top.
+    3) ^b to scroll to the bottom.
+    4) ^t to scroll back to the top and the
+       edit change is gone.  Saving the file
+       at this time does not pick up the change 
+       either.
+
+    In Ce, from ACR 6102 (Type X)
+    Create an 87000 (or so) line file.
+    Save it and go back into edit on it.
+    1,$xd
+    The bug version memory faulted.
+
+    In ceterm on any machine. (Type D)
+    Start a ceterm from another window.
+    Start a long ls -la in scroll mode.
+    Icon the window.  
+    Make sure this does not produce Xerrors when output
+    is being produced on a window which is totally
+    obscured or icon.ed
+
+    ************************************** R2.0C **************************************
+    ************************************** R2.0C **************************************
+    ************************************** R2.0C **************************************
+
+    In ce (Type O)
+    cpo /bin/sh -c '/local/bin/ce -cmd "lineno" -geo 1025x490+0+500 <test_file>'
+    from a cv window causes a runaway shell sitting there eating time
+    but doing nothing.
+
+    In ce. (Type D)
+    Mark a rectangle and scroll the rectangle off screen.
+    Make sure it works correctly.
+
+    In ce on the HP.
+    use font courb14.  The lower case m has a negative 
+    left bearing.  Put an 'm' ast the first character on
+    some line of the file.  Scroll the 'm' off the bottom of
+    the window.  Scroll up on one line at a time.  The 'm' should
+    not leave any garbage in the left margin.
+
+    in Ce, the Tab definition
+    (aegis mode)
+    kd ^1 es' ';;al;so / /@t/;ar ke
+    (unix mode)
+    kd ^1 es' ';;al;so / /	/;ar ke
+    Moves the cursor over one too many spaces.
+    It should be just past the tab.
+
+    In ce (Type M)
+    In ww mode,  move the cursor to the right of the ww colunm and start
+    typing.  Window wrapping should occur.
+
+    In ce (Type M)
+    with window wrap on. Select a range of lines.
+    do a ww -a.  Make sure it window wraps it.
+
+    In ce (Type M)
+    Verify the correction of the following bug.
+    ww mode enters a blank at the left side of screen on next line when 
+    last word on first line just hits the right margin.
+
+    In ceterm, on each machine
+    go into vt100 mode, fill the screen and enter the clear command.
+
+    In ceterm on the sun,
+    create a two line shell input window.  Press enter on the
+    top line (keeps two lines).  Make sure the echo of the command
+    goes to the last visible line on the screen.
+
+    In unix window, paste in several lines. in hold mode. highlight
+    several lines. Arrow around and type. The problem was that
+    typing goofed up.
+
+    In ceterm, if you start a new ceterm with a cp DM command,
+    the first line flag was not being reset in scroll_some.
+    The result is that data kept getting scrolled off the top
+    of the screen.
+
+    On the IBM in a ceterm main window, do an ls -lad on a
+    path with a long link that extends past the right edge
+    of the window.  use the m3/m2 combination to grab it and
+    then drop in in the input window.  The word gets
+    truncated at the right edge of the screen if there is
+    a . in the name.
+
+************************************** R2.0b **************************************
+Bugs above this line were shipped with R2.0b ONLY IF STARRED *
+************************************** R2.0b **************************************
+
+    On Apollo, ce does not deal with `node_data soft links or soft links
+    with environment variables in them.
+    On Apollo edit /etc/rc which is a soft link.
+    The edit should work and a message get printed about
+    switching to copy backups.  This should also work from the dm
+    command window.
+
+    In ceterm (Type V)
+    Under vt mode, do a more.  The more should be
+    correctly highlighted at the lower left corner of the window.
+    more% goes to right side of screen some times
+
+    In ce, (Type E)
+    Make sure the -t and -b options work in the wp command.
+    kd ^1 wp -t ke
+    kd ^2 wp -b ke
+
+    In ceterm. (Type O)
+    open several windows and make sure the tty names displayed by who
+    and tty are all diffent and match the window.
+
+    In ceterm (Type D)
+    Verify the correction of the following bug.
+    copy two lines and two caracters, paste into unix input,
+    and ^b, and type. Problem was the remaining pasted text went away.
+
+    In ce (Type E)
+    Make sure key, mouse, and motion events are accepted during a long
+    search and substitute.  Build a 40000 line file, of lines of 12 a's.
+    Do a rectangular substitute on two columns "s/a/b/" and move the cursor
+    to see if the mouse cursor moves. Then try a mouse button click.
+    Then try to do a ^x (abrt)
+    to stop the action.
+
+    in ceterm (Type C)
+    Make a unix prompt wider than the screen,
+    PS1="this is a test of a wide prompt, one two three four: "
+    Verify the correction of the following bugs.
+    typing, or the tl or tr commands blast the cursor out of the window.
+    type a command and press enter.  The enter should not blast
+    the cursor out of the window.  Make sure scrolling the screen left
+    does not blast the cursor out of the window.
+
+    in ceterm (Type D).
+    do a dr;echo on the shell input line and type.
+    The bug was that the highlighting turned on and off.
+
+    In ce -reload (Type P)
+    In the .Cekeys file,
+    end a key definition  with a semicolon followed by a space.
+    The bug was that an error message resulted.
+
+    in ceterm (Type D)
+    Do the Alt h command,
+    kd *h env CEHOST;tdmo;tl;/=/ar;dr;tr;xc  -l host;ti;tl;xd  -l junk;es'DISPLAY=';;xp  host;tr;es':0.0;export DISPLAY;CEHOST=';;xp  host;tr;es' ;export CEHOST';;en ke
+    Then type in the unix command window.  Bug was:  The next thing typed in
+    unix window gets extra junk.
+
+    In ce (Type P)
+    try xc and xd with both upper and lower case -f, -a, -r, and -l.
+
+    In ceterm or ce (Type P)
+    The tn command should only go to unobscurred windows.
+    kd ^1 tn ke
+    Set up two unobscurred windows and one obscurred.  The
+    window should ignore the obscurred window.
+
+    in ceterm (Type D)
+    with the window partially obsured.
+    press Escape (tdm).
+    The window should rise and the cursor end up in the dm input window.
+
+    In ce (Type D)
+    do a mark followed by a change to insert mode.
+    Make sure this does not cause a mouse dropping.
+
+    In ceterm (Type P & E))
+    escape to the dm window from the Unix command window, and execute
+    wh;eef
+    Make sure the eof is there and gets passed to the
+    shell when the line is sent.
+
+    In ceterm on sun (Type D)
+    Verify the correction of the following bug.
+    Residual unix prompt is displayed when going into vt mode
+    at the bottom of the screen.
+
+    In ceterm on each platform (Type D)
+    Telnet to different types of machines.  Make sure the
+    password does not display.
+
+    In ce on the HP (Type P).
+    create the key definition kd ^1 fgc blue ke
+    Make sure it does not memory fault.
+
+    In ce (type S)
+    create_data 'aaaaa' 30000 > /tmp/z
+    ce the file.
+    Mark a rectangular region 2 wide starting
+    in col 3 for the whole height of the file.
+    s/a/b/
+    Problem was all the a's changed.
+    save and back out.  
+    sort -u should give only 1 line.
+
+    In ce (Type S)
+    Verify the correction of the following bug.
+    Ted Kyle problem number 2
+    create_data 'aaaaa' 40000 > /tmp/z
+    ce the file.  
+    goto line 20000
+    dr;echo
+    ^b
+    cut
+ 
+    in ce: (Type P)
+    Set up the key definition
+    kd ^1 es '&'prompt'' ke
+    go into the main window and pres ctrl-1
+    You should get prompted.  The string you type should get inserted.
+
+    In ce  (Type S & C & D)
+    Verify the correction of the following substitute bugs.
+    - s/ /xy/ does not replace all blanks 
+          where xy is any 2 or more characters replacement string.
+    - if s/str1/str2/ fails because str1 is not in range,
+         cursor should go to character after the end of the marked range.
+    - if s/str1/str2/ suceeds because str1 is in range,
+         cursor should go to last char of str2 instead of after str1 like DM.
+    - Inserting characters in a paragraph in word wrap mode causes
+      chunks of text to be repeated on the next line.
+    - Semicolon not allowed in: kd ^1;
+    - Space after ^1 causes message about incomplete definition:
+      kd m3 ;
+    - a prompt in &'prompt' that won't fit in the command line causes
+      the window to jump to the upper left hand side of the screen
+      and causes to Motif border to go off the screen so that the window
+      can't be manipulated with the mouse.
+ 
+
+    in ce (Type S)
+    Open a new file with CE
+    Create 6 lines of lower case a
+    five a's, then three a's repeated 3 times.
+    blank line in between each line.
+    BUG 1.  put cursor on second to last char
+            of first line.  do rectagular mark.
+            esc to dm window
+            s/a/b/
+            get zero size region message.
+    BUG 2.  put cursor on last char of 5 char line.
+            rectangular mark
+            arrow down to last line.
+            escape to dm window
+            s/a/b/
+            changes the wrong chars.
+
+
+    in ce (Type M)
+    turn on window wrap, type blanks across the limit marker.
+    Bug was:
+    in R1.2 ww allows typing after the limit if you type 2 blanks
+    on the limit
+
+    In ce (Type M)
+    With hex on in a new file
+    put in a few blanks on the first line.
+    tr, ar a few times, press char del.
+    Make sure that blanks are filled in to the delete position
+    and that the $ moves correctly.  Then add a few lines
+    after the first line and repeat.
+
+    in ce (Type D)
+    Mark a rectangular region, then grow the window with
+    the window manager.  Make sure there are no mouse
+    droppings.  Make it both bigger and smaller.  Also try
+    using escape to get it to the dm window and then go out and
+    do the grow.
+
+    In ceterm (Type M)
+    Verify the correction of the following bug.
+    bell does not work in ceterm echo "\007"
+    The \007 will have to be trapped in shell2pad, and a call
+    to XBell generated
+
+    In ce (Type O)
+    Verify the correction of the following bug.
+    on decosf, attempt to initiate an FTP session to decult.
+    The login prompt comes up, when you type
+    the login id, the password prompt comes usand is aparently
+    repsonded to with a null line.  The session then terminates.
+
+    in ceterm (Type V)
+    On each machine in vt100 mode,  bring a file up in vi and also
+    run it in more.
+    One bug was:  On the RS6000, more hangs
+
+    In ce (Type D)
+    Verify the correction of the following bug.
+    ceterm,  do an ls and click on a file name.
+    file obscures window.  move new edit window,
+    unix prompt disappears.
+
+    In ceterm (Type D)
+    do an ls -la on a large directory and move the
+    cursor out of the window.  The scrolling should continue.
+    Bug was that it stopped.
+
+    in ceterm (Type D)
+    with autoclose off, close a window and do the ^n.
+    There should be no "ok to quit?" message.
+
+    in ce (Type S)
+    in a 600 line file of '0x0x' mark a single rectangular column 
+    covering the first 'x' and do s/x/y/
+    Make sure this works on the top and bottom and at the 512 line
+    boundary.
+
+    In Ce (Type P)
+    From a unix command window, execute the command
+    cat x1 | ce -cmd 'pn /tmp/file;ro'
+    where x1 is any file and /tmp/file does not already exist.
+
+    In ce (Type M)
+    Verify the correction of the following bug. Paste in area below
+    a form feed on the window causes window to put first pasted line
+    at the top of the screen Should paste in the expected place. Try
+    regular and rectangular pastes. Rectangular paste will extend
+    into the next page.
+
+************************************** R1.2 **************************************
+Bugs above this line were shipped with R1.2 ONLY IF STARRED *
+************************************** R1.2 **************************************
+
+    In ce (Type M)
+    Verify the correction of the following bug.
+    pad write of file over 24562 lines fails with abend on HP
+    Start with a empty file and add lines via copy and paste till
+    there are more than 24562.  Save it and back out.  Go back into
+    the file, scroll to the bottom and do a pad write.
+          Found by:
+          Ehven Mychalowycz
+          Boeing Helecopters 
+          215-591-5547
+          Philedelphia
+          2 meg file.   HP-750  hp/ux
+          Rita Patrylak - sys admin
+          215-591-3440
+   
+    In ce (Type P)
+    Verify the correction of the following bug.
+    -load and -reload always assume aegis mode expressions
+    Try doing a ce -expr u -reload with aegis key defs.  Should
+    get an error.
+
+************************************** R1.1 **************************************
+Bugs above this line were shipped with R1.1 ONLY IF STARRED *
+************************************** R1.1 **************************************
+
+    In ce (Type D)
+    Verify that tdm only moves a window when the dm input window is
+    off screen. Move the windows around with the numeric pad and
+    then do tdm's.
+
+    In ce (Type D)
+    Verify the correction of the following bug.
+    ce on new file and first thing you do is move the window causes
+    memory fault.
+
+    In ce (Type D)
+    in a file with tabs, do a same column rectangular highlight
+    in a column past the first tab.  Make sure the highlighting
+    is done correctly.
+
+    In ce (Type D)
+    make sure lines right at 4096 wide paste and load correctly.
+    4096 wide lines did not paste/load correctly
+
+    In ce (Type D)
+    do 
+    1,$! -m -c wc
+    twice make sure each result is on a separate line
+    Bug was:
+    ! command, can prepend output on dmoutput line
+
+    In ce (Type M).
+    Verify the correction of the following bug.
+    Ce memfaults on paste;paste;paste of 5400 lines
+
+    In ce (Type M).
+    Verify the correction of the following bug.
+    Open readonly mode a 32000 line file, add 200 lines at top of file
+    and at line 12,000 things get weird.
+
+    in ce, on the IBM (Type D)
+    Do a copy spanning more than 512 lines,  Make sure there
+    are no mouse droppings.
+
+    in ce (Type S)
+    execute s/abc/def/ on a line where it will be found.
+    Then on another line with abc on it, execute s/xyz/
+    The search path should remain abc.
+    Bug was:
+    s/reppat/ does not use previous search pattern -
+    i.e. it uses s/srchpat/
+        see (/sys/help/s.hlp)
+
+
+    in ce (Type S)
+    open a very large file like the dictionary and immediately search for
+    zebra (use a key definition to set this up)
+    The bug was:
+    a /pat/ only searches to the last loaded line. 
+    If the file is not completely loaded when a search or substitute is
+    done the search should wait until the file is loaded.
+
+    in ce (Type D)
+    On Apollo (also other machines)
+    with lineno on with a full screen of data.
+    fl 12x24
+    then
+    fl  8x13
+    make sure line numbers are drawn to the bottom of the screen.
+   
+    in ce (Type D)
+    're' with no arguments should show the regular expression mode
+
+************************************** R1 **************************************
+Bugs above this line were shipped with R1
+************************************** R1 **************************************
+
+    in ce (Type S)
+    In a the following text segment:
+    col 1
+    |
+    V
+    char 0x38 = '8'
+    char 0x39 = '9'
+    char 0x3A = ':'
+    char 0x3B = ';'
+    char 0x3C = '<'
+    char 0x3D = '='
+    char 0x3E = '>'
+    char 0x3F = '?'
+    char 0x40 = '@'
+    char 0x41 = 'A'
+    char 0x42 = 'B'
+    char 0x43 = 'C'
+    char 0x44 = 'D'
+    char 0x45 = 'E'
+    char 0x46 = 'F'
+    char 0x47 = 'G'
+
+    Mark the region from char 0x3A to the line 0x46
+    Press escape and type
+    s/'@nc/c/
+    The marked text should be flattened into a single line and the
+    cursor left on the last 'c'.
+
+    next, undo the last change and
+    mark the region from char 0x3A to the line 0x46
+    Press escape and type
+    s/'@n/5/
+
+    next, undo the last change and
+    mark the region from char 0x3A to the line 0x46
+    Press escape and type
+    s/@n/5/
+
+    next, undo the last change and
+    mark the region from char 0x3A to the line 0x46
+    Press escape and type
+    s/@nc/5/
+
+    in ce (Type D)
+    on 1,000,000 line files X shifts the output  (makes me worry about
+    buffer overflow <- is ok, work buffer is 16 bytes) Temporary fix
+    for R1, truncate left side of number at 1,000,000. 
+    The titlebar window lets you know the position.
+
+    in ce or ceterm,
+    When displaying on another node, <name> should appear.
+    When displaying locally, <name> should not appear.
+    Use display = ":0", ":0.0", "<node>:0.0", "unix:0.0", (hp only) "local:0.0"
+    bug was:  on jake <jake> appears
+
+    in ce on apollo (Type P)
+    verify that 
+      'ce -fg white <file>' yields white fg,  black bg, and white border.
+      'ce -fg black <file>' yields black fg,  white bg, and black border.
+      'ce -fg black -bg black <file>' yields white fg,  black bg, and white border.
+
+    in ce (type C)
+    al against the bar between the dmout and dmin window should cross the line
+    ar against the bar between the dmout and dmin window should cross the line
+    al in line number num window should go to col 1 in edit window
+
+    in ce (type C),
+    cursor locks for ar al when arrow placed right on line between
+    edit/dminput Try doing al commands at the window border.
+
+    in ce (type P),
+    kd bs should define the shifted b and not <BackSpace> per the discussion below.
+       kd bs ?  does that define <BackSpace>, how do i define key <b. shifted?
+       -  bs will define the <backspace key>, bss will define the backspace key
+          shifted.
+          You are right, Bs should define shifted B, but defines bs since the
+          Apollo keynames are treated non-case sensitive.
+          If we want to do something about this, we better make it before R1 or
+          we will be locked in with keydefs which get written.
+      -   Solution,  kd bs has been removed as a special apollo case.
+
+    In ce (type D)
+    a file 3000 columns wide has a problem in the column display
+    in the title bar.
+
+    In ce (Type P)
+    numerous cursor position commands caused program crash:
+        (,y)    (x,)    (,)    (,,)    (,,,)    (,
+    verify that these do not cause an error.
+
+    In ce (type D)
+    in a tall window. (50-60 lines of window, ~175 lines of file)
+    put in @f at line 15, 30, and 155.
+    Make sure pb, pt work and scroll (pp +/-.5) work though the
+    whole file.
+    
+    In ce (Type P)
+    numerous curs
+    cps or cpo with no arguments should be flagged as an error,
+    it should not crash program.
+
+    In ce (Type S)
+    Should do nothing, but should find null lines.
+    1,$s/%$//  causes infinite loop  (1,$s/%@n// does too)
+
+    In Ce (Type C)
+    EDITOR="/home/stymar/etg/crpad.dev/ce -w -nb -geo c80x60-0+0 /tmp/file"
+    go into edit as shown above by typing $EDITOR
+    type 1 character
+    press cmd
+    press cmd
+    press ^n
+    respond yes
+    bug was that a memory fault occured.
+
+    In ce (Type M)
+    edit a file with a line longer than MAX_LINE (4096) it should
+    wrap.
+
+    In ce (Type S)
+    With m1 defined as click on a file name, make sure
+    it grabs the word if it is on the first, middle, or
+    last character of the word.
+
+    In ce (Type S)
+    go to the end of the line and do a search of '$'
+    It should find the end of the next line.
+
+    In ce (Type D)
+    pop when partial cursor is displayed leaves mouse dropping.
+
+    In ce (Type P)
+    Make sure any keysym is only shown once.  Bug was that the
+    keys command shows ^m3 several times.
+
+    In ce (Type E)
+    Typing fast with highlight on messes up cursor position.
+    Try in main and command windows
+    In ceterm, try in the unix command window.
+
+    In ce on the Dec. (Type E)
+    Put "cv /tmp/temp" in the copy buffer and execute
+    cmdf -p
+    The bug was that the cv command was ignored and
+    that xp was messed from that point on on the.
+    Try this where /tmp/temp exists and does not exist.
+
+    In ce (Type E)
+    In any file, verify the correction of the following bug:
+    {xp -f /tmp/file; rs}   causes cursor to disapear
+
+    In ce (Type P & S)
+    In any file, verify the correction of the following bug:
+    kd ^1 /@&'find:'/ ke 
+    (Unix mode)
+    kd ^1 /\&'find:'/ ke 
+        a. prints wrong with a kd
+        b. starts search at [0,0] always
+        c. garbage from next_line in search
+
+    Make sure (Type C)
+    (10,10) puts the cursor in the correct place.
+
+    In ce or ceterm (Type D)
+    In any file:
+    enter in dminput should clear dmout
+
+    In a ce and also in a ceterm. (Type C)
+    In each writable window, for a few different screen sizes,
+    Make sure auto horizontal scrolling  inserts characters 
+    in the correct order.  eg type, 0101010101 at the edge.
+
+    In ce (Type D)
+    In any file:
+    Make sure cmdf clears any outstanding messages in the dm output window.
+
+    In ce (Type C)
+    On the Apollo.
+    Use the DM ti command to get to a ceterm.  Start typing,
+    the typing should appear in the DM input window or the 
+    Unix cmd window.
+
+    In ce (Type D)
+    Make sure the cursor does not disappear after an undo or backspace.
+    cursor disapearse after undo,backspace...
+   
+    In ce (Type D)
+    In hex mode on a file, put in a \b and then
+    backspace over it.  Make sure it deletes the \ and the b.
+
+    In ce
+    In any file, verify the command
+    Aegis: s/% *//
+    Unix:  s/^ *//
+    deletes leading blanks from the front of lines in a marked area.
+
+    In ce (Type X)
+    In any file, verify the correction of the following bug:
+    Rectangular copy of one line does not work, dr;echo -r;xc
+
+    In ce (Type X)
+    vertical rectangular copy does not work (col != 0)
+    In any ce file:
+    Do a rectangular copy:
+    1.  regular box.
+    2.  straight down, in col zero
+    3.  straight down, not in col zero
+    4.  In an area longer than 512 lines, in all three above cases
+    
+
+    In ce (Type X)
+    In any file, verify the correction of the following bug:
+    in memdata on the sun:
+    xlsfonts | crpad
+    fl -schumacher-clean-medium-r-normal--6-60-75-75-c-40-iso8859-1
+    screen fills, then a memory fault occurs.
+
+    In ce (Type P)
+    Start a cv with a cpo, make sure it works.
+
+    In ce (Type D)
+    Put a long command in the dm input window so that it has to scroll
+    right.  Enter should make it scroll back to the left.
+
+    In ce (Type D)
+    In any file, verify the correction of the following bug:
+    ^t;dr;^b;xd followed by cursor motion
+    (page up/down has strange results typing causes memfault
+
+     Start a ce -w from a shell.  do a tf, ^q in the shell window to
+     kill the edit session.  A crash file should be created.
+
+     size a window very small on sun, It should limit how small the
+     window can get.
+
+     In any file, do a keys command and look at the output.  Make sure
+     everything looks as it should, compare it to the keydefs file.
+   
+     In any file.
+     scroll left in DMINPUT window, and 'command: ' should go away.
+
+     m1 in dmoutput has strange results on SUN
+     Make sure m1 click works normally.
+
+     In a large file, (the dictionary) make sure 
+     1,$s/a/e/  in a large file after opening it does all the lines,
+     forcing read ahead a necessary.
+     May need debug @2 to see this one work.
+
+     Do a find and reverse find when found object is:
+     1.  first thing in the file.
+     2.  last thing in the file
+     3.  first thing on line 513, start search at top of file
+     4.  past line 513.
+
+     In a large file, start a long search/substitute and press ^x (abrt),
+     The abort should work.
+
+     Start a search, abort it, restart it.  It should not skip any 
+     copies of what it is looking for.
+
+     in ce
+     in a file with over 515 lines in it
+     type on line 1
+     go to line 511
+     on line 513 type then press ^t.
+     Make sure line 1 is in tact.  Then recheck line 513
+
+
+     make sure kk works
+
+     In any file, verify the correction of the following bug:
+     type in a word in the dminput and hit del-char and you
+     get "no such line"
+
+     On the sun, if a mouse button is held down and you go from
+     the main window to the dminput window, the motion events still
+     come in for the main window.
+     make sure the block cursor moves correctly.
+
+     In any file, execute the tdm key (escape) and type ph 10, the main
+     window should scroll, not the DM input window.
+
+     Do a help key, or some other prompt and make sure the cursor
+     gets positioned correctly.  Do this with an empty DM input
+     window and also with junk on the line.
+
+    In any file, highlight text across zero length lines.
+    There should be highlighting if we are showing column 1, and no
+    highlighting if we are scrolled left.
+
+    Make sure mark and copy work in each window in a ceterm.
+
+    In a command file, with a semicolon in the comment, make sure the
+    comment ignores the text to the end of the line.
+
+    In any file, verify the correction of the following bug:
+    mark, add 5 blanks, xc, go to next line, paste, memory faults
+
+    make sure that just the command Ce, by itself terminates 
+    with a message.
+
+    In any file, with line numbers turned on, scroll
+    to the bottom of the file, and start typing
+    in the empty area past the last line,  Line numbers
+    should fill in immediately.  Try this with a new file too.
+
+    Use the ~ in a file name in the command line, cv command,
+    ce command (new file), pn command, and xp -f command.
+
+    In any file, verify the correction of the following bug:
+    If the first two commands in a pad are 'rm' and 'gm', a core dump
+    results. Verify this with an existing and a new file.
+
+    The command /a/b/ should be flagged as a syntax error.
+
+    Attempt to pn (pad name) to an existing file name.  The
+    attempt should fail both with -c and without -c.
+   
+    In a file: type   pt;tt;tr
+    copy this string to a named paste buffer xyz
+    Try out the following key definition:
+    kd ^1 cmdf -p &'buff name: ' ke
+    When prompted enter xyz
+
+    In any file which is wider and taller than the window.
+    Verify workings of rectangular highlight when base
+    point (marked point) is off each different side of the
+    screen.  That is mark a rectangular region and scroll the 
+    base point off each side and corner of the screen.  This
+    is 8 different places:  1 | 2 | 3
+                           -----------
+                            4 |   | 5
+                           -----------
+                            6 | 7 | 8
+
+    Make a small edit window (300x300), modify a char and
+    press ^n (wc -q).  DM input prompt should scroll to position
+    cursor.
+
+    In any file,
+    'ee' in overstrike mode should replace deleted char with a blank
+
+    a null response to "File modified; okay to quit?"
+    should be the same as answering no.
+
+    In any file.
+    'en' in overstrike should replace the character under the cursor [STYMA]
+
+    In any file, ro -on makes the file read only if possible. 
+    ro -off makes it read/write.
+
+    In any file, sc -on should turn case sensitivity on.
+    sc -off should turn it off (case insensitive).
+
+    In any file,
+    'rs' should accept -f, -n, and -o for upward compatibility
+    The screen is refreshed, the parms are ignored.
+
+    In any file, try twb, No parms should give an error.
+    twb should REQUIRE one of -t, -b, -l, -r
+
+    If text is cut from tail of file,
+    make sure the area where the text was shows up as
+    null lines when highlighted.
+
+    In any file, go to the bottom of the file (^b) and
+    repeat 'pv 1' at bottom of file.  File should scroll up
+    till only one line is shown and stay that way.
+
+    In any file, execute the dm cmd line.
+    lineno;lineno
+    The lineno should toggle back to where it is.
+
+    In ce
+    do a ^b.  Press enter.  Each press of enter should
+    scroll one line to keep the line you want to type on on the screen.
+
+    In ce.
+    In any file.  enter some text via
+    tdm key
+    es 'abc'
+    enter.
+    Make sure undo undoes the abc but no more.
+
+    Make sure high lighting adjusts pixel lengths on left and right scrolls.
+
+    In ce.
+    In any file.  verify that
+    on copy/paste operations, 0-length lines are not lost.  That is
+    copy a range of text with zero length lines embedded, paste it.
+    The null lines should get pasted.
+
+    upon invocation, if mouse cursor is not in edit window and any
+    key is hit, a core dump is taken. This is for a machine with
+    explicit pointer focus.
+
+    after mouse cursor has been in window, if it is moved out and
+    text typed, the first character appears at line 0 (no kidding),
+    and subsequent text is inserted at a vertical displacement equal
+    to that of the mouse cursor when it was outside the window. THis
+    is for a machine with explicit pointer focus.
+
+    if an area is highlighted, and the cursor is put in the Command:
+    window, and backspace is pressed into the left margin, the
+    highlight is lost, until the mouse cursor is moved into the text
+    area, at which point the original end-of-highlight-area point is
+    lost
+
+    '//' (repeat search) dumps if no previous pattern (unless at eof), and
+    '\\' (backward search) dumps if no previous pattern (unless at bof)
+
+    /@@/ should find an at sign.
+
+    Go into a file.  somewhere in the middle of a line
+    type abc.  then press <esc> (tdm) and do \abc\.
+    The new text should be found.
+
+    
+    s/%/abc/
+    should put abc at the front of each line it affects.
+    Do this in a highlighted region, rectangular and regular.
+    put the cursor in col 1 and do it without hightlight.
+    Do it 1,5s/%/abc/
+    This is aegis mode.
+
+    Make sure highlighting is turned off for an 's' command
+    for both success and failure when doing it over a highlighted
+    region.  Do this for small and >512 line highlights.
+
+    there is a problem with the mouse cursor after s-and-s success - it
+    sometimes ends up outside the window instead of it being with the
+    text cursor at the bottom of the highlighted area.
+
+    make sure a single command line (or key def) that does 'pt;tt;tl' 
+    (i.e. go to the top) positions the cursor properly
+
+   Do a s/a/b/ on a line with an a on it.
+   Move the cursor to a line with another a on it.
+   do s
+   This should change the a's to b's on the new lijne
+   do s/// 
+   This should delete the a'a
+   Then do undo's, the undos should each
+   undo all the data on a line.
+
+    Do a rectangular copy in a file.
+    Go to the bottom and page up.  paste Rectangular and also
+    regular into the empty area past eof.
+
+     in a file of ten character 1's by 20 lines.
+     on HP720 - 1,$s/1/0/ changes only first char in file, again, and
+     changes all but first line.  [PLYLERK]
+
+    Resize a window and watch for mouse droppings.
+    Do this in highlight and non-higlight and
+    rectangular highlight modes.
+
+    In any file do
+    1,$s/@n/a/   
+
+    In aegis mode,
+    search for /?@{/
+    This should find any character followed by a {
+
+    In any file, do
+    1,$so/a/b/
+    then do
+    so
+    It should find and change a second a on the line
+    or say not found.
+
+    ph 200000000;es 'd' memfaults
+    In any file, 
+    ph 200000000;es 'd' 
+    It should say line too long.
+
+    Create a file with 40000 lines of data.
+    do a 1,$xd.
+    Then undo the change and then redo it.
+    It should not memory fault and the line count
+    should be good.  Then do a search for something which
+    will not be found.  Then start at the bottom and do
+    a backward search for something which will not be found.

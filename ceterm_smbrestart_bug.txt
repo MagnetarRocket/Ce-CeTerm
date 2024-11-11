@@ -1,0 +1,372 @@
+[zherc.phx.lucent.com]: ceterm
+[zherc.phx.lucent.com]: CEDEBUG=0x8000
+CEDEBUG=0x408000
+ @pad2shell([115]service smb restart)nl:True[p2sbuf: '']
+"
+ @S2P#1 '21' bytes to read: 
+S2P-IO:     Decimal len = 21
+--ADDR-----OFFSET----DATA---------------------------------------------------------------------------------------------------------
+BFBAA5C0   000000   73657276 69636520 736D6220 72657374 6172740D 0A                           * service.smb.restart.. *
+I/O is: [21] bytes:'service smb restart
+'
+ @S2P-select TO(2000) data Not Ready to read: 
+fd[5] echo_only:0
+#define ECHO=8, CRMOD=16
+telnet_mode:0
+termio.c_lflag:0x3B
+sgtty.sg_flags:0x11
+(termio & ECHO) = 8, (sgtty & CRMOD) = 16
+RC=1
+c_iflag = 0x00002500
+ICRNL,IXON,IMAXBEL,
+c_oflag = 0x00001805
+OPOST,ONLCR,TABDLY,TAB1,TAB2,TAB3,
+c_cflag = 0x000004bd
+CSIZE,  CS6,  CS7,  CS8,CREAD,HUPCL,
+c_lflag = 0x0000003b
+ISIG,ICANON,ECHO,ECHOE,ECHOK,
+
+ @S2P#1 '28' bytes to read: 
+S2P-IO:     Decimal len = 28
+--ADDR-----OFFSET----DATA---------------------------------------------------------------------------------------------------------
+BFBAA5C0   000000   53687574 74696E67 20646F77 6E20534D 42207365 72766963 65733A20            * Shutting.down.SMB.services.. *
+I/O is: [28] bytes:'Shutting down SMB services: '
+ @S2P-select TO(2000) data Not Ready to read: 
+fd[5] echo_only:0
+#define ECHO=8, CRMOD=16
+telnet_mode:0
+termio.c_lflag:0x3B
+sgtty.sg_flags:0xBFBB2518
+(termio & ECHO) = 8, (sgtty & CRMOD) = 16
+RC=1
+c_iflag = 0x00002500
+ICRNL,IXON,IMAXBEL,
+c_oflag = 0x00001805
+OPOST,ONLCR,TABDLY,TAB1,TAB2,TAB3,
+c_cflag = 0x000004bd
+CSIZE,  CS6,  CS7,  CS8,CREAD,HUPCL,
+c_lflag = 0x0000003b
+ISIG,ICANON,ECHO,ECHOE,ECHOK,
+
+ @S2P#1 '5' bytes to read: 
+S2P-IO:     Decimal len = 5
+--ADDR-----OFFSET----DATA---------------------------------------------------------------------------------------------------------
+BFBAA5C0   000000   1B5B3630 47                                                               * ..60G *
+I/O is: [5] bytes:'60G'
+ @S2P-select TO(2000) data Ready to read: 
+S2P-IO:     Decimal len = 1
+--ADDR-----OFFSET----DATA---------------------------------------------------------------------------------------------------------
+BFBAA5C0   000000   5B                                                                        * . *
+I/O is: [1] bytes:'['
+ @S2P-select TO(2000) data Ready to read: 
+S2P-IO:     Decimal len = 7
+--ADDR-----OFFSET----DATA---------------------------------------------------------------------------------------------------------
+BFBAA5C0   000000   1B5B303B 33326D                                                           * ..0.32m *
+I/O is: [7] bytes:''
+ @S2P-select TO(2000) data Ready to read: 
+S2P-IO:     Decimal len = 6
+--ADDR-----OFFSET----DATA---------------------------------------------------------------------------------------------------------
+BFBAA5C0   000000   20204F4B 2020                                                             * ..OK.. *
+I/O is: [6] bytes:'  OK  '
+ @S2P-select TO(2000) data Ready to read: 
+S2P-IO:     Decimal len = 7
+--ADDR-----OFFSET----DATA---------------------------------------------------------------------------------------------------------
+BFBAA5C0   000000   1B5B303B 33396D                                                           * ..0.39m *
+I/O is: [7] bytes:''
+ @S2P-select TO(2000) data Ready to read: 
+S2P-IO:     Decimal len = 1
+--ADDR-----OFFSET----DATA---------------------------------------------------------------------------------------------------------
+BFBAA5C0   000000   5D                                                                        * . *
+I/O is: [1] bytes:']'
+ @S2P-select TO(2000) data Ready to read: 
+S2P-IO:     Decimal len = 1
+--ADDR-----OFFSET----DATA---------------------------------------------------------------------------------------------------------
+BFBAA5C0   000000   0D                                                                        * . *
+I/O is: [1] bytes:''
+ @S2P-select TO(2000) data Not Ready to read: 
+fd[5] echo_only:0
+#define ECHO=8, CRMOD=16
+telnet_mode:0
+termio.c_lflag:0x3B
+sgtty.sg_flags:0xBFBB2518
+(termio & ECHO) = 8, (sgtty & CRMOD) = 16
+RC=1
+c_iflag = 0x00002500
+ICRNL,IXON,IMAXBEL,
+c_oflag = 0x00001805
+OPOST,ONLCR,TABDLY,TAB1,TAB2,TAB3,
+c_cflag = 0x000004bd
+CSIZE,  CS6,  CS7,  CS8,CREAD,HUPCL,
+c_lflag = 0x0000003b
+ISIG,ICANON,ECHO,ECHOE,ECHOK,
+
+ @S2P#1 '30' bytes to read: 
+S2P-IO:     Decimal len = 30
+--ADDR-----OFFSET----DATA---------------------------------------------------------------------------------------------------------
+BFBAA5C0   000000   0D0A5368 75747469 6E672064 6F776E20 4E4D4220 73657276 69636573 3A20       * ..Shutting.down.NMB.services.. *
+I/O is: [30] bytes:'
+Shutting down NMB services: '
+ @S2P-select TO(2000) data Not Ready to read: 
+fd[5] echo_only:0
+#define ECHO=8, CRMOD=16
+telnet_mode:0
+termio.c_lflag:0x3B
+sgtty.sg_flags:0xBFBB2518
+(termio & ECHO) = 8, (sgtty & CRMOD) = 16
+RC=1
+c_iflag = 0x00002500
+ICRNL,IXON,IMAXBEL,
+c_oflag = 0x00001805
+OPOST,ONLCR,TABDLY,TAB1,TAB2,TAB3,
+c_cflag = 0x000004bd
+CSIZE,  CS6,  CS7,  CS8,CREAD,HUPCL,
+c_lflag = 0x0000003b
+ISIG,ICANON,ECHO,ECHOE,ECHOK,
+
+ @S2P#1 '5' bytes to read: 
+S2P-IO:     Decimal len = 5
+--ADDR-----OFFSET----DATA---------------------------------------------------------------------------------------------------------
+BFBAA5C0   000000   1B5B3630 47                                                               * ..60G *
+I/O is: [5] bytes:'60G'
+ @S2P-select TO(2000) data Ready to read: 
+S2P-IO:     Decimal len = 1
+--ADDR-----OFFSET----DATA---------------------------------------------------------------------------------------------------------
+BFBAA5C0   000000   5B                                                                        * . *
+I/O is: [1] bytes:'['
+ @S2P-select TO(2000) data Ready to read: 
+S2P-IO:     Decimal len = 7
+--ADDR-----OFFSET----DATA---------------------------------------------------------------------------------------------------------
+BFBAA5C0   000000   1B5B303B 33326D                                                           * ..0.32m *
+I/O is: [7] bytes:''
+ @S2P-select TO(2000) data Ready to read: 
+S2P-IO:     Decimal len = 6
+--ADDR-----OFFSET----DATA---------------------------------------------------------------------------------------------------------
+BFBAA5C0   000000   20204F4B 2020                                                             * ..OK.. *
+I/O is: [6] bytes:'  OK  '
+ @S2P-select TO(2000) data Not Ready to read: 
+fd[5] echo_only:0
+#define ECHO=8, CRMOD=16
+telnet_mode:0
+termio.c_lflag:0x3B
+sgtty.sg_flags:0xBFBB2518
+(termio & ECHO) = 8, (sgtty & CRMOD) = 16
+RC=1
+c_iflag = 0x00002500
+ICRNL,IXON,IMAXBEL,
+c_oflag = 0x00001805
+OPOST,ONLCR,TABDLY,TAB1,TAB2,TAB3,
+c_cflag = 0x000004bd
+CSIZE,  CS6,  CS7,  CS8,CREAD,HUPCL,
+c_lflag = 0x0000003b
+ISIG,ICANON,ECHO,ECHOE,ECHOK,
+
+ @S2P#1 '9' bytes to read: 
+S2P-IO:     Decimal len = 9
+--ADDR-----OFFSET----DATA---------------------------------------------------------------------------------------------------------
+BFBAA5C0   000000   1B5B303B 33396D5D 0D                                                      * ..0.39m.. *
+I/O is: [9] bytes:']'
+ @S2P-select TO(2000) data Not Ready to read: 
+fd[5] echo_only:0
+#define ECHO=8, CRMOD=16
+telnet_mode:0
+termio.c_lflag:0x3B
+sgtty.sg_flags:0xBFBB2518
+(termio & ECHO) = 8, (sgtty & CRMOD) = 16
+RC=1
+c_iflag = 0x00002500
+ICRNL,IXON,IMAXBEL,
+c_oflag = 0x00001805
+OPOST,ONLCR,TABDLY,TAB1,TAB2,TAB3,
+c_cflag = 0x000004bd
+CSIZE,  CS6,  CS7,  CS8,CREAD,HUPCL,
+c_lflag = 0x0000003b
+ISIG,ICANON,ECHO,ECHOE,ECHOK,
+
+ @S2P#1 '2' bytes to read: 
+S2P-IO:     Decimal len = 2
+--ADDR-----OFFSET----DATA---------------------------------------------------------------------------------------------------------
+BFBAA5C0   000000   0D0A                                                                      * .. *
+I/O is: [2] bytes:'
+'
+@vt100_color_line: line= "Shutting down NMB services:   OK  ]"
+@vt100_color_line data     Decimal len = 55
+--OFFSET----DATA---------------------------------------------------------------------------------------------------------
+  000000   53687574 74696E67 20646F77 6E204E4D 42207365 72766963 65733A20 1B5B3630   * Shutting.down.NMB.services....60 *
+  000020   475B1B5B 303B3332 6D20204F 4B20201B 5B303B33 396D5D                       * G...0.32m..OK....0.39m. *
+vt100_color_line EC[60G[ (at pos 30)  - Select Graphic Rendition 
+VT100: Bad character in number string (G) in vt100 cmd sequence line (60G[  OK  ])
+vt_sgr: count = 1  (60G[0;32)
+vt_sgr: unsupported parm 60 found
+vt100_color_line EC[0;39m (at pos 49)  - Select Graphic Rendition 
+vt_sgr: count = 2  (0;39)
+build_color: case 27 or 0, normal video
+vt_sgr: unsupported parm 39 found
+vt100_color_line: line= "Shutting down NMB services:   OK  ]"
+color = "34,16384,DEF_BG/DEF_FG;28,16384,DEF_BG/DEF_FG;"
+ @S2P-select TO(2000) data Ready to read: 
+S2P-IO:     Decimal len = 23
+--ADDR-----OFFSET----DATA---------------------------------------------------------------------------------------------------------
+BFBAA5C0   000000   53746172 74696E67 20534D42 20736572 76696365 733A20                       * Starting.SMB.services.. *
+I/O is: [23] bytes:'Starting SMB services: '
+ @S2P-select TO(2000) data Not Ready to read: 
+fd[5] echo_only:0
+#define ECHO=8, CRMOD=16
+telnet_mode:0
+termio.c_lflag:0x3B
+sgtty.sg_flags:0xBFBB2518
+(termio & ECHO) = 8, (sgtty & CRMOD) = 16
+RC=1
+c_iflag = 0x00002500
+ICRNL,IXON,IMAXBEL,
+c_oflag = 0x00001805
+OPOST,ONLCR,TABDLY,TAB1,TAB2,TAB3,
+c_cflag = 0x000004bd
+CSIZE,  CS6,  CS7,  CS8,CREAD,HUPCL,
+c_lflag = 0x0000003b
+ISIG,ICANON,ECHO,ECHOE,ECHOK,
+
+ @S2P#1 '5' bytes to read: 
+S2P-IO:     Decimal len = 5
+--ADDR-----OFFSET----DATA---------------------------------------------------------------------------------------------------------
+BFBAA5C0   000000   1B5B3630 47                                                               * ..60G *
+I/O is: [5] bytes:'60G'
+ @S2P-select TO(2000) data Ready to read: 
+S2P-IO:     Decimal len = 1
+--ADDR-----OFFSET----DATA---------------------------------------------------------------------------------------------------------
+BFBAA5C0   000000   5B                                                                        * . *
+I/O is: [1] bytes:'['
+ @S2P-select TO(2000) data Ready to read: 
+S2P-IO:     Decimal len = 7
+--ADDR-----OFFSET----DATA---------------------------------------------------------------------------------------------------------
+BFBAA5C0   000000   1B5B303B 33326D                                                           * ..0.32m *
+I/O is: [7] bytes:''
+ @S2P-select TO(2000) data Ready to read: 
+S2P-IO:     Decimal len = 6
+--ADDR-----OFFSET----DATA---------------------------------------------------------------------------------------------------------
+BFBAA5C0   000000   20204F4B 2020                                                             * ..OK.. *
+I/O is: [6] bytes:'  OK  '
+ @S2P-select TO(2000) data Ready to read: 
+S2P-IO:     Decimal len = 7
+--ADDR-----OFFSET----DATA---------------------------------------------------------------------------------------------------------
+BFBAA5C0   000000   1B5B303B 33396D                                                           * ..0.39m *
+I/O is: [7] bytes:''
+ @S2P-select TO(2000) data Ready to read: 
+S2P-IO:     Decimal len = 1
+--ADDR-----OFFSET----DATA---------------------------------------------------------------------------------------------------------
+BFBAA5C0   000000   5D                                                                        * . *
+I/O is: [1] bytes:']'
+ @S2P-select TO(2000) data Ready to read: 
+S2P-IO:     Decimal len = 1
+--ADDR-----OFFSET----DATA---------------------------------------------------------------------------------------------------------
+BFBAA5C0   000000   0D                                                                        * . *
+I/O is: [1] bytes:''
+ @S2P-select TO(2000) data Ready to read: 
+S2P-IO:     Decimal len = 2
+--ADDR-----OFFSET----DATA---------------------------------------------------------------------------------------------------------
+BFBAA5C0   000000   0D0A                                                                      * .. *
+I/O is: [2] bytes:'
+'
+ @S2P-select TO(2000) data Ready to read: 
+S2P-IO:     Decimal len = 23
+--ADDR-----OFFSET----DATA---------------------------------------------------------------------------------------------------------
+BFBAA5C0   000000   53746172 74696E67 204E4D42 20736572 76696365 733A20                       * Starting.NMB.services.. *
+I/O is: [23] bytes:'Starting NMB services: '
+ @S2P-select TO(2000) data Not Ready to read: 
+fd[5] echo_only:0
+#define ECHO=8, CRMOD=16
+telnet_mode:0
+termio.c_lflag:0x3B
+sgtty.sg_flags:0xBFBB2518
+(termio & ECHO) = 8, (sgtty & CRMOD) = 16
+RC=1
+c_iflag = 0x00002500
+ICRNL,IXON,IMAXBEL,
+c_oflag = 0x00001805
+OPOST,ONLCR,TABDLY,TAB1,TAB2,TAB3,
+c_cflag = 0x000004bd
+CSIZE,  CS6,  CS7,  CS8,CREAD,HUPCL,
+c_lflag = 0x0000003b
+ISIG,ICANON,ECHO,ECHOE,ECHOK,
+
+ @S2P#1 '5' bytes to read: 
+S2P-IO:     Decimal len = 5
+--ADDR-----OFFSET----DATA---------------------------------------------------------------------------------------------------------
+BFBAA5C0   000000   1B5B3630 47                                                               * ..60G *
+I/O is: [5] bytes:'60G'
+ @S2P-select TO(2000) data Ready to read: 
+S2P-IO:     Decimal len = 1
+--ADDR-----OFFSET----DATA---------------------------------------------------------------------------------------------------------
+BFBAA5C0   000000   5B                                                                        * . *
+I/O is: [1] bytes:'['
+ @S2P-select TO(2000) data Ready to read: 
+S2P-IO:     Decimal len = 7
+--ADDR-----OFFSET----DATA---------------------------------------------------------------------------------------------------------
+BFBAA5C0   000000   1B5B303B 33326D                                                           * ..0.32m *
+I/O is: [7] bytes:''
+ @S2P-select TO(2000) data Ready to read: 
+S2P-IO:     Decimal len = 6
+--ADDR-----OFFSET----DATA---------------------------------------------------------------------------------------------------------
+BFBAA5C0   000000   20204F4B 2020                                                             * ..OK.. *
+I/O is: [6] bytes:'  OK  '
+ @S2P-select TO(2000) data Ready to read: 
+S2P-IO:     Decimal len = 7
+--ADDR-----OFFSET----DATA---------------------------------------------------------------------------------------------------------
+BFBAA5C0   000000   1B5B303B 33396D                                                           * ..0.39m *
+I/O is: [7] bytes:''
+ @S2P-select TO(2000) data Ready to read: 
+S2P-IO:     Decimal len = 1
+--ADDR-----OFFSET----DATA---------------------------------------------------------------------------------------------------------
+BFBAA5C0   000000   5D                                                                        * . *
+I/O is: [1] bytes:']'
+ @S2P-select TO(2000) data Ready to read: 
+S2P-IO:     Decimal len = 1
+--ADDR-----OFFSET----DATA---------------------------------------------------------------------------------------------------------
+BFBAA5C0   000000   0D                                                                        * . *
+I/O is: [1] bytes:''
+ @S2P-select TO(2000) data Ready to read: 
+S2P-IO:     Decimal len = 2
+--ADDR-----OFFSET----DATA---------------------------------------------------------------------------------------------------------
+BFBAA5C0   000000   0D0A                                                                      * .. *
+I/O is: [2] bytes:'
+'
+ @S2P-select TO(2000) data Not Ready to read: 
+fd[5] echo_only:0
+#define ECHO=8, CRMOD=16
+telnet_mode:0
+termio.c_lflag:0x3B
+sgtty.sg_flags:0xBFBB2518
+(termio & ECHO) = 8, (sgtty & CRMOD) = 16
+RC=1
+c_iflag = 0x00002500
+ICRNL,IXON,IMAXBEL,
+c_oflag = 0x00001805
+OPOST,ONLCR,TABDLY,TAB1,TAB2,TAB3,
+c_cflag = 0x000004bd
+CSIZE,  CS6,  CS7,  CS8,CREAD,HUPCL,
+c_lflag = 0x0000003b
+ISIG,ICANON,ECHO,ECHOE,ECHOK,
+
+ @S2P#1 '43' bytes to read: 
+S2P-IO:     Decimal len = 43
+--ADDR-----OFFSET----DATA---------------------------------------------------------------------------------------------------------
+BFBAA5C0   000000   02026364 202F6469 736B322F 5354352E 330D0A5B 7A686572 632E7068 782E6C75   * ..cd..disk2.ST5.3...zherc.phx.lu *
+BFBAA5E0   000020   63656E74 2E636F6D 5D3A20                                                  * cent.com... *
+I/O is: [43] bytes:'[zherc.phx.lucent.com]: '
+translate_tilde_dot : setting edit file dir from current working directory!
+ @S2P-select TO(2000) data Not Ready to read: 
+fd[5] echo_only:0
+#define ECHO=8, CRMOD=16
+telnet_mode:1
+termio.c_lflag:0x31
+sgtty.sg_flags:0xBFBB2518
+(termio & ECHO) = 0, (sgtty & CRMOD) = 16
+RC=1
+c_iflag = 0x00002400
+IXON,IMAXBEL,
+c_oflag = 0x00001805
+OPOST,ONLCR,TABDLY,TAB1,TAB2,TAB3,
+c_cflag = 0x000004bd
+CSIZE,  CS6,  CS7,  CS8,CREAD,HUPCL,
+c_lflag = 0x00000031
+ISIG,ECHOE,ECHOK,
+

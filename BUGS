@@ -1,0 +1,1920 @@
+###############################################################################
+#
+#       NEW, UNPRIORITIZED
+
+bell -off still beeps.
+
+
+The default keydefs for *m2 and m3 are bad in UNIX mode.  The B version in
+the file should be replaced with the ? version.
+
+B kd *m2  sic;/[^-a-zA-Z._@$0-9\\\\/\\\~]/dr;?[^-a-zA-Z._@$0-9\\\\/\\\~]?;/./xc X ke 
+G kd *m2  sic;/[^-a-zA-Z._@$0-9\\/\\~]/dr;?[^-a-zA-Z._@$0-9\\/\\~]?;/./xc X ke 
+
+
+B kd m3   sic;/[^-a-zA-Z._@$0-9\\\\/\\\~]/dr;  ?[^-a-zA-Z._@$0-9\\\\/\\\\~]?;/./xc -l cv_file; ti;tl;xd junk;es 'cv \\\\'';xp cv_file;tr;es '\\\\'';en ke
+? kd m3   sic;/[^-a-zA-Z._@$0-9\\/\\\~]/dr;  ?[^-a-zA-Z._@$0-9\\/\\\\~]?;/./xc -l cv_file; ti;tl;xd junk;es 'cv \\'';xp cv_file;tr;es '\\'';en ke
+G kd m1   sic;/[^-a-zA-Z._@$0-9\\/\\\~]/dr;  ?[^-a-zA-Z._@$0-9\\/\\\\~]?;/./xc -l cv_file; tdm;tl;xd junk;es 'cv \\'';xp cv_file;tr;es '\\'';en ke
+
+
+
+
+
+    in ceterm (type >)
+    Move the UNIX command window off the bottom of the screen.
+    Put the cursor in the transcript pad and type a command.  The bug
+    is the command is typed backwards.  This is no good.  The question
+    becomes, what should happen?  Should the window move like when you
+    press escape?  Should it beep at you?
+
+    in ce (Type ?)
+    mkdir test1 test1/test2 test1/test2/test3
+    cd test1
+    echo Howdy\! > file
+    cd test2/test3
+    ln -s .. test4
+    cat test4/../file
+    cv test4/../file
+
+
+    in ce (Type S)
+    In Aegis RE mode
+    /%[ @t]*$/
+     Should find a blank line or a null line
+***************************************************************
+***************************************************************
+
+Bob.....
+
+Please find below an update to your response on my request for CE
+enhancements. The status of the requests is as follows :
+
+ceterm_indicators_bug.txt : add flags for CETERM window states --> Modified
+ce_ascii_ebcdic_bug.txt : add ASCII/EBCDIC tables to CE help files --> Closed
+ce_bkuptype_bug.txt : add VAX mode option for creating backup files --> Open
+ce_case_bug.txt : add options for Sentence case, Title Case --> Closed
+ce_file_mgr_bug.txt : create Arpus file manager --> Closed
+ce_help_bug.txt : add CEHELPPATH environment variable --> Closed
+ce_overstrike_mode_bug.txt : change flag to O for overstrike --> Open
+ce_record_mode_bug.txt : add flag for REC mode --> Open
+ce_vt100_bug.txt : add options for sizing VT100 window --> Closed
+
+Regards,
+
+Stan
+...........................................................................
+Stan Dunajski        Nortel Networks    Email : dunajski@nortelnetworks.com
+Network Integration  8200 Dixie Road    Tel   : (905) 863-4767
+                     Brampton, Ontario  Fax   : (905) 863-5725
+Global Professional  Canada             M/S   : 036/E2/301
+Services             L6T 4B8
+...........................................................................
+
+> Subject: Re: Request for Enhancements/Fixes to Arpus/CE
+> Date: Mon, 15 Jan 2001 13:49:33 -0700
+> From: Robert Styma <stymar@agcs.com>
+> Organization: AG Communication Systems
+> To: "Dunajski, Stan [BRAM:1594:EXCH]" <dunajski@americasm01.nt.com>
+>
+> Hi Stan,
+>  Here is my initial analysis of your requests. Let me know what you think.
+>
+
+***************************************************************************
+> filename="ceterm_indicators_bug.txt"
+>
+> [ 2001/01/15, Dunajski ]
+>
+> Update indicators in CETERM to show flags, instead of blank, for
+> following : Jump Scroll, No Hold. Better visual cues and a prompt
+> to user that these are changeable to other states.
+>
+> [ 2001/01/15, Styma ]
+> This could be added as an option along with the recording flag.  If I just
+> put it out, I would get beaten up for cluttering up the interface.  I will
+> look into this.
+>
+
+After reviewing your responses and reflecting on Apollo DM design
+philosophies, I would like to modify this request.
+
+A NO HOLD indicator no longer makes sense to me. It does not add
+any additional info. I would like to delete this request.
+
+For the Scroll flag [S] position, it could reflect [J] for Jump Scroll
+instead of blank, and [S] for smooth scroll as currently. The intent is
+not to clutter up the interface as mentioned, but to modify the current
+indicator to show the jump scroll mode.
+
+Request open.
+
+
+***************************************************************************
+> filename="ce_ascii_ebcdic_bug.txt"
+>
+> [ 2001/01/15, Dunajski ]
+>
+> Add ASCII, EBCDIC, binary/octal/decimal/hex tables to CE help file system.
+> Useful reference when developing programs that use these encodings.
+>
+> Also useful when you need these tables for lookup and cannot find them.
+>
+> [ 2001/01/15, Styma ]
+> You wouldn't happen to have textual tables in the form you want already
+> made up would you?  If you use the help key extension shown under
+> ce_help_bug.txt, you can add extra help files globally or locally.
+>
+
+Files attached. May need some massaging. Request closed.
+
+
+***************************************************************************
+> filename="ce_bkuptype_bug.txt"
+>
+> [ 2001/01/15, Dunajski ]
+>
+> Update ce -bkuptype options {dm | vi | none} to include :
+>
+> vax : create sequenced backup files, example arpus.c;1, arpus.c;2, ...
+>
+> This additional functionality can be found in the editor in VAX/VMS.
+> Useful when creating programs in a language, compiling, and debugging.
+> Creates a history of files that can be referenced or retrieved during
+> program development.
+>
+>
+> [ 2001/01/15, Styma ]
+>
+> I have thought about adding this for a long time.  The interface I envision
+> is an Xdefaults variable BackupCount.  When set to a number, for example,
+> ce.BackupCount : 4
+>
+> Ce would create   ab.c.bak
+>                   ab.c.bak1
+>                   ab.c.bak2
+>                   ab.c.bak3
+>
+> when saving backups for ab.c
+> .bak would always contain the most current backup.  A new .bak file
+> pushes every file up one number and the last guy falls off the end.
+>
+> The current backup strategy follows the Apollo DM method.  When you
+> open a file for edit.  The first save creates the .bak file.  Additional
+> saves do not create additional .bak files.  If we keep multiple backups,
+> should they follow the original strategy or bump them along every save.
+> This would be impacted by the autosave feature.  It could be an option in
+> the .Xdefaults file, but that would be a nightmare to try to document
+> in a coherent manner.
+>
+> In any case, what would you think of my planned strategy with the existing
+> DM approach as to when to create backups.
+>
+
+I like the overall approach. I take it that ce.BackupCount = 0 would
+continue with classic Apollo DM method, that is create only .bak, no
+sequenced backup files. I take it that BackupCount would also be
+featured as a command line option to operate in a particular CE
+window as opposed to global.
+
+I also like the idea of limiting the number of backup files for those
+editting tasks that are not related to program development. For program
+development, you could set the variable high (say 100) if you wanted to
+keep a long history of program source images.
+
+Regarding strategy of backup file generation, you bring up a good point.
+If I read you correctly, extending the Apollo DM strategy would suggest
+that ab.c.bak3 would be more recent than ab.c.bak1. Once ce.BackupCount
+is exceeded, then ab.c.bak1 would be deleted, ab.c.bak would be renamed
+to ab.c.bak4, and a new ab.c.bak would be born. If I set ce.BackupCount
+to a high number, then I have a nice linear, forward progression of
+file images. The bump-along strategy (ab.c.bak1 is newer than ab.c.bak3)
+is OK too but my preference would be the other method. Did I interpret
+this correctly ?
+
+The AUTOSAVE feature presents a small dilema. If it is set small (say
+50 keystrokes) then you quickly run up a large number of backup files
+(up to the ce.BackupCount limit). I suppose the user needs to be made
+aware of this situation (in the help file) and let them make a decision
+on both variables : AUTOSAVE off/<m>, ce.BackupCount 0/<n>
+
+I envisioned the above enhancement more for program development and
+debugging, where you tend to edit/save/compile, edit/save/compile, etc
+and I (Stan) would probably turn off AUTOSAVE.
+
+Request open.
+
+
+***************************************************************************
+> filename="ce_file_mgr_bug.txt"
+>
+> [ 2001/01/15, Dunajski ]
+>
+> Request for a file manager. Granted, there are file managers available
+> with most windowing systems. However a common file manager available
+> across multiple platforms would be nice, one that has the Arpus look
+> and feel, and takes advantage of any Arpus/CE features. Some platforms
+> (DOMAIN/OS) do not have a file manager for the X environment.
+>
+> [ 2001/01/15, Styma ]
+>
+> This request is somewhat outside the pervue of Ce.  I do not believe
+> we could pursue this.
+>
+
+Agreed. Request closed.
+
+
+***************************************************************************
+> filename="ce_help_bug.txt"
+>
+> [ 2001/01/15, Dunajski ]
+>
+> Add help search path variable (example CEHELPPATH) to allow CE help
+> system to search several help directories for target subject.
+>
+> For example, on DOMAIN/OS, I would like to use help in Arpus/CE to
+> access help files in //<nodename>/sys/help in addition to CE help
+> files, and possibly other help files I create for my users.
+>
+> Functionality available in UNIX as MANPATH variable.
+>
+>
+> [ 2001/01/15, Styma ]
+> This is doable, but would require the addition of a "help" command.
+> The current help command and key is a key definition which tells
+> where to look for the help file. The CEHELPDIR environment variable
+> allows you to specify one place to look. The current Help alias and
+> also Help key contains:
+>
+> kd Help cv $CEHELPDIR/&'Help on: '.hlp ke
+> alias  help       cv /phx/lib/ce/help/$1.hlp ke             # get help
+>
+> The trick becomes how to add a help command (which will override any
+> alias since built in commands are checked first) without breaking
+> current installations.
+>
+> You can however, do this quite easily using the existing Ce functionality:
+>
+> 1. Create the shell file CeSearchPath in your bin (or some bin in your
+>    search path) use the contents below to fill it in.
+> 2. Use the key definition:
+>    kd F9 ! -c -e "CeSearchPath &'Help on: '.hlp"  ke
+>    where F9 is replaced by the help key of your choice.
+> 3. In your .profile or somewhere else, define the CEHELPDIRPATH variable
+>    with the paths to search separated by colons just like $PATH.
+>
+> ########################### start CeSearchPath ##########################
+> #!/bin/ksh -p
+> #
+> # This shell script searches the environment variable CEHELPDIRPATH
+> # for the help file passed in argument 1 (ex:  commands.hlp)
+> # if it is found, it is written to stdout.  This shell is intended
+> # to be executed from an ARPUS/Ce command such as:
+> #
+> #  kd ^1 ! -c -e "CeSearchPath &'Help on: '.hlp"  ke
+> #
+>
+> r=$CEHELPDIRPATH:
+> while [[ "$r" = *:* ]]
+> do
+>     p=${r%%:*}
+>     r=${r#*:}
+>     [ -r "${p:-.}/$1" -a -f "${p:-.}/$1" ] && print cv ${p:-.}/$1 &&  exit
+> done
+>
+> print cv $CEHELPDIR/commands.hlp -cmd \"msg\\\"Could not find $1\\\"\"
+> ############################ end ########################################
+>
+>
+
+I tried this approach but a "variable syntax" appeared in the script. I
+feel, though, that this solution is what I will use once I debug it on
+my Apollo. I did not try it on the Sun machine yet.
+
+Request closed.
+
+
+***************************************************************************
+> filename="ce_case_bug.txt"
+>
+> [ 2001/01/15, Dunajski ]
+>
+> Update CASE command with additional options :
+>
+> Sentence case  <--- convert text to lowercase, with UPPERCASE on first
+>                     letter of first word, for each sentence in marked
+>                     range
+>
+> Title Case     <--- convert text to lowercase, capitalize first letter
+>                     of each word in marked range
+>
+> This additional functionality can be found in MS Word which supports
+> Sentence case, lowercase, UPPERCASE, Title Case, and tOGGLE cASE.
+>
+>
+> [ 2001/01/15, Styma ]
+>
+> This request rapidly gets into the area of word processors. The next step
+> would be acronym lists which remain capitalized and other features. This
+> could be done using techniques similar to what is show in the help command.
+> Remember, the thing you call from the ! (bang) command can be a shell
+> script, C program, Perl script (with the appropriate #! on line 1), or
+> any other executable which can write to stdout.  The default behavior
+> for the ! command is the marked region is cut and sent as stdin to the
+> program.  Stdout from the program is pasted where the cut was done.
+> Stderr is placed in the Ce error message window.
+>
+> If you look in the contrib directory in the distribution, you can see
+> some examples of this sort of programming.
+>
+
+I will experiment with ! and scripting to obtain the above functionality.
+
+Request closed.
+
+
+***************************************************************************
+> filename="ce_overstrike_mode_bug.txt"
+>
+>
+> [ 2001/01/15, Dunajski ]
+>
+> Update edit mode indicator to display "O" for overstrike mode instead
+> of blank. Provides more accurate visual cue of edit mode.
+>
+> Update modified indicator to show a flag, instead of blank, that copy
+> of file in memory matches disk copy. Provides more accurate visual cue
+> of state of file.
+>
+>
+> [ 2001/01/15, Styma ]
+>
+> This is a good idea. It does not, however, mimic the Apollo DM, which
+> means it would have to be added as an XResource switch.
+>
+
+The X resource switch is a good solution. To summarize :
+
+For the Insert flag [I] position in CE/CV/CETERM, it could reflect [O]
+for Overstrike instead of blank, and [I] for Insert/[R] for Read Only
+as currently. The intent is not to clutter up the interface as mentioned,
+but to modify the current indicator to show the overstrike mode more clearly.
+
+Request open.
+
+
+***************************************************************************
+>  filename="ce_record_mode_bug.txt"
+>
+>
+> [ 2001/01/15, Dunajski ]
+>
+> Request for indicator in CE window title bar to show RECORD mode during
+> editting. Sometimes one forgets this mode is on especially during long
+> editting sessions. Also, this flag would show the true state of the
+> edit/read pad.
+>
+>
+> [ 2001/01/15, Styma ]
+>
+> Good idea, I will look into this. Since the record feature is an extension
+> to the DM, adding an extra flag should not be a problem. There may be
+> issues when the window gets real thin, but when the window gets too small,
+> you can't see everything anyway.
+>
+
+Request open.
+
+
+***************************************************************************
+> filename="ce_vt100_bug.txt"
+>
+> [ 2001/01/15, Dunajski ]
+>
+> Add following options to VT command in Arpus/CE :
+>
+> -std      Set up a VT100 window that is 24 lines by 80 columns (the
+>           standard size of a VT100 screen).
+>
+> -lines n  Set up a VT100 window with the number of lines specified by n.
+>           The number of lines cannot exceed the number of lines in the DM
+>           window running the VT100 emulator.
+>
+> -columns n
+>           Set up a VT100 window with the number of columns specified by
+>           n.  The number of columns cannot exceed the number of columns
+>           of the DM window running the VT100 emulator.
+>
+> -f        Use the current DM font rather than one of the two default
+>           vt100 fonts.  If the pad in which vt100 is started already
+>           exists, then the existing font in that pad will be used.  If
+>           a new pad is created for the vt100 window, then the current
+>           DM font, as defined by the DM "fl" command, will be used.
+>
+>
+> Include "rubberband" to show extent/outline of VT100 window.
+>
+> This functionality is available with the VT100 command in DOMAIN/OS.
+>
+>
+> [ 2001/01/15, Styma ]
+>
+> Initial response:
+> You can do much of this with key definitions or aliases:
+> 
+> # -std option for vt mode
+> alias vtstd vt -on;geo c80x24 ke
+> kd ^1  vt -on;geo c80x24 ke
+>
+> # -lines n (assuming do do not want to use the above technique
+> alias vtlines geo cx&'number of lines on screen: ' ke
+> kd ^1  geo cx&'number of lines on screen: ' ke
+>
+> # -columns n
+> alias vtcols geo c&'number of cols on screen: ' ke
+> kd ^1  geo c&'number of cols on screen: ' ke
+>
+> # -f
+> #  I'm not sure what you mean by this one. Consider the following
+> # string of commands:
+> vt -off;fl 10x20;vt -on;geo c80x24
+> On my machine at work (sparc 20) I get a vt100 screen using the
+> big 10x20 font in vt100 mode with 80 columns and 24 rows.
+> 
+> Rubberbanding is a function of the window manager.  I am not sure
+> what it is you are requesting.
+> 
+
+Bad choice of word. I should know better.
+
+In the Apollo DM pad, when "vt100 -std" or "vt100 -lines <n> -columns <n>"
+is executed, the DM draws an outline of the VT100 window within the pad.
+
+To my pleasant surprise, the CE geo command resizes the window to the
+the number of characters/lines specified, taking into account the
+font being used. Using the aliases supplied above gives me the
+functionality I want.
+
+Request closed.
+
+
+
+
+
+ DATE :  MONDAY JANUARY 29, 2001
+
+ FILE :  ~/GLOSSARY/ASCII.TXT
+
+ VERSION : 01
+
+ SUBJECT : DESCRIPTION OF ASCII
+ ===========================================================================
+
+ NAME
+
+     ASCII : American National Standard Code for Information Interchange
+
+
+ DESCRIPTION
+     Data exchanged between a terminal and a host is generally in a standard
+     code or representation. ASCII is one such code.
+
+     Other references to ASCII include USASCII and ANSCII but the standard
+     acronym is ASCII.
+
+     ASCII is the North American version of the International Alphabet No. 5
+     (IA5)
+
+     The ASCII character code was developed by members of ANSI and adopted
+     as a standard in 1963, based on the character set used in the Teletype
+     Model 33 teleprinter. This version had no lower case characters. Since
+     then, two revisions have been made to the original ASCII code, one in
+     1968, and the second in 1977. The 1977 version of ASCII is in use today.
+     This version is also known as ANSI X3.4-1977.
+
+     ASCII is a seven bit code. This means that all characters are represented
+     in binary form by a seven bit sequence. A group of seven bits represents
+     a total of 128 combinations. ASCII defines all 128 combinations, consisting
+     of 33 control characters, 52 alphabetic characters, 10 numeric characters,
+     and 33 symbols.
+
+     There are some who claim that ASCII is an eight bit code. This comes
+     about because many systems append an additional bit to the end of each
+     ASCII character. This optional bit is called a parity bit and is used
+     for detecting errors. ASCII characters are only seven bits in length
+     but may be surrounded by other overhead bits.
+
+     The ASCII binary or hex code is obtained by starting with the column
+     followed by the row. For example, the character A is hex 41 or
+     binary 1000001.
+
+     =================================================================
+     | Binary          000   001   010   011   100   101   110   111 |
+     |         -------------------------------------------------------
+     |         | HEX    0     1     2     3     4     5     6     7  |
+     |         |     -------------------------------------------------
+     |   0000  |  0  | NUL | DLE |  SP |  0  |  @  |  P  |  `  |  p  |
+     |         |     -------------------------------------------------
+     |   0001  |  1  | SOH | DC1 |  !  |  1  |  A  |  Q  |  a  |  q  |
+     |         |     -------------------------------------------------
+     |   0010  |  2  | STX | DC2 |  "  |  2  |  B  |  R  |  b  |  r  |
+     |         |     -------------------------------------------------
+     |   0011  |  3  | ETX | DC3 |  #  |  3  |  C  |  S  |  c  |  s  |
+     |         |     -------------------------------------------------
+     |   0100  |  4  | EOT | DC4 |  $  |  4  |  D  |  T  |  d  |  t  |
+     |         |     -------------------------------------------------
+     |   0101  |  5  | ENQ | NAK |  %  |  5  |  E  |  U  |  e  |  u  |
+     |         |     -------------------------------------------------
+     |   0110  |  6  | ACK | SYN |  &  |  6  |  F  |  V  |  f  |  v  |
+     |         |     -------------------------------------------------
+     |   0111  |  7  | BEL | ETB |  '  |  7  |  G  |  W  |  g  |  w  |
+     |         |     -------------------------------------------------
+     |   1000  |  8  | BS  | CAN |  (  |  8  |  H  |  X  |  h  |  x  |
+     |         |     -------------------------------------------------
+     |   1001  |  9  | HT  | EM  |  )  |  9  |  I  |  Y  |  i  |  y  |
+     |         |     -------------------------------------------------
+     |   1010  |  A  | LF  | SUB |  *  |  :  |  J  |  Z  |  j  |  z  |
+     |         |     -------------------------------------------------
+     |   1011  |  B  | VT  | ESC |  +  |  ;  |  K  |  [  |  k  |  {  |
+     |         |     -------------------------------------------------
+     |   1100  |  C  | FF  | FS  |  ,  |  <  |  L  |  \  |  l  |  |  |
+     |         |     -------------------------------------------------
+     |   1101  |  D  | CR  | GS  |  -  |  =  |  M  |  ]  |  m  |  }  |
+     |         |     -------------------------------------------------
+     |   1110  |  E  | SO  | RS  |  .  |  >  |  N  |  ^  |  n  |  ~  |
+     |         |     -------------------------------------------------
+     |   1111  |  F  | SI  | US  |  /  |  ?  |  O  |  _  |  o  | DEL |
+     =================================================================
+
+
+ NOTES
+     The first two columns of the ASCII chart contain control characters.
+     These are characters which cause actions or functions to be performed
+     rather than causing printing to occur.
+
+     The CTRL key on keyboards maps columns 4, 5 into columns 0, 1
+     respectively. For example :
+
+     CTRL-G = BEL (bell)
+     CTRL-U = NAK (Negative AcKnowledgement)
+     CTRL-H = BS  (BackSpace)
+     CTRL-Q = DC1 (XON)
+     CTRL-S = DC3 (XOFF)
+
+
+     HEX 27 is the single quote character (')
+
+     HEX 60 is the tic character (`)
+
+
+     NUL
+     - Hex 00
+     - the Null character
+     - A control character used for media fill or time fill. 
+     - Null characters may be inserted into or removed from a stream of
+       data without affecting the information content of that stream.
+
+     SOH
+     - Hex 01
+     - Start Of Heading
+     - A communication control (CC) character used as the first character
+       of a heading of a data block.
+
+     STX
+     - Hex 02
+     - Start of TeXt
+     - A communication control (CC) character that precedes a text field.
+
+     ETX
+     - Hex 03
+     - End of TeXt
+     - A communication control (CC) character that terminates a text field.
+
+     EOT
+     - Hex 04
+     - End Of Transmission
+     - A communication control (CC) character used to indicate the conclusion
+       of a transmission sequence. In some protocols, like IBM BSC, this
+       character is used by the control station to stop remote stations from
+       sending.
+
+     ENQ
+     - Hex 05
+     - ENQuiry
+     - A communication control (CC) character used to request a response
+       from another station. In Stop-and-Wait ARQ, the station receiving
+       the ENQ would respond with a retransmission of the previous data
+       block.
+
+     ACK
+     - Hex 06
+     - ACKnowledge
+     - A communication control (CC) character transmitted by a receiver
+       as an affirmative response to a sender.
+
+     BEL
+     - Hex 07
+     - Bell
+     - A control character normally used to call attention. A terminal would
+       emit a sound from its speaker when it receives a BEL character. Note
+       that the ASCII standard considers BEL a character that has general
+       purpose usage meaning that it can be used by a vendor for an unusual
+       function.
+
+     BS
+     - Hex 08
+     - BackSpace
+     - A format effector (FE) which causes movement backward by one position
+       on the same line.
+
+     HT
+     - Hex 09
+     - Horizontal Tabulation
+     - A format effector (FE) which causes movement forward to the next
+       predefined position on the same line.
+
+     LF
+     - Hex 0A
+     - Line Feed
+     - A format effector (FE) that causes movement down to the next line.
+       This character may also cause movement to the first character
+       position of the next line. The line feed is optionally referred to
+       as New Line (NL).
+
+     VT
+     - Hex 0B
+     - Vertical Tabulation
+     - A format effector (FE) that causes movement up to the next predetermined
+       line.
+
+     FF
+     - Hex 0C
+     - Form Feed
+     - A format effector (FE) which causes movement to the top of the next page
+       or form.
+
+     CR
+     - Hex 0D
+     - Carriage Return
+     - A format effector (FE) which causes movement to the first character
+       position on the same line. This character is often used as an End-of-Line
+       terminator as well.
+
+     SO
+     - Hex 0E
+     - Shift Out
+     - A control character that is used in conjunction with SI to extend the
+       character set. This is accomplished by substituting different graphics
+       characters for those listed in columns 2 through 7 of the ASCII chart.
+
+     SI
+     - Hex 0F
+     - Shift In
+     - A control character used to restore the graphics characters which were
+       affected by SO (Shift Out).
+
+     DLE
+     - Hex 10
+     - Data Link Escape
+     - A communication control (CC) character used for code extension
+       exclusively to provide supplemental data transmission control
+       sequences. Code extension takes place when DLE is followed by
+       a predetermined character or characters.
+
+     DC1-4
+     - Hex 11 (DC1), Hex 12 (DC2), Hex 13 (DC3), Hex 14 (DC4)
+     - Device Control 1-4
+     - These four control characters are used to control ancillary devices
+       connected to data processing devices or telecommunications systems.
+       Generally they are used to switch devices on or off. Although the
+       use of these characters is system or device specific, DC1 and DC3
+       have pseudo-standard usage. These two characters are often used
+       for data flow control and are known also as XON (DC1) and XOFF
+       (DC3). Flow control allows a receive to throttle the sender.
+     - Flow control is typically used by a receiver to temporarily stop 
+       a sender from sending characters. A slow printer connected to a
+       host is such a situation. If the host sends characters to the
+       printer at a rate which is too fast for the printer to keep up
+       with, the printer can stop the host from sending temporarily by
+       sending an XOFF (ASCII DC3) character to the host. When the printer
+       is available to receive more data, the printer will send an XON
+       (ASCII DC1) character to the host.
+     - Flow control is also used when a user wants to stop the screen
+       from scrolling so that the screen can be read. XOFF will hold
+       the screen and is sent from the ASCII keyboard by holding down
+       the CTRL key and pressing the S key. XON will scroll the screen
+       and is sent from the ASCII keyboard by holding down the CTRL
+       key and pressing the Q key.
+
+     NAK
+     - Hex 15
+     - Negative AcKnowledge
+     - A communication control (CC) character transmitted by a receiver
+       as a negative response to the sender.
+
+     SYN
+     - Hex 16
+     - SYNchronous idle
+     - A communication control (CC) character used by a synchronous
+       transmission system for achieving or maintaining synchronism.
+
+     ETB
+     - Hex 17
+     - End of Transmission Block
+     - A communication control (CC) character used to indicate the end
+       of a block of data. Generally, the implication of ETB is there
+       are more blocks following.
+
+     CAN
+     - Hex 18
+     - Cancel
+     - A control character used to indicate that data is in error and/or
+       should be discarded. The specific meaning of CAN is defined by
+       each specific application.
+
+     EM
+     - Hex 19
+     - End of Medium
+     - A control character used to identify the end of a medium. This
+       is probably the least used ASCII control character.
+
+     SUB
+     - Hex 1A
+     - SUBstitute
+     - A control character which can substitute for a character which
+       is invalid or received in error.
+
+     ESC
+     - Hex 1B
+     - ESCape
+     - A control character intended to provide supplementary characters
+       (code extension). This is a more general purpose version of the
+       DLE character.
+
+     FS
+     - Hex 1C
+     - Field Separator
+     - An information separator (IS) character whose usage is dependent
+       on the application.
+
+     GS
+     - Hex 1D
+     - Group Separator
+     - An information separator (IS) character whose usage is dependent
+       on the application.
+
+     RS
+     - Hex 1E
+     - Record Separator
+     - An information separator (IS) character whose usage is dependent
+       on the application.
+
+     US
+     - Hex 1F
+     - Unit Separator
+     - An information separator (IS) character whose usage is dependent
+       on the application.
+
+     SP
+     - Hex 20
+     - Space character
+
+     DEL
+     - Hex 7F
+     - DELete
+     - A control character used primarily to erase or obliterate an
+       erroneous or unwanted character in punched tape. The character
+       is also called RUBOUT. DEL may be used the same as NUL. Its use
+       is application or system specific.
+
+ 
+ SEE ALSO
+
+     EBCDIC : IBM's Extended Binary-Coded Decimal Interchange Code
+
+
+
+
+
+
+
+
+
+
+
+
+
+ DATE :  MONDAY JANUARY 29, 2001
+
+ FILE :  ~/GLOSSARY/EBCDIC.TXT
+
+ VERSION : 01
+
+ SUBJECT : DESCRIPTION OF EBCDIC
+ ===========================================================================
+
+ NAME
+
+     EBCDIC : Extended Binary Coded Decimal Interchange Code
+
+
+ DESCRIPTION
+     Data exchanged between a terminal and a host is generally in a standard
+     code or representation. EBCDIC is one such code.
+
+     EBCDIC is a code developed by IBM and is related to Hollerith punch
+     card code.
+
+     EBCDIC is an eight bit code which allows 256 combinations. Many of
+     these combinations are undefined by IBM. Different IBM product families
+     use slightly different versions of the code set. Terminal's do not
+     typically use the EBCDIC code unless they are equipped with additional
+     hardware and software for running IBM 3270 or 3780 protocols.
+
+     The EBCDIC binary or hex code is obtained by starting with the
+     column followed by the row. For example, the character A is hex
+     C1 or binary 11000001. The table below is EBCDIC implemented for
+     the IBM 3270 Information Display System.
+
+     =================================================================================================================
+     | Binary         0000  0001  0010  0011  0100  0101  0110  0111  1000  1001  1010  1011  1100  1101
+1110  1111 |
+     |
+-------------------------------------------------------------------------------------------------------
+     |         | HEX    0     1     2     3     4     5     6     7     8     9     A     B     C     D
+E     F  |
+     |         |
+-------------------------------------------------------------------------------------------------
+     |   0000  |  0  | NUL | DLE |     |     | SP  |  &  |  -  |     |     |     |     |     |  {  |  }  |
+\  |  0  |
+     |         |
+-------------------------------------------------------------------------------------------------
+     |   0001  |  1  | SOH | SBA |     |     |     |     |  /  |     |  a  |  j  |  ~  |     |  A  |  J  |
+|  1  |
+     |         |
+-------------------------------------------------------------------------------------------------
+     |   0010  |  2  | STX | EUA |     | SYN |     |     |     |     |  b  |  k  |  s  |     |  B  |  K  |
+S  |  2  |
+     |         |
+-------------------------------------------------------------------------------------------------
+     |   0011  |  3  | ETX | IC  |     |     |     |     |     |     |  c  |  l  |  t  |     |  C  |  L  |
+T  |  3  |
+     |         |
+-------------------------------------------------------------------------------------------------
+     |   0100  |  4  |     |     |     |     |     |     |     |     |  d  |  m  |  u  |     |  D  |  M  |
+U  |  4  |
+     |         |
+-------------------------------------------------------------------------------------------------
+     |   0101  |  5  | PT  | NL  |     |     |     |     |     |     |  e  |  n  |  v  |     |  E  |  N  |
+V  |  5  |
+     |         |
+-------------------------------------------------------------------------------------------------
+     |   0110  |  6  |     |     | ETB |     |     |     |     |     |  f  |  o  |  w  |     |  F  |  O  |
+W  |  6  |
+     |         |
+-------------------------------------------------------------------------------------------------
+     |   0111  |  7  |     |     | ESC | EOT |     |     |     |     |  g  |  p  |  x  |     |  G  |  P  |
+X  |  7  |
+     |         |
+-------------------------------------------------------------------------------------------------
+     |   1000  |  8  |     |     |     |     |     |     |     |     |  h  |  q  |  y  |     |  H  |  Q  |
+Y  |  8  |
+     |         |
+-------------------------------------------------------------------------------------------------
+     |   1001  |  9  |     | EM  |     |     |     |     |     |     |  i  |  r  |  z  |     |  I  |  R  |
+Z  |  9  |
+     |         |
+-------------------------------------------------------------------------------------------------
+     |   1010  |  A  |     |     |     |     |  c  |  !  |  |  |  :  |     |     |     |     |     |     |
+|     |
+     |         |
+-------------------------------------------------------------------------------------------------
+     |   1011  |  B  |     |     |     |     |  .  |  $  |  ,  |  #  |     |     |     |     |     |     |
+|     |
+     |         |
+-------------------------------------------------------------------------------------------------
+     |   1100  |  C  |     | DUP |     | RA  |  <  |  *  |  %  |  @  |     |     |     |     |     |     |
+|     |
+     |         |
+-------------------------------------------------------------------------------------------------
+     |   1101  |  D  |     | SF  | ENQ | NAK |  (  |  )  |  _  |  '  |     |     |  [  |  ]  |     |     |
+|     |
+     |         |
+-------------------------------------------------------------------------------------------------
+     |   1110  |  E  |     | FM  |     |     |  +  |  ;  |  >  |  =  |     |     |     |     |     |     |
+|     |
+     |         |
+-------------------------------------------------------------------------------------------------
+     |   1111  |  F  |     | ITB |     | SUB |  |  |  -  |  ?  |  "  |     |     |     |     |     |     |
+|     |
+     =================================================================================================================
+
+
+ NOTES
+     HEX 4A is the cents character.
+
+
+     NUL
+     - Hex 00
+     - the Null character
+     - A control character used for media fill or time fill. 
+     - Null characters may be inserted into or removed from a stream of
+       data without affecting the information content of that stream.
+
+     SOH
+     - Hex 01
+     - Start Of Heading
+     - A communication control (CC) character used as the first character
+       of a heading of a data block.
+
+     STX
+     - Hex 02
+     - Start of TeXt
+     - A communication control (CC) character that precedes a text field.
+
+     ETX
+     - Hex 03
+     - End of TeXt
+     - A communication control (CC) character that terminates a text field.
+
+     PT
+     - Hex 05
+
+     DLE
+     - Hex 10
+     - Data Link Escape
+     - A communication control (CC) character used for code extension
+       exclusively to provide supplemental data transmission control
+       sequences. Code extension takes place when DLE is followed by
+       a predetermined character or characters.
+
+     SBA
+     - Hex 11
+
+     EUA
+     - Hex 12
+
+     IC
+     - Hex 13
+
+     NL
+     - Hex 15
+     - New Line
+     - A format effector (FE) that causes movement down to the next line.
+       This character may also cause movement to the first character
+       position of the next line. The new feed is optionally referred to
+       as Line Feed (LF).
+
+     EM
+     - Hex 19
+     - End of Medium
+     - A control character used to identify the end of a medium. This
+       is probably the least used ASCII control character.
+
+     DUP
+     - Hex 1C
+
+     SF
+     - Hex 1D
+
+     FM
+     - Hex 1E
+
+     ITB
+     - Hex 1F
+
+     ETB
+     - Hex 26
+     - End of Transmission Block
+     - A communication control (CC) character used to indicate the end
+       of a block of data. Generally, the implication of ETB is there
+       are more blocks following.
+
+     ESC
+     - Hex 27
+     - ESCape
+     - A control character intended to provide supplementary characters
+       (code extension). This is a more general purpose version of the
+       DLE character.
+
+     ENQ
+     - Hex 2D
+     - ENQuiry
+     - A communication control (CC) character used to request a response
+       from another station. In Stop-and-Wait ARQ, the station receiving
+       the ENQ would respond with a retransmission of the previous data
+       block.
+
+     SYN
+     - Hex 32
+     - SYNchronous idle
+     - A communication control (CC) character used by a synchronous
+       transmission system for achieving or maintaining synchronism.
+
+     EOT
+     - Hex 37
+     - End Of Transmission
+     - A communication control (CC) character used to indicate the conclusion
+       of a transmission sequence. In some protocols, like IBM BSC, this
+       character is used by the control station to stop remote stations from
+       sending.
+
+     RA
+     - Hex 3C
+
+     NAK
+     - Hex 3D
+     - Negative AcKnowledge
+     - A communication control (CC) character transmitted by a receiver
+       as a negative response to the sender.
+
+     SUB
+     - Hex 3F
+     - SUBstitute
+     - A control character which can substitute for a character which
+       is invalid or received in error.
+
+     SP
+     - Hex 40
+     - Space character
+
+ 
+ SEE ALSO
+
+     ASCII : American National Standard Code for Information Interchange
+
+
+
+
+
+
+
+
+***************************************************************
+***************************************************************
+
+
+
+s/[~ ]/-/ infinite loops
+
+WHen using the geometry command based on characters, make sure
+the scroll bars are taken into account.
+
+TRY 
+
+Make PD command default build of pd at current cursor location.
+pd -c says put it at cursor
+pd -d <string> says go to this pd option first
+
+
+CEterm core dumps if you run 'factor $FACTOR &' about 30 times
+in groups of 6; I copy the line paste it about six times and hit
+^b paste 6 ... about the 5th time I do this (The CPU is pretty hammered by then)
+Ceterm dies  (could not find core file!) - kbp
+
+
+Fix this bug: from: 
+Thomas van Thiel
+Senior Engineer
+Atlas Mission Integration
+(303) 971-1673 (Denver CO)
+ss8twv@ast.lmco.com
+
+ In Aegis expressions
+>      "?[ @t@n]?"  (locate whitespace)
+
+reverse finds with @n have a bug in them in that the search forward
+on the line and search back words through the file (known bug)
+
+>    does not work correctly, although "?[ @t]? and "/[ @t@n]/" and "s/@n/ /" do work.
+>    "s/@n/ /" works differently from "s/[@n]/ /" when no text range is marked.
+
+This is true, every line has an implied %text@n$ delimeter set on them.
+@n $ and % are special in that they are only found under certain circumstances.
+fro example, /$/ finds end of line, but /[~a]/ will not find it (searching for 
+anything that is not an 'a' does not include %, $ @n.
+
+>    Inclusion of newline characters seems to cause problems, particularly in Unix
+>    regular expressions.  Since operations like these are performed routinely in
+>    our workplace, we need these bugs to be fixed.  Because we work in a Unix
+>    environment, we particularly want to have the Unix expressions working.
+> 
+> 
+
+\n in UNIX mode could be turned on, but we have only had requests for it in aegis mode,
+and it detracts from being standard ( see "man ed(1)" ) Unix regular expressions.
+
+
+
+-------------------------------------------------------------------------
+
+
+Nice job on UG.
+
+As a suggestion, I would find usefull if table B.1 (command Summary)
+would have another column indicating that the command accepted
+parameters (e.g ! -c, etc. ). In such cases, the paramter could be
+investigated via the HELP
+
+Dave Korer
+
+
+
+
+    in ceterm
+    paste a command to the UNIX window so it make 2 lines.
+    Then press the down arrow while moving the mouse down
+    at the same time.  Bug is a mouse dropping in the dminput
+    window.
+
+    in ce on apollo (Type P) (failed test from line 2622)
+    verify that 
+      'ce -fg white <file>' yields white fg,  black bg, and white border.
+      'ce -fg black <file>' yields black fg,  white bg, and black border.
+      'ce -fg black -bg black <file>' yields white fg,  black bg, and white border.
+
+    in ceterm. (failed test from line 2260)
+    Make a unix prompt wider than the screen,
+    PS1="this is a test of a wide prompt, one two three four: "
+    Verify the correction of the following bugs.
+    typing, or the tl or tr commands blast the cursor out of the window.
+    type a command and press enter.  The enter should not blast
+    the cursor out of the window.  Make sure scrolling the screen left
+    does not blast the cursor out of the window.
+
+    In ce
+    with ww on, ww -c 60
+    Near the end of a line higlight and then color a word.
+    In the middle of the line, start typing.  Make sure that
+    The color stays with the word when it changes lines and
+    starts moving.  Failure occured when the word before the
+    colored line shifted down.
+
+make PW not free_forward the events list.
+
+-------------------------------------------------------
+-------------------------------------------------------
+***************************************************************
+
+FILE:
+
+The following line messes up file ~/crpad/zBUGTEST1
+1,$s/%{ TCB?*}@n{ PRB?*}@n/@1 @2/
+The following line does what we want in the same file:
+1,$s/% TCB{?*}@n PRB{?*}@n OPSW{?*}/ TCB@1 PRB@2 OPSW@3/
+
+   In Ce
+   kd ^1  bl do end ke  # this works
+   kd ^1  bl 'do;' 'end;' ke # this does not work
+
+
+----------------------------------------------------------------------------------
+
+
+
+The following keydef should find the previous word, but
+instead finds the second word on a line.
+kd LeftS            \[~ ]\;\[ @@n]\;/[~ ]/ ke   # cursor to previous word
+
+
+
+    1,$s/[~a-zA-Z0-9]/@n/ infinit loops!
+
+
+###############################################################################
+#
+#       not for 2.5
+
+
+    /[ @n@f]/  the @n covers over the @f
+    try to do a /[ @n@f@t\f]/ on the next line, the tabs seem to mess up cursor placement
+    Note: replace the above \f with a real form feed
+    > form fe	ed, or tab. However, it always finds the end of line character
+
+
+    vt mode has problems with underlining (try /etc/update from xterm and ceterm
+
+
+add #define UNIX_NEWLINE to search one day
+
+
+2.  ceterm can't handle long lines - just beeps - need to enter ^C to continue.
+    Test:  At unix prompt enter "111111111" until there are more than
+           260 chars entered (can verify with the dm "=" cmd.
+           When pressing Return to submit command, ceterm will ring
+           several ^G bells, redisplay the line and then do nothing.
+           Another Return has no effect.  Eventually ^C gets the unix
+           prompt back.
+
+
+However, for the situation when I'm closing a ce window,
+I want focus passed on another ce window at all costs.
+Therefore, an option to tn would be extremely useful.
+The option (e.g. "tn -any") would perform the following:
+
+   1)  Go to any unobscurred ceterm window.
+
+   2)  If none, go to any unobscurred ce window.
+
+   3)  If none, go to any obscurred ceterm window and
+       pop it to the top of the stack.
+
+   4)  If none, go to any obscurred ce window and
+       pop it to the top of the stack.
+
+The idea is to pick an unobscurred window first, obscurred
+otherwise.  And to pick a ceterm window first, ce/cv otherwise.
+
+The Apollo DM follows steps 1) and 2) so maybe there should
+be an option for this behavior also (e.g. "tn -apollo").
+
+Add this to window close as a option.
+
+
+
+
+Add 2m1 key def processing for double click.  Would work with all
+the mouse defintions.  Use a timer to get mouse 1 release and press
+events.
+1.  Only do it if there is a keydef for multiple mouse definitions.
+2.  Get timer value from resource multiClickTime
+3.  
+
+
+
+
+   From Mike Mennino, implement tlw
+
+
+For a wi command,
+XUnmapWindow has the desired results.  However, at the time
+of the command, you may need to assign the main window to
+the wm_window because the wm_window goes away before the
+reparent notify appears.  This causes property changes
+against a non-existant window.  May be server dependent.
+
+1,$s/@n// does not work (turn on debug in delayed_delete() if SIZE is compiled in
+
+ if you vt -off an elm window and cc -display it to a sun from an HP the cc window comes up brain damaged
+
+    In ce
+    Flag a new file with a message in the DM output window.
+
+    In ce
+    in init.c
+    Set minimum window size.  Also provide a reset ability
+    to use in lineno.c when line numbers are turned on and off.
+
+    in Ceterm on HP
+    Compile the following program:
+      #include <stdio.h>   /* /usr/include/stdio.h  */
+      main (int argc, char *argv[])
+      {
+      char      buffer[1024];
+      while(fgets(buffer, sizeof(buffer), stdin) != NULL)
+      {
+        sleep(1);
+        fputs(buffer,  stdout);
+      }
+      } /* end of main */
+    Run the program in a ceterm window with stdout directed to
+    a file.   Paste a large piece of data (200+ lines) into
+    the Unix command window and press ^b.  The data should
+    arrived in tact in the target file.  The problem was that
+    the line discipline gets overrun with data and starts
+    throwing things away.  Original problem was from Norm Nexon
+    doing an ls -l of a large directory piping into a print command.
+
+    On the sun - ceterm.
+    Use rsh to remotely log in.  Pass a command of ceterm with
+    the display set back to the original node.  The window will
+    not come up.
+    The ioctl's fail.
+
+    kd F6  xc -f ~/from_ce ; cp "/bin/csh -c 'xterm -e ~/bin/printer ~/from_ce'"  ke
+
+    In Ceterm on the HP/UX
+    12 consecutive geo commands with no shell
+    activity in between (done via the numeric keypad),
+    causes the shell to die.
+
+    find out why DEBUG=-1 stops working on HP
+
+   In malloc_error, when doing the pause, put the message across all ce
+   main windows in addition to stderr.
+
+    sic -p, evaluate what window the cursor 
+       
+
+Message 6/7  From strieted@agcs.com                 Mar 13, 96 10:40:10 am -0700
+
+
+Return-Path: <strieted@agcs.com>
+Date: Wed, 13 Mar 1996 10:40:10 -0700
+To: stymar@agcs.com (Bob Styma), plylerk@agcs.com (Kevin Plyler)
+Subject: (Fwd) Re: Road Map
+
+
+Bob,
+
+Here are some additional comments regarding the requested ce
+enhancement.  I just noticed that the "crt" command Luc mentioned is
+defeated by the word-wrap facility of ce.  In other words, when using
+"crt" I can get the indented text to line up on the left side if I put
+a hard return at the end of each line, but not if I let ce wrap the
+words for me.  It would be good if ce could incorporate an
+indented-text function compatible with word wrapping.
+
+Dave
+
+
+--- Forwarded mail from strieted@number-1 (Dave Strieter)
+
+From: strieted@number-1 (Dave Strieter)
+Date: Thu, 22 Feb 1996 15:18:20 -0700
+To: stymar@agcs.com
+Subject: Re: Road Map
+
+On Feb 22,  2:31pm, stymar@agcs.com wrote:
+> Subject: Road Map
+> Dave,
+>    I saw your roadmap item:
+>
+> SR-15 Ce Editor Enhancements
+>
+> It requests auto indenting.  Kevin is working on this currently.
+> We will keep you informed and you can help test it out to make
+> sure it does what you want.
+>
+> --
+>                     Bob Styma  @ stymar  (x 7323)
+>-- End of excerpt from stymar@agcs.com
+
+
+Bob,
+
+Luc Leemans previously saw the road map item and told me that call
+processing had created an "F0" command to do what I wanted.  ("crt" and
+"cr").  It does the job, but, of course, is not integrated into the ce
+editor.  Just FYI.
+
+Thanks.
+
+
+###############################################################################
+#
+#       dec_ult problems
+
+To summarize:
+  The problems I've found with ceterm:
+   - Can't invoke ceterm without -w or shell executable.
+   - ceterm usually locks up; Have to Ctl-C to quit abort.
+
+   cp does not work on decosf
+   processes start, but no window
+
+
+###############################################################################
+#
+#
+#       2.1 type stuff#
+
+   Implement list
+   curs
+   tlw
+
+
+###############################################################################
+#
+#       DOCUMENTATION
+#
+
+Section on problems.
+
+1.  Mention default keys assume input focus based on pointer
+
+2.  Copy cut problem between windows when using explicet focus.
+
+3.  Num lock key problem.
+
+
+###############################################################################
+#
+#       LOW PRIORITY
+#
+
+>Date: Mon, 10 Jul 1995 21:27:38 -0500 (CDT)
+>From: "C. Eric Ladner" <celadner@whale.st.usm.edu>
+>Subject: ce/cv product info.
+>To: arpus@etg1.etginc.com
+>
+>I would like to receive pricing information on the ce program for the 
+>following platforms:
+>  DEC Alpha (OSF/1)
+>  HP  HPUX 9.0x
+>
+>Being a long time user of Domain/OS machines, I am glad to see the 
+>capabilities of the pad live on.
+>
+>One thing I would like to see, however, is that the text and the border 
+>colors be drawn in different colors.  (Then you could set the colors up 
+>to look JUST like a pad.)  Actually, it is mildly annoying to have the 
+>borders and text the same color.
+>
+>Otherwise, it's a great product!  I've been using the Linux version for 
+>about 2 weeks and I'm trying to convince my boss to buy it.
+>
+>Thank you...
+>
+>Eric.
+>
+>
+>
+
+
+Bob,
+
+I'm really getting peeved at this business of defaulting to the last 
+window geo rather then the wdf! That's why I have the wdf in the 1st 
+place. I know we lived with in on Apollo, and I remember I didn't like 
+that much either.
+
+But, it seems to me that on the Sun, you (me, via .Xdefaults) should 
+have control over this. There a CE geo default. It says it uses wdf as a 
+default. We know better. Please allow me the ability to override the 
+'last geo' position, with the Ce.geo in the .Xdefaults.
+
+I have many tools that open small windows, just to display a small bit 
+of info. Then later, when I want to use ce/cv, I get that stinkin small 
+window. I want it to use my wdf, that of which I put so much effort in 
+setting up.
+
+
+
+Rules based indenting:
+
+*  '*.[ch]' '*a.mail'
+<  'optionsal;dm;cmds' zcat {}
+>  'optionsal;dm;cmds' compress -c > {}.out  /* $CE_FILE instead of {} */
+=  stat function
+#  comment
+^ /regexp/; dm;cmd
+^ \regexp\; dm;cmd
+V /regexp/; dm;cmd
+- \regexp\; dm;cmd
+- /regexp/; dm;cmd
+V \regexp\; dm;cmd
+                      /* blank lines */
+! /tmp/file           /* include processing */
+
+
+Notes:
+1.  PW recursive check
+2.  ksh matcher for *.[ch]
+3.  ce -ftype .mail
+4.  Test prompt in trailer commands
+examples  {.Z .ps .crypt .c .cxx .html ...}
+
+Q&A 
+a) $CE_FILE instead of {}
+b) current line number line 73 of ind.c
+c) compress $CE_INPUT > $CE_FILE (FIFO) or compress $CE_FILE > $CE_TARGET (with .Z)
+d) multiple *'s EX: * *.z *.mail
+e) stat why? use in .cetypes file
+f) #6 below ???
+g) how do we prevent // from screwing up saved expressions
+
+Rules based indenting.  
+dm command ind (indent)
+
+1.  positions cursor on the current line.
+2.  looks are rules of the form   /regx/  {indent ! "DM;CMDS"" }
+                            or    \regx\  {indent ! "DM;CMDS"" }
+3.  Finds the preceding and following non-blank lines.
+4.  Applies the rules in order till a match is found
+5.  Positions cursor to start position of that line
+    + or minus the indent or runs the list of dm cmds.
+6.  Indent examples:   +5    indent 5 beyond the start
+                             of the matched line
+                       -3    indent 3 before the start of
+                             the matched line
+                        6    put the cursor in column 6
+7.  A Null regular expression means match the previous/next
+    non-blank line.
+8.  The command has an option to ignore rules and position
+    based on the previous or next non-blank line.
+9.  ind [-p] [-n] [-c] [<indent_num>]
+    specifying no options causes rules to be checked.
+    -p -> position based on the previous non-blank lines start point
+    -n -> position based on the next non-blank lines start point
+    -c -> position based on the current lines start point
+    start point is the first non-blank.
+
+***************************************************************
+
+>Dan would be the best person to address redefining xterm keys.
+>I would like to see the error messages from ceterm you get.
+>I will try to correct this.
+>
+>
+Creating a message in ALL-IN-1 causes an error message in the
+message window adjacent to the 'Command:' window.  The text of
+the error reads:
+    
+    VT100 'ESCn' mode error, char = \ (0x5C)
+
+The screen gets all messed up in the process and I have to
+do a screen refresh to repaint the screen.
+
+Ceterm also does not understand the DEC special graphics mode
+characters which are used by ALL-IN-1.  This mode is entered by
+sending a three character sequence '<ESC>(0' to the screen.  Once
+in this mode the ASCII codes in the range 0x5f thru 0x7e are
+mapped to special graphics symbols.  This range includes all the
+lower case alpha letters plus a half dozen other symbols such
+as left and right brace, tilde, etc.  To reenter normal ASCII mode
+a three character sequence '<ESC>(B' is output to the screen.
+
+It appears that ceterm ignores the '<ESC>(0' and '<ESC>(B'
+sequences and displays the normal ASCII character representations
+for the ASCII codes which it receives--which in most cases is
+a lowercase alpha character.
+
+Also there are still some problems with keyboard mapping for
+input.  The information you provided to me was very helpful but
+there are still key mapping problems with the keypad /,*,-, and +
+keys.  Also there needs to be a good substitute provided for the
+ALL-IN-1 GOLD key, page up, and page down.
+
+I don't know if you have time to address all these problems
+considering the handful of users who will be affected.  Maybe the
+company policy will be to migrate those ALL-IN-1 users who access
+ALL-IN-1 via Apollo to the Sun mail system when the time arises for
+the user to part with his/her Apollo.  However, if these problems
+can all be fixed then ceterm can possibly be used to access ALL-IN-1
+from the Sun AFS platform.
+
+Alan
+
+
+
+###############################################################################
+#
+#       NOT REPRODUCABLE
+#
+
+   Keys sometimes fails because the DISPLAY variable is not set in the 
+   ce environment.
+
+   decosf  DEBUG=@1-4  do a ^d and get a memfault in kd.c 1206
+
+   Xlib: sequence lost (0x1099f > 0x2217) in reply type 0x2!
+
+   xc ;tdm;es'fl ';;xp ;tr;en  does not work some times
+
+   line 66,67,1,2,3... in line numbers 
+  
+   rectangular highlighting gets two regions
+
+    kevin's .Cekeys- m2;tdm followed by typing appear in the dmout (sometimes)
+
+    I have a key def:  kd ^n wc -y kd  and some times dont get the error message that the keydef is 
+    unterminated when I edit a file <- pilot error
+
+    memory fault on a keydef with 2 prompts
+
+    I have a key def:  kd ^n wc -y kd  and some times dont get the error message that the keydef is 
+    unterminated when I edit a file <- pilot error
+
+    tr does not work after a tf under the 't'
+
+    can freeze x server on sun w/ alt/m2/f1
+
+4.  Undo when under slim -ce does not undo last, but previous to that.
+    This is one of several problems ce has when interfacing with slim.
+    Test: Enter "slim proto0 -ce" at unix prompt.
+          Enter command "pwd" at "Slim:" prompt.
+          Press Undo key, and only "p" appears.
+          Try this with other commands.
+    I brought this to the slim group's attention, and Jim Southway
+    claimed it was a a ce problem.
+
+5.  Uparrow under slim -ce gives error when command has double quotes.
+    Test: In a slim window, enter command:  echo "hi"
+          Press up-arrow.  Instead of recalling previous command,
+          the following error is printed:
+              (es) Too many command arguments (es "echo "hi"")
+    This might be a problem with the slim program interfacing to ce.
+
+
+#######################################################################################################################################################################################################
+#
+#      NOT FIXABLE
+#   
+
+    Problem with Alpha DCE on the sun.
+      Dan Mazolla wanted me to let you know if there was a case where
+      ce did not save the file when the workstation was Exited (with the
+      "EXIT" button on the dashboard).  I found that if a change is made to
+      a file and the window is iconed, then ce will not save the change
+      upon workstation exit.  I just wanted to let you know in case you
+      weren't aware.  This is not a critical problem for me, since I plan to
+      redefine my icon key to perform a pw before the icon operation to
+      be safe.
+      
+      Regards,
+      -- Rainer
+      
+
+    1,$s\[ @t@n]\ should have newline_search start at end of line instead of begiing
+
+    1,$s\[ @t@n]@n*\ should have a RE compile error message Cant mix * [ and @n
+
+    on decosf submitting a shell command of greater than 512 causes problems (no more dec machine)
+
+    Modify ce, cpo, cp to modify argv/argc.
+
+    On apollo, if you start ceterm from the startup.dm file, before mwm
+    is started, starting a ceterm from within this window causes Xapollo
+    to memory fault.
+ 
+    > ww -a (no selected range) sometimes flows 4 lines together instead of 
+    > 2, when a line is followed by another non blank line, then a blank 
+    > line, and then a non blank line.
+    Problem is due to fact that ww -a collects enough
+    data so the line is longer than ww col and then
+    does the split.
+    > 
+   on sun, drag and drop key will not drop to other window   (X side effect)
+
+    On the sun sparc 10, more fails to send the bottom line
+
+       on hp
+       !ls
+       (no highlight,  kills edit window)  HPTERM bug!
+
+      a line_del in the input window below a cmd does not launch the command
+
+       an aegis search with a [@n] has the @n removed
+
+       xd without a mark delets to end of line and the newline!, and sometimes several lines!
+       -  initial response, first part is as it should be.  Need way to reproduce second part.
+
+       kd B tdm ke does something, what i don't know?
+       -  Known problem.  This definition defines a non-shifted capital 'B' to tdm.  However,
+          the keysym for capital B only occurs with a shift so while definable, this keysym
+          cannot occur.  You were made aware of this early on.  Actually, since I filter out
+          the caps lock modifier, You might get this keydef executed by doing a <caps lock> B.
+
+    fl 8x13 fails on Kevin's node
+
+    fl anything says can not load font
+                                   HOME=/home/stymar
+cd $HOME
+. .aliases
+
+    (tr) scroll left does not work in DM output window
+
+    prompt becomes permanent if fail & tdm
+
+    m1 does not execute until up stroke for m1 down
+    - This is a problem in the Apollo X server, requires a reboot
+
+    m1 no longer works   X-bug
+
+    m3u does not work somtimes on Apollo
+
+    mark/grow opposite corners grows the wrong corner
+
+     a unix find with imbeded \n will fail
+
+    in ce on the sun.
+    in expr -u mode
+    put a blank as the first char on a line.  Go to the
+    beginning of this line.  press escape (tdm) and enter
+    the command:
+    so / /\t/
+    A tab is not inserted.
+
+<find marker>
+###############################################################################
+#
+#       FIXED
+#
+    in ce or ceterm
+    Make sure
+    wdc 1 'navy blue' white
+    works correctly.  The problem was the quotes were not
+    being processed correctly.
+
+    in ceterm
+    in non-scroll mode and in scroll mode.
+    With the screen starting off full and with the screen not full.
+    kd *f er \f ke
+    do an echo command of the form feed.
+    or do:
+    echo '\014'
+    The problem was, the screen did not clear stuff built
+    up past the bottom of the screen.
+
+    in ceterm
+    go into hold mode.  put a few lines of data in the unix window. 
+    Scroll two lines from the top of the screen and put the cursor
+    in the middle of the screen.  ^t does not work.
+
+    In ce 
+    Verify the command 
+    wdc 1 'navy blue' white
+    works.  Use wdc to verify. 
+
+
+    ************************************** R2.3.1 **************************************
+    ************************************** R2.3.1 **************************************
+    ************************************** R2.3.1 **************************************
+
+    on HP, create_data 5 30000;1,$s/?/a/ infinite loop
+
+ /* we decided not to change this one !!!! */
+    In Ce 
+    In col 1 of some text.  Press mark (F1)  arrow down
+    twice.  Two lines are now highlighed.  Press Esc and
+    enter "tf -r 66" and press return.  Problem is that
+    the three lines get text flowed.  That is the non-highlighted
+    line the cursor is on is included in the text flow.
+
+In save_file in memdata.c (around line 1731)
+We should check for I/O errors on the fput's.
+
+pututline failure (rainer) (No such process)
+
+s/[~ @t]/-/" infinite loop rainer
+
+1,$s/%/>/ does not get blank lines
+
+  on solaris in a file 1,$s/$/x/ does all but the last line if
+  you are on the last char of the file and it is a blank
+
+
+    In ce, make a file with a single line: '       file'
+    do: line_del, line_undel....
+    until there are 7 lines mark at line 2, col 1
+    drag down to line 5, do a line_undel
+    now try to reset the mark on line 2, try a xc
+    line 2, col 1; 
+
+On Sep 11,  2:46pm, campbelb@agcs.com wrote:
+> Subject: CE problem
+>
+> I have a couple of problems.
+>
+> One, when using an initial command string, I have to move the mouse
+> into the window and then press the return key to get the command string
+> to execute.
+>
+dde ceterm -w -mouse off     -cmd "es 'elm';en;vt" -DebuG @4-15-1-30
+> Example command string:
+>    -cmd "es 'elm';en;vt"
+>
+> Also, when I have tabs in the file, and I postition the
+> cursor after a tab on the same line, the tab moves to the
+> right some more characters.  Also, the copy operation appears
+> to grab the wrong characters (shifted to the right a few characters).
+>
+> These problems have seemed to show up lately and may coincide when
+> I started to use the mouse off option exclusively.  In addition,
+> it happens on my HP node triton, using v 2.3.2.
+>-- End of excerpt from campbelb@agcs.com
+
+
+   for ceterm on a solaris, make a file mode 444 rm it when prompted, the cursor goes away
+
+?    in ceterm
+?    go into hold mode.  put a few lines of data in the unix window. 
+?    Scroll two lines from the top of the screen and put the cursor
+?    in the middle of the screen.  ^t does not work.
+  (RES works for me!?)
+
+
+
+mark a region and do a "s/cyan/%s/" (^s shows up)
+
+do three ca  on a line and do an undo, all three go away (undo bug) (kevin)
+
+place the curor on line 28 column 3; press <esc>; 
+execute 
+        [28,1],[28,9]ca "" cyan # CENTER 
+you get the message: (ca) Invalid Text Range
+
+color an html file with the parser, do line deletes in the 
+middle of the screen and colors get crazy
+
+a keystrok event is not sent to event_do() for a key with a ca in it.
+
+***************************************************************
+***************************************************************
+Color on Linux
+
+   DISPLAY COLORIZATION
+       When  using  the -o or --color options, this version of ls
+       will colorize the file names printed according to the name
+       and  type  of  file.   By default, this colorization is by
+       type only, and the codes used are ISO 6429 (ANSI)  compli-
+       ant.
+
+       You  can override the default colors by defining the envi-
+       ronment variable LS_COLORS (or LS_COLOURS).  The format of
+       this variable is reminicent of the termcap(5) file format;
+       a  colon-separated  list  of  expressions  of   the   form
+       "xx=string",  where "xx" is a two-character variable name.
+       The variables with their associated defaults are:
+
+         no        0              Normal (non-filename) text
+         fi        0              Regular file
+         di        32             Directory
+         ln        36             Symbolic link
+         pi        31             Named pipe (FIFO)
+         so        33             Socket
+         bd        44;37          Block device
+         cd        44;37          Character device
+         ex        35             Executable file
+         mi        (none)         Missing file (defaults to fi)
+         or        (none)         Orphanned symbolic link (defaults to ln)
+         lc        \e[            Left code
+         rc        m              Right code
+         ec        (none)         End code (replaces lc+no+rc)
+
+       You only need to include the variables you want to  change
+       from the default.
+
+       File  names can also be colorized based on filename exten-
+       sion.  This is specified in the LS_COLORS  variable  using
+       the  syntax  "*ext=string".   For  example, using ISO 6429
+       codes, to color all C-language source files blue you would
+       specify "*.c=34".  This would color all files ending in .c
+       in blue (34) color.
+
+       Control  characters  can  be  written  either  in  C-style
+       \-escaped  notation,  or  in stty-like ^-notation.  The C-
+       style notation adds \e for Escape, \_ for a  normal  space
+       characer,  and  \?  for Delete.  In addition, the \ escape
+       character can be used to override the default  interpreta-
+       tion of \, ^, : and =.
+
+
+
+FSF                     GNU File Utilities                      5
+
+
+
+
+
+LS(1L)                                                     LS(1L)
+
+
+       Each file will be written as <lc> <color code> <rc> <file-
+       name> <ec>.  If the <ec> code is undefined,  the  sequence
+       <lc>  <no>  <rc>  will be used instead.  This is generally
+       more convenient to use, but less general.  The left, right
+       and  end codes are provided so you don't have to type com-
+       mon parts over and over again and to support weird  termi-
+       nals;  you  will  generally not need to change them at all
+       unless your terminal does not use ISO 6429 color sequences
+       but a different system.
+
+       If  your  terminal  does use ISO 6429 color codes, you can
+       compose the type codes (i.e. all except the lc, rc, and ec
+       codes)  from  numerical  commands separated by semicolons.
+       The most common commands are:
+
+          0        to restore default color
+          1        for brighter colors
+          4        for underlined text
+          5        for flashing text
+         30        for black foreground
+         31        for red foreground
+         32        for green foreground
+         33        for yellow (or brown) foreground
+         34        for blue foreground
+         35        for purple foreground
+         36        for cyan foreground
+         37        for white (or gray) foreground
+         40        for black background
+         41        for red background
+         42        for green background
+         43        for yellow (or brown) background
+         44        for blue background
+         45        for purple background
+         46        for cyan background
+         47        for white (or gray) background
+
+       Not all commands will  work  on  all  systems  or  display
+       devices.
+
+       A  few  terminal programs do not recognize the default end
+       code properly.  If all text gets colorized after you do  a
+       directory listing, try changing the no and fi codes from 0
+       to the numerical codes for your standard fore-  and  back-
+       ground colors.
+
+
+
