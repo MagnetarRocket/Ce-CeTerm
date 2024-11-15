@@ -39,7 +39,6 @@
 
 #include    "debug.h"
 #include    "expidate.h"
-#include    "lserv.h"
 #include    "netlist.h"
 
 

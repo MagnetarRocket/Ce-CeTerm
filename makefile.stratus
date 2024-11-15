@@ -48,7 +48,7 @@ SRCMODS  = $(CRPAD_OBS:.o=.c)  xdmc.c ceapi.c
 
 HFILES =  bl.h dmc.h buffer.h memdata.h debug.h drawable.h cc.h color.h xutil.h display.h dmfind.h dmwin.h dumpxevent.h emalloc.h execute.h expidate.h pw.h getevent.h mvcursor.h getxopts.h help.h hexdump.h init.h kd.h dmsyms.h lineno.h mark.h netlist.h\
           pad.h parms.h parsedm.h pastebuf.h prompt.h record.h redraw.h serverdef.h hsearch.h tab.h textflow.h titlebar.h txcursor.h typing.h undo.h unixpad.h unixwin.h vt100.h wc.h wdf.h ww.h window.h windowdefs.h winsetup.h xc.h xerror.h xerrorpos.h search.h\
-          apistats.h sendevnt.h borders.h keysym.h normalize.h lserv.h gc.h mouse.h scroll.h editicon.h shellicon.h defkds.h regexp.h ceapi.h
+          apistats.h sendevnt.h borders.h keysym.h normalize.h  gc.h mouse.h scroll.h editicon.h shellicon.h defkds.h regexp.h ceapi.h
 
 default: crpad xdmc
 
@@ -69,7 +69,7 @@ dumpxevent.o:  dumpxevent.h keysym.h
 emalloc.o:  debug.h dmwin.h buffer.h memdata.h drawable.h xutil.h getevent.h mvcursor.h dmc.h emalloc.h undo.h vt100.h windowdefs.h unixwin.h xerror.h
 execute.o:  cc.h dmc.h buffer.h memdata.h debug.h drawable.h display.h dmsyms.h dmwin.h xutil.h emalloc.h execute.h getevent.h mvcursor.h getxopts.h help.h init.h kd.h mark.h normalize.h pad.h parms.h pastebuf.h pw.h record.h serverdef.h hsearch.h\
           txcursor.h unixpad.h unixwin.h wdf.h window.h windowdefs.h xc.h
-expidate.o:  debug.h expidate.h lserv.h netlist.h
+expidate.o:  debug.h expidate.h  netlist.h
 gc.o:  debug.h gc.h xutil.h drawable.h memdata.h xerrorpos.h
 getevent.o:  borders.h cc.h dmc.h buffer.h memdata.h debug.h drawable.h dmfind.h dmwin.h xutil.h dumpxevent.h emalloc.h expidate.h getevent.h mvcursor.h init.h kd.h dmsyms.h lineno.h mouse.h pad.h pw.h parms.h redraw.h scroll.h search.h sendevnt.h tab.h\
           titlebar.h txcursor.h typing.h vt100.h window.h windowdefs.h unixwin.h unixwin.h unixpad.h wc.h xerrorpos.h
