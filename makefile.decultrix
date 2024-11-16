@@ -41,8 +41,8 @@ include makefile.depends
 	expistamp -n 130.131 1001 
 #	expistamp  1993/12/31 1001
 
-expi expistamp: expistamp.o
-	$(CC) $(CFLAGS) -o expistamp expistamp.o
+expi expistamp: 
+	$(CC) $(CFLAGS) -o expistamp 
 
 md: memdata_test.o memdata.o debug.o undo.o search.o re.o
 	$(CC) $(CFLAGS) -o md memdata_test.o memdata.o debug.o undo.o search.o re.o
@@ -98,7 +98,7 @@ link_date.o: $(CRPAD_OBS)
 	date '+char   *compile_time = "%T";' >> link_date.c
 	$(CC) $(CFLAGS) -c link_date.c
 
-$(SRCMODS) $(HFILES) expistamp.c expilist.c:
+$(SRCMODS) $(HFILES)  :
 	ln -s Xlib/$@ $@
 
 

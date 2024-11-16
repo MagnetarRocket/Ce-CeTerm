@@ -117,7 +117,7 @@ xutil.o:  debug.h tab.h dmc.h buffer.h memdata.h drawable.h xerrorpos.h xutil.h
 xdmc.o:  cc.h dmc.h buffer.h memdata.h debug.h drawable.h getxopts.h help.h xerror.h xerrorpos.h
 ceapi.o:  apistats.h cc.h dmc.h buffer.h memdata.h debug.h drawable.h ceapi.h dmsyms.h pastebuf.h pad.h xerror.h xerrorpos.h
 expilist.o:  
-expistamp.o:  
+:  
 
 
 ##-- mkdep end
@@ -174,8 +174,8 @@ libceapi.a: ceapi.o debug.o xdmccc.o apipastebuf.o apinormalize.o hexdump.o
 getxopts: getxopts.c  debug.o
 	$(CC) $(CFLAGS) -DGETXOPTS_STAND_ALONE -o getxopts getxopts.c debug.o $(LIBS)
 
-expistamp: expistamp.c
-	$(CC) $(CFLAGS) -o expistamp expistamp.c $(LIBS)
+expistamp: 
+	$(CC) $(CFLAGS) -o expistamp  $(LIBS)
 
 propnames: propnames.c
 	$(CC) $(CFLAGS) -o propnames propnames.c $(LIBS)
@@ -183,10 +183,10 @@ propnames: propnames.c
 
 link_date.o: $(CRPAD_OBS)
 
-$(SRCMODS) $(HFILES) expistamp.c expilist.c link_date.c:
+$(SRCMODS) $(HFILES)   link_date.c:
 	ln -s Xlib/$@ $@
 
 tar:
-	tar cf - $(SRCMODS) $(HFILES) expistamp.c expilist.c xdmc.c > crpad.tar
+	tar cf - $(SRCMODS) $(HFILES)   xdmc.c > crpad.tar
 
 

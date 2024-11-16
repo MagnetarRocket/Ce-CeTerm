@@ -50,8 +50,8 @@ dumpxevent_test: dumpxevent_test.o dumpxevent.o keysym.o
 	./expistamp -n 130.131 1001 
 #	expistamp  1994/12/31 1001
 
-expi expistamp: expistamp.o
-	$(CC) $(CFLAGS) -o expistamp expistamp.o
+expi expistamp: 
+	$(CC) $(CFLAGS) -o expistamp 
 
 hppad:  hppad.c
 	$(CC) $(CFLAGS) -o hppad hppad.c
@@ -116,7 +116,7 @@ link_date.o: $(CRPAD_OBS) $(EXTRA_OBJS)
 	date '+char   *compile_time = "%T";' >> link_date.c
 	$(CC) -c link_date.c $(CFLAGS)
 
-$(SRCMODS) $(HFILES) expistamp.c expilist.c:
+$(SRCMODS) $(HFILES)  :
 	ln -s Xlib/$@ $@
 
 z: z.o usleep.o

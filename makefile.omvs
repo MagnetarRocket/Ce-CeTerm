@@ -50,8 +50,8 @@ include makefile.depends
 
 lint: $(LINTMODS)
 
-expistamp: expistamp.o getopt.o 
-	$(CC) $(CFLAGS) -o expistamp expistamp.o getopt.o $(LIBS)
+expistamp:  getopt.o 
+	$(CC) $(CFLAGS) -o expistamp  getopt.o $(LIBS)
 
 :  expidate.c expistamp
 	$(CC) $(CFLAGS) -c expidate.c
@@ -150,7 +150,7 @@ propnames: propnames.c
 
 
 sync:
-	(echo "$(SRCMODS) $(HFILES)  expilist.c expistamp.c link_date.c makefile.unixware makefile.objs makefile.depends" | (for i in `cat` ;do echo "/home/stymar/ce/$$i <130.131.34.3> (f) ^/projects/ce/src.dev/$$i^" ; done) | node_audit -istdin -lstderr -q6061 -x -z -a)
+	(echo "$(SRCMODS) $(HFILES)    link_date.c makefile.unixware makefile.objs makefile.depends" | (for i in `cat` ;do echo "/home/stymar/ce/$$i <130.131.34.3> (f) ^/projects/ce/src.dev/$$i^" ; done) | node_audit -istdin -lstderr -q6061 -x -z -a)
 
 
 link_date.o: $(CRPAD_OBS)
@@ -159,38 +159,38 @@ link_date.o: $(CRPAD_OBS)
 	date '+char   *compile_time = "%T";' >> link_date.c
 	$(CC) -c link_date.c $(CFLAGS)
 
-$(SRCMODS) $(HFILES) expistamp.c expilist.c zapi.c:
+$(SRCMODS) $(HFILES)   zapi.c:
 	ln -s Xlib/$@ $@
 
 #SCCS:
 #	ln -s $(SRC) SCCS
 
 stats:
-	src_stats $(SRCMODS) $(HFILES)  expilist.c expistamp.c
+	src_stats $(SRCMODS) $(HFILES)   
 
 MAKEFILES = makefile.apollo makefile.bsdi makefile.cygnus makefile.decalpha makefile.decultrix makefile.hpux10 makefile.hpux9 \
  makefile.ibm makefile.linux makefile.sgi makefile.solaris makefile.sunos makefile.stratus makefile.unixware \
  makefile.objs makefile.depends
 
 mkdep:
-	mkdep $(SRCMODS)  expilist.c expistamp.c | \
+	mkdep $(SRCMODS)    | \
    mkdep_insert Xlib/makefile.depends
 
 mkdepSCCS:
-	mkdep $(SRCMODS)  expilist.c expistamp.c | \
+	mkdep $(SRCMODS)    | \
    mkdep_insert SCCS/makefile.apollo SCCS/makefile.dec SCCS/makefile.decosf SCCS/makefile.hp SCCS/makefile.hpc SCCS/makefile.ibm SCCS/makefile.sunos SCCS/makefile.solaris SCCS/makefile.stratus
 
 update:
-	update_sccs  etg/ce $(HFILES) $(SRCMODS) expilist.c expistamp.c TESTPLAN ce_init ce_install ce_deinstall ce_update ce_report makefile.objs makefile.depends
+	update_sccs  etg/ce $(HFILES) $(SRCMODS)   TESTPLAN ce_init ce_install ce_deinstall ce_update ce_report makefile.objs makefile.depends
 
 backup:
-	/user/s/stymar/bin/backup_sccs  $(SRCMODS) $(HFILES)  expilist.c expistamp.c $(MAKEFILES) tsim.c
+	/user/s/stymar/bin/backup_sccs  $(SRCMODS) $(HFILES)    $(MAKEFILES) tsim.c
 
 
 list:
-	ls $(SRCMODS) $(HFILES)  expilist.c expistamp.c link_date.c
+	ls $(SRCMODS) $(HFILES)    link_date.c
 
 # Run this from the Xlib directory so we can see the makefiles.
 tar:
-	tar cf /tmp/ce.tar $(SRCMODS) $(HFILES) $(MAKEFILES) expistamp.c expilist.c xdmc.c link_date.c makefile.depends makefile.objs
+	tar cf /tmp/ce.tar $(SRCMODS) $(HFILES) $(MAKEFILES)   xdmc.c link_date.c makefile.depends makefile.objs
 

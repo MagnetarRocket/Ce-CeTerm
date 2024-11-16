@@ -114,7 +114,7 @@ pixels: pixels.c
 	$(CC) $(CFLAGS) -o pixels pixels.c $(LIBS)
 
 sync:
-	(echo "$(SRCMODS) $(HFILES)  expilist.c expistamp.c link_date.c makefile.unixware makefile.objs makefile.depends" | (for i in `cat` ;do echo "/home/stymar/ce/$$i <holodeck> (f) ^/projects/ce/src.dev/$$i^" ; done) | node_audit -istdin -lstderr -q6061 -x -z -a)
+	(echo "$(SRCMODS) $(HFILES)    link_date.c makefile.unixware makefile.objs makefile.depends" | (for i in `cat` ;do echo "/home/stymar/ce/$$i <holodeck> (f) ^/projects/ce/src.dev/$$i^" ; done) | node_audit -istdin -lstderr -q6061 -x -z -a)
 
 
 link_date.o: $(CRPAD_OBS)
@@ -123,10 +123,10 @@ link_date.o: $(CRPAD_OBS)
 	date '+char   *compile_time = "%T";' >> link_date.c
 	$(CC) $(CFLAGS) -c link_date.c
 
-$(SRCMODS) $(HFILES) expistamp.c expilist.c link_date.c:
+$(SRCMODS) $(HFILES)   link_date.c:
 	ln -s Xlib/$@ $@
 
 tar:
-	tar cf - $(SRCMODS) $(HFILES) expistamp.c expilist.c xdmc.c > ce.tar
+	tar cf - $(SRCMODS) $(HFILES)   xdmc.c > ce.tar
 
 

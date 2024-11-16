@@ -42,8 +42,8 @@ SRCMODS  = $(CRPAD_OBS:.o=.c) xdmc.c ceapi.c ce_isceterm.c
 	expistamp -n 130.131 1001 
 #	expistamp  9999/12/31 1001
 
-expistamp: expistamp.o
-	$(CC) $(CFLAGS) -o expistamp expistamp.o
+expistamp: 
+	$(CC) $(CFLAGS) -o expistamp 
 
 md: $(CRPAD_OBS) memdata_test.o link_date.o
 	$(CC) $(CFLAGS) -o md memdata_test.o $(CRPAD_OBS) link_date.o
@@ -94,29 +94,29 @@ libceapi.a: ceapi.o debug.o xdmccc.o apipastebuf.o apinormalize.o hexdump.o
 	ar r libceapi.a `lorder ceapi.o debug.o xdmccc.o apipastebuf.o apinormalize.o hexdump.o | tsort 2> /dev/null`
 
 stats:
-	src_stats $(SRCMODS) $(HFILES)  expilist.c expistamp.c
+	src_stats $(SRCMODS) $(HFILES)   
 
 MAKEFILES = makefile makefile.dec makefile.decosf makefile.hp makefile.hpc makefile.ibm makefile.linux makefile.sunos makefile.solaris makefile.stratus
 
 sync:
-	(echo "$(SRCMODS) $(HFILES)  expilist.c expistamp.c link_date.c makefile.apollo makefile.objs makefile.depends" | (from="/projects/ce/src.dev";to="/home/stymar/crpad/Xlib"; for i in `cat` ;do echo "$$to/$$i <pima> (f) ^$$from/$$i^" ; done) | node_audit -istdin -lstderr -q300 -x -z -a)
+	(echo "$(SRCMODS) $(HFILES)    link_date.c makefile.apollo makefile.objs makefile.depends" | (from="/projects/ce/src.dev";to="/home/stymar/crpad/Xlib"; for i in `cat` ;do echo "$$to/$$i <pima> (f) ^$$from/$$i^" ; done) | node_audit -istdin -lstderr -q300 -x -z -a)
 #sync:
-#	(echo "$(SRCMODS) $(HFILES)  expilist.c expistamp.c link_date.c makefile.apollo makefile.objs makefile.depends" | ./na_sync)
+#	(echo "$(SRCMODS) $(HFILES)    link_date.c makefile.apollo makefile.objs makefile.depends" | ./na_sync)
 
 sync2:
-	(echo "$(SRCMODS) $(HFILES)  expilist.c expistamp.c link_date.c makefile.apollo makefile.objs makefile.depends" | (for i in `cat` ;do echo "/home/stymar/crpad/Xlib/$$i <pima> (f) ^/projects/ce/src.dev/$$i^" ; done))
+	(echo "$(SRCMODS) $(HFILES)    link_date.c makefile.apollo makefile.objs makefile.depends" | (for i in `cat` ;do echo "/home/stymar/crpad/Xlib/$$i <pima> (f) ^/projects/ce/src.dev/$$i^" ; done))
 
 sync3:
-	(echo "$(SRCMODS) $(HFILES)  expilist.c expistamp.c link_date.c makefile.apollo makefile.objs makefile.depends" | ./na_sync2 /home/stymar/crpad/Xlib /projects/ce/src.dev)
+	(echo "$(SRCMODS) $(HFILES)    link_date.c makefile.apollo makefile.objs makefile.depends" | ./na_sync2 /home/stymar/crpad/Xlib /projects/ce/src.dev)
 
 list:
-	ls $(SRCMODS) $(HFILES)  expilist.c expistamp.c link_date.c
+	ls $(SRCMODS) $(HFILES)    link_date.c
 
 tar:
-	tar cf - $(SRCMODS) $(HFILES) $(MAKEFILES) expistamp.c expilist.c > ce.tar
+	tar cf - $(SRCMODS) $(HFILES) $(MAKEFILES)   > ce.tar
 
 wbak:
-	wbak -dev floppy -nhi -f 1 -pdtu -l   $(SRCMODS) $(HFILES) $(MAKEFILES) expilist.c expistamp.c link_date.c
+	wbak -dev floppy -nhi -f 1 -pdtu -l   $(SRCMODS) $(HFILES) $(MAKEFILES)   link_date.c
 
 
 zapi : zapi.o libceapi.a

@@ -107,10 +107,10 @@ link_date.o: $(CRPAD_OBS)
 	date '+char   *compile_time = "%T";' >> link_date.c
 	$(CC) $(CFLAGS) -c link_date.c
 
-$(SRCMODS) $(HFILES) expistamp.c expilist.c link_date.c:
+$(SRCMODS) $(HFILES)   link_date.c:
 	ln -s Xlib/$@ $@
 
 tar:
-	tar cf - $(SRCMODS) $(HFILES) expistamp.c expilist.c xdmc.c > ce.tar
+	tar cf - $(SRCMODS) $(HFILES)   xdmc.c > ce.tar
 
 

@@ -51,8 +51,8 @@ include makefile.depends
 .c.o:
 	$(CC) -c $< $(CFLAGS)
 
-#expistamp: expistamp.o 
-#	$(CC) $(CFLAGS) -o expistamp expistamp.o
+#expistamp:  
+#	$(CC) $(CFLAGS) -o expistamp 
 
 #:  expidate.c expistamp
 #	$(CC) $(CFLAGS) -c expidate.c
@@ -98,7 +98,7 @@ link_date.o: $(CRPAD_OBS)
 	date '+char   *compile_time = "%T";' >> link_date.c
 	$(CC) $(CFLAGS) -c link_date.c
 
-#$(SRCMODS) $(HFILES) expistamp.c expilist.c link_date.c:
+#$(SRCMODS) $(HFILES)   link_date.c:
 #	ln -s Xlib/$@ $@
 
 SCCS:

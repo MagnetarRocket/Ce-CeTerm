@@ -71,7 +71,7 @@ default: crpad xdmc
 .r.h:
 	cp $*.r $*.h
 
-$(LSRC) link_date.z expistamp.c expilist.c:
+$(LSRC) link_date.z  :
 	ln -s Xlib/$(@:.z=.c) $@
 
 $(LINCL):
@@ -146,7 +146,7 @@ xutil.o:  debug.h tab.h dmc.h buffer.h memdata.h drawable.h xerrorpos.h xutil.h
 xdmc.o:  cc.h dmc.h buffer.h memdata.h debug.h drawable.h getxopts.h help.h xerror.h xerrorpos.h
 ceapi.o:  apistats.h cc.h dmc.h buffer.h memdata.h debug.h drawable.h ceapi.h dmsyms.h pastebuf.h pad.h xerror.h xerrorpos.h
 expilist.o:  
-expistamp.o:  
+:  
 
 
 ##-- mkdep end
@@ -215,14 +215,14 @@ link_date.o: $(CRPAD_OBS)
 propnames: propnames.c
 	$(CC) $(CFLAGS) -o propnames propnames.c $(LIBS)
 
-expistamp: expistamp.c 
-	$(CC) $(CFLAGS) -o expistamp expistamp.c
+expistamp:  
+	$(CC) $(CFLAGS) -o expistamp 
 	date
 
-expilist: expilist.c 
-	$(CC) $(CFLAGS) -o expilist expilist.c
+expilist:  
+	$(CC) $(CFLAGS) -o expilist 
 
 tar:
-	tar cvf /dev/rfd0 $(SRCMODS) $(HFILES) expistamp.c expilist.c
+	tar cvf /dev/rfd0 $(SRCMODS) $(HFILES)  
 
 

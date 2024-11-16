@@ -89,10 +89,10 @@ propnames: propnames.c
 
 link_date.o: $(CRPAD_OBS)
 
-$(SRCMODS) $(HFILES) expistamp.c expilist.c link_date.c:
+$(SRCMODS) $(HFILES)   link_date.c:
 	ln -s Xlib/$@ $@
 
 tar:
-	tar cf - $(SRCMODS) $(HFILES) expistamp.c expilist.c xdmc.c > ce.tar
+	tar cf - $(SRCMODS) $(HFILES)   xdmc.c > ce.tar
 
 

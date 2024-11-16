@@ -61,8 +61,8 @@ include makefile.depends
 
 lint: $(LINTMODS)
 
-#expistamp: expistamp.o 
-#	$(CC) $(CFLAGS) -o expistamp expistamp.o $(LIBS)
+#expistamp:  
+#	$(CC) $(CFLAGS) -o expistamp  $(LIBS)
 
 #:  expidate.c expistamp
 #	$(CC) -c expidate.c $(CFLAGS)

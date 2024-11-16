@@ -39,8 +39,8 @@ include makefile.depends
 .c.o:
 	$(CC) -c $< $(CFLAGS)
 
-expi expistamp: expistamp.o
-	$(CC) $(CFLAGS) -o expistamp expistamp.o
+expi expistamp: 
+	$(CC) $(CFLAGS) -o expistamp 
 
 :  expidate.c expistamp
 	$(CC) -c expidate.c $(CFLAGS)
@@ -88,10 +88,10 @@ link_date.o: $(CRPAD_OBS)
 	date '+char   *compile_time = "%T";' >> link_date.c
 	$(CC) -c link_date.c $(CFLAGS)
 
-$(SRCMODS) $(HFILES) expistamp.c expilist.c link_date.c:
+$(SRCMODS) $(HFILES)   link_date.c:
 	ln -s Xlib/$@ $@
 
 sync:
-	(echo "$(SRCMODS) $(HFILES)  expilist.c expistamp.c link_date.c makefile.hpux10 makefile.objs makefile.depends" | (from="/projects/ce/releases/ce.r2.5/solaris_251";to="/local/ce"; for i in `cat` ;do echo "$$to/$$i <ute> (f) ^$$from/$$i^" ; done) | node_audit -istdin -lstderr -q300 -x -z -a)
+	(echo "$(SRCMODS) $(HFILES)    link_date.c makefile.hpux10 makefile.objs makefile.depends" | (from="/projects/ce/releases/ce.r2.5/solaris_251";to="/local/ce"; for i in `cat` ;do echo "$$to/$$i <ute> (f) ^$$from/$$i^" ; done) | node_audit -istdin -lstderr -q300 -x -z -a)
 
 

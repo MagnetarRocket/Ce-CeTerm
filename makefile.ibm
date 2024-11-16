@@ -100,10 +100,10 @@ link_date.o: $(CRPAD_OBS)
 	$(CC) -c link_date.c $(CFLAGS)
 
 
-$(SRCMODS) $(HFILES) expistamp.c expilist.c link_date.c:
+$(SRCMODS) $(HFILES)   link_date.c:
 	ln -s Xlib/$@ $@
 
 tar:
-	tar cvf /dev/rfd0 $(SRCMODS) $(HFILES) expistamp.c expilist.c xdmc.c
+	tar cvf /dev/rfd0 $(SRCMODS) $(HFILES)   xdmc.c
 
 
