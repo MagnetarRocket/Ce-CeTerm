@@ -1,6 +1,6 @@
 
 HFILES =  xnt.h cc.h dmc.h buffer.h memdata.h debug.h drawable.h  cswitch.h display.h dmwin.h\
-          xutil.h dumpxevent.h emalloc.h execute.h expidate.h expose.h pw.h getevent.h\
+          xutil.h dumpxevent.h emalloc.h execute.h  expose.h pw.h getevent.h\
           mvcursor.h getxopts.h Xresource.h help.h hexdump.h init.h kd.h dmsyms.h keypress.h\
           lineno.h mark.h netlist.h normalize.h pad.h parms.h pastebuf.h pd.h record.h redraw.h\
           sbwin.h sendevnt.h serverdef.h hsearch.h tab.h titlebar.h txcursor.h typing.h undo.h\
@@ -38,7 +38,7 @@ dumpxevent.o:  xnt.h
 emalloc.o:  debug.h  dmwin.h  buffer.h  memdata.h  drawable.h   
 execute.o:  display.h  buffer.h  memdata.h  debug.h  drawable.h   \
           normalize.h  pad.h  parms.h  Xresource.h   
-expidate.o:  debug.h  expidate.h    netlist.h 
+:  debug.h      netlist.h 
 expose.o:  xnt.h   \
           xerror.h  xerrorpos.h 
 gc.o:  xnt.h   

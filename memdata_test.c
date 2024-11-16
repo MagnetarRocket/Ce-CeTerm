@@ -28,7 +28,6 @@
 #include "dmwin.h"
 #include "dumpxevent.h"
 #include "execute.h"
-#include "expidate.h"
 #include "pw.h"
 #include "gc.h"
 #include "getevent.h"

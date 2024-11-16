@@ -246,7 +246,6 @@
 #include "emalloc.h"
 #include "execute.h"
 /*#ifdef EXPIDATE*/
-#include "expidate.h"
 /*#endif*/
 #include "expose.h"
 #include "pw.h"

@@ -44,11 +44,11 @@ dumpxevent_test: dumpxevent_test.o dumpxevent.o keysym.o
 .c.o:
 	$(CC) -c $< $(CFLAGS)
 
-expidate.o: expidate.h expidate.c expistamp
+:  expidate.c expistamp
 	$(CC) -c expidate.c $(CFLAGS)
-#	./expistamp 1001 expidate.o
-	./expistamp -n 130.131 1001 expidate.o
-#	expistamp expidate.o 1994/12/31 1001
+#	./expistamp 1001 
+	./expistamp -n 130.131 1001 
+#	expistamp  1994/12/31 1001
 
 expi expistamp: expistamp.o
 	$(CC) $(CFLAGS) -o expistamp expistamp.o

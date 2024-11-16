@@ -25,8 +25,6 @@
 #include <fcntl.h>          /* /usr/include/fcntl.h      */
 #include <malloc.h>
 
-#include    "expidate.h"
-
 
 
 /***************************************************************

@@ -30,8 +30,6 @@
 #include <fcntl.h>          /* /usr/include/fcntl.h      */
 #include <malloc.h>         /* /usr/include/malloc.h     */
 
-#include    "expidate.h"
-
 #define B1 1  /* use binary mode on fopen for PC's unless it breaks something*/
 
 /***************************************************************

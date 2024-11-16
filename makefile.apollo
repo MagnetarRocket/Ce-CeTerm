@@ -37,10 +37,10 @@ SRCMODS  = $(CRPAD_OBS:.o=.c) xdmc.c ceapi.c ce_isceterm.c
 .c.o:
 	$(CC) -c $< $(CFLAGS)
 
-expidate.o: expidate.h expidate.c expistamp
+:  expidate.c expistamp
 	$(CC) $(CFLAGS) -c expidate.c
-	expistamp -n 130.131 1001 expidate.o
-#	expistamp expidate.o 9999/12/31 1001
+	expistamp -n 130.131 1001 
+#	expistamp  9999/12/31 1001
 
 expistamp: expistamp.o
 	$(CC) $(CFLAGS) -o expistamp expistamp.o

@@ -54,12 +54,12 @@ include makefile.depends
 
 lint: $(LINTMODS)
 
-expistamp: expistamp.o expidate.h
+expistamp: expistamp.o 
 	$(CC) $(CFLAGS) -o expistamp expistamp.o 
 
-expidate.o: expidate.h expidate.c expistamp
+:  expidate.c expistamp
 	$(CC) -c expidate.c $(CFLAGS)
-	./expistamp -d 1999/12/31 1001 expidate.o
+	./expistamp -d 1999/12/31 1001 
 
 md: memdata_test.o memdata.o debug.o undo.o search.o re.o
 	$(CC) $(CFLAGS) -o md memdata_test.o memdata.o debug.o undo.o search.o re.o
