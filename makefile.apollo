@@ -37,14 +37,6 @@ SRCMODS  = $(CRPAD_OBS:.o=.c) xdmc.c ceapi.c ce_isceterm.c
 .c.o:
 	$(CC) -c $< $(CFLAGS)
 
-:  expidate.c expistamp
-	$(CC) $(CFLAGS) -c expidate.c
-	expistamp -n 130.131 1001 
-#	expistamp  9999/12/31 1001
-
-expistamp: 
-	$(CC) $(CFLAGS) -o expistamp 
-
 md: $(CRPAD_OBS) memdata_test.o link_date.o
 	$(CC) $(CFLAGS) -o md memdata_test.o $(CRPAD_OBS) link_date.o
 

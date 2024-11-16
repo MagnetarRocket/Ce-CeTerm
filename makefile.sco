@@ -50,12 +50,6 @@ include makefile.depends
 .c.o:
 	$(CC) -c $< $(CFLAGS)
 
-
-:  expidate.c expistamp
-	$(CC) -c expidate.c $(CFLAGS)
-	./expistamp -d 9999/12/31 1001 
-#	expistamp  1994/12/31 1001
-
 md: memdata_test.o memdata.o debug.o undo.o search.o re.o
 	$(CC) $(CFLAGS) -o md memdata_test.o memdata.o debug.o undo.o search.o re.o
 

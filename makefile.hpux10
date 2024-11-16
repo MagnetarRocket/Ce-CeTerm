@@ -39,13 +39,6 @@ include makefile.depends
 .c.o:
 	$(CC) -c $< $(CFLAGS)
 
-expi expistamp: 
-	$(CC) $(CFLAGS) -o expistamp 
-
-:  expidate.c expistamp
-	$(CC) -c expidate.c $(CFLAGS)
-	./expistamp -n 130.131 1001 
-
 xdmccc.o : cc.o  xdmccc.c
 	$(CC) $(CFLAGS) -DPGM_XDMC -c xdmccc.c
 

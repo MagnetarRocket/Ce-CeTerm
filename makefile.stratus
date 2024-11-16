@@ -126,11 +126,6 @@ expilist.o:
 .c.o:
 	$(CC) -c $< $(CFLAGS)
 
-:  expidate.c expistamp
-	$(CC) $(CFLAGS) -c expidate.c
-	expistamp -n 130.131 1001 
-#	expistamp  1993/12/31 1001
-
 md: memdata_test.o memdata.o debug.o undo.o search.o re.o
 	$(CC) $(CFLAGS) -o md memdata_test.o memdata.o debug.o undo.o search.o re.o
 
@@ -173,9 +168,6 @@ libceapi.a: ceapi.o debug.o xdmccc.o apipastebuf.o apinormalize.o hexdump.o
 
 getxopts: getxopts.c  debug.o
 	$(CC) $(CFLAGS) -DGETXOPTS_STAND_ALONE -o getxopts getxopts.c debug.o $(LIBS)
-
-expistamp: 
-	$(CC) $(CFLAGS) -o expistamp  $(LIBS)
 
 propnames: propnames.c
 	$(CC) $(CFLAGS) -o propnames propnames.c $(LIBS)

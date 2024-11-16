@@ -44,15 +44,6 @@ dumpxevent_test: dumpxevent_test.o dumpxevent.o keysym.o
 .c.o:
 	$(CC) -c $< $(CFLAGS)
 
-:  expidate.c expistamp
-	$(CC) -c expidate.c $(CFLAGS)
-#	./expistamp 1001 
-	./expistamp -n 130.131 1001 
-#	expistamp  1994/12/31 1001
-
-expi expistamp: 
-	$(CC) $(CFLAGS) -o expistamp 
-
 hppad:  hppad.c
 	$(CC) $(CFLAGS) -o hppad hppad.c
 

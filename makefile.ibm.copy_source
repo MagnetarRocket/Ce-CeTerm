@@ -155,12 +155,6 @@ expilist.o:
 ptrace: ptrace.c
 	$(CC) $(CFLAGS) ptrace.c -o ptrace
 
-:  expidate.c expistamp
-	$(CC) -c expidate.c $(CFLAGS)
-#	expistamp 1001 
-#	expistamp -n 130.131 1001 
-	expistamp -d 1994/12/31 1001  
-
 md: memdata_test.o memdata.o debug.o undo.o search.o re.o
 	$(CC) $(CFLAGS) -o md memdata_test.o memdata.o debug.o undo.o search.o re.o
 
@@ -214,10 +208,6 @@ link_date.o: $(CRPAD_OBS)
 
 propnames: propnames.c
 	$(CC) $(CFLAGS) -o propnames propnames.c $(LIBS)
-
-expistamp:  
-	$(CC) $(CFLAGS) -o expistamp 
-	date
 
 expilist:  
 	$(CC) $(CFLAGS) -o expilist 
